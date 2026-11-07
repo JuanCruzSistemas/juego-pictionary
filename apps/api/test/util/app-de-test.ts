@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing';
 import type { INestApplication } from '@nestjs/common';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import type { App } from 'supertest/types.js';
 import { AppModule } from '../../src/app.module.js';
 import { configurarApp } from '../../src/configurar.js';
@@ -30,10 +31,10 @@ export async function crearAppDeTest(): Promise<AppDeTest> {
     .overrideProvider(Reloj)
     .useValue(reloj)
     .compile();
-  const app = modulo.createNestApplication<INestApplication<App>>();
+  const app = modulo.createNestApplication<NestExpressApplication>();
   configurarApp(app);
   await app.init();
-  return { app, prisma: app.get(PrismaService), reloj };
+  return { app: app as unknown as INestApplication<App>, prisma: app.get(PrismaService), reloj };
 }
 
 /**

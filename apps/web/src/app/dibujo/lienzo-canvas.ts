@@ -11,12 +11,12 @@ import {
   type OnDestroy,
 } from '@angular/core';
 import type { Stroke } from '@garabato/shared';
+import { BORDE_DEL_MARCO, ajustarCuadrado } from './cuadrado';
 import { COLOR_HOJA, agregarPunto, cerrarTrazo, normalizarPunto, pintarTrazo, pintarTrazos } from './trazos';
 
 /** Contactos más anchos que esto (en px CSS) se toman como palma. */
 const ANCHO_DE_PALMA = 50;
-/** Igual que --borde-lienzo. */
-const BORDE = 2.5;
+
 
 type TrazoEnCurso = { pointerId: number; rect: DOMRect; trazo: Stroke };
 
@@ -78,6 +78,8 @@ export class LienzoCanvas implements AfterViewInit, OnDestroy {
   readonly grosor = input.required<number>();
   /** Convierte el timeStamp de un evento en ms desde el primer punto del dibujo. */
   readonly tiempo = input.required<(timeStamp: number) => number>();
+  /** Mientras se manda el dibujo, no se puede seguir dibujando. */
+  readonly bloqueado = input(false);
   readonly terminado = output<Stroke>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -118,7 +120,7 @@ export class LienzoCanvas implements AfterViewInit, OnDestroy {
 
   protected abajo(e: PointerEvent): void {
     // Un solo dedo a la vez: si ya hay un trazo en curso, el segundo dedo o la palma se ignoran.
-    if (this.enCurso || !e.isPrimary || this.esPalma(e)) return;
+    if (this.bloqueado() || this.enCurso || !e.isPrimary || this.esPalma(e)) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault();
 
@@ -171,18 +173,16 @@ export class LienzoCanvas implements AfterViewInit, OnDestroy {
   // ---------- Tamaño y pintado ----------
 
   private ajustarTamano(): void {
-    const canvas = this.canvasRef().nativeElement;
-    const { width, height } = this.host.nativeElement.getBoundingClientRect();
-    const lado = Math.max(0, Math.floor(Math.min(width, height) - 2 * BORDE));
+    const disponible = this.host.nativeElement.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
+    const lado = Math.max(0, Math.floor(Math.min(disponible.width, disponible.height) - 2 * BORDE_DEL_MARCO));
     if (lado === this.lado && dpr === this.dpr) return;
-
-    this.lado = lado;
-    this.dpr = dpr;
-    canvas.style.width = canvas.style.height = `${lado}px`;
-    const marco = this.marcoRef().nativeElement.style;
-    marco.width = marco.height = `${lado + 2 * BORDE}px`;
-    for (const c of [canvas, this.base]) c.width = c.height = Math.round(lado * dpr);
+    ({ lado: this.lado, dpr: this.dpr } = ajustarCuadrado(
+      disponible,
+      this.marcoRef().nativeElement,
+      [this.canvasRef().nativeElement, this.base],
+      dpr,
+    ));
     this.repintarBase(this.trazos());
   }
 

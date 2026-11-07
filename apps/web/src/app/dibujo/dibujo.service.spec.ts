@@ -37,10 +37,11 @@ describe('DibujoService', () => {
     expect(d.tiempo(12000)).toBe(0);
   });
 
-  it('paraEnviar devuelve los trazos y la duración', () => {
+  it('paraEnviar devuelve los trazos; la duración queda aparte', () => {
     d.agregar(trazo(0, 100));
     d.agregar(trazo(900, 1500));
-    expect(d.paraEnviar()).toEqual({ trazos: [trazo(0, 100), trazo(900, 1500)], duracionMs: 1500 });
+    expect(d.paraEnviar()).toEqual({ trazos: [trazo(0, 100), trazo(900, 1500)] });
+    expect(d.duracionMs()).toBe(1500);
     expect(d.cantidadDePuntos()).toBe(4);
   });
 

@@ -1,0 +1,25 @@
+<main class="pantalla">
+  <header>
+    <a routerLink="/" class="volver" aria-label="Volver al inicio">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+    </a>
+    <h1 class="titulo">¿Qué te dibujó?</h1>
+  </header>
+
+  <div class="zona-dibujo">
+    @if (trazos(); as t) {
+      <app-dibujo-vista class="vista" [trazos]="t" descripcion="El dibujo para adivinar" />
+    } @else if (error()) {
+      <div class="estado">
+        <p>No pudimos cargar el dibujo.</p>
+        <button type="button" class="btn-secundario" (click)="reintentar()">Probar de nuevo</button>
+      </div>
+    } @else {
+      <p class="estado texto-suave" role="status">Cargando el dibujo…</p>
+    }
+  </div>
+
+  <p class="nota texto-suave">Para escribir tu respuesta falta el paso 8.</p>
+</main>
+<app-aviso-girar />

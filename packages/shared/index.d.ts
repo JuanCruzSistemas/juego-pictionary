@@ -26,7 +26,9 @@ export type CodigoError =
   | 'no_es_tu_turno'
   /** El turno ya no admite el cambio: por ejemplo, el dibujo ya se mandó. */
   | 'turno_cerrado'
-  | 'sin_salteos';
+  | 'sin_salteos'
+  /** El dibujo todavía no se mandó. */
+  | 'dibujo_no_disponible';
 
 /** Cuerpo de toda respuesta de error de la API. */
 export type ErrorApi = { codigo: CodigoError; mensaje: string };
@@ -86,6 +88,15 @@ export type PalabraBody = { opcion: string } | { propia: string };
 
 /** POST /api/turnos/:id/salteo */
 export type SalteoRespuesta = { salteos: Salteos };
+
+/** POST /api/turnos/:id/dibujo. La duración la calcula la API con el último `t`. */
+export type EnviarDibujoBody = { trazos: Stroke[] };
+
+/** `turno` es null si el turno ya se cerró (por ejemplo, un reintento después de que adivinaron). */
+export type EnviarDibujoRespuesta = { turno: TurnoActual | null };
+
+/** GET /api/turnos/:id/dibujo */
+export type DibujoGuardado = { trazos: Stroke[]; duracionMs: number };
 
 /** GET /api/estado */
 export type Estado = {

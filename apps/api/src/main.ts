@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module.js';
 import { configurarApp } from './configurar.js';
 
@@ -7,7 +8,7 @@ import { configurarApp } from './configurar.js';
 if (existsSync('.env')) process.loadEnvFile('.env');
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   configurarApp(app);
 
   // En local el front pasa por el proxy de ng serve; en producción viene de otro dominio.

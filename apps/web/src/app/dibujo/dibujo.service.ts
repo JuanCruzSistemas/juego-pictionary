@@ -3,7 +3,7 @@ import type { Stroke } from '@garabato/shared';
 import { deshacer } from './trazos';
 
 /**
- * El dibujo en curso, como Stroke[]. El paso 7 solo tiene que mandar `paraEnviar()`.
+ * El dibujo en curso, como Stroke[]. Lienzo lo manda con `paraEnviar()`.
  * Vive mientras la app está abierta y está atado a un turno: si cambia el turno, arranca vacío.
  */
 @Injectable({ providedIn: 'root' })
@@ -48,7 +48,8 @@ export class DibujoService {
     this.origen = null;
   }
 
-  paraEnviar(): { trazos: Stroke[]; duracionMs: number } {
-    return { trazos: this.lista(), duracionMs: this.duracionMs() };
+  /** El body de POST /api/turnos/:id/dibujo. La duración la calcula la API. */
+  paraEnviar(): { trazos: Stroke[] } {
+    return { trazos: this.lista() };
   }
 }

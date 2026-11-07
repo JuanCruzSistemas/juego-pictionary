@@ -31,3 +31,6 @@ export const turnoCerrado = (mensaje: string) => new ErrorDeApi(HttpStatus.CONFL
 
 export const sinSalteos = () =>
   new ErrorDeApi(HttpStatus.CONFLICT, 'sin_salteos', 'Ya usaste tus 3 salteos. Cada uno vuelve a la media hora de usarlo.');
+
+export const dibujoNoDisponible = () =>
+  new ErrorDeApi(HttpStatus.NOT_FOUND, 'dibujo_no_disponible', 'Todavía no hay un dibujo para este turno.');

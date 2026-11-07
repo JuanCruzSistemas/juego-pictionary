@@ -1,6 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import type {
+  DibujoGuardado,
+  EnviarDibujoBody,
+  EnviarDibujoRespuesta,
   EntrarBody,
   EntrarRespuesta,
   Estado,
@@ -32,5 +35,13 @@ export class ApiService {
 
   saltear(turnoId: string) {
     return this.http.post<SalteoRespuesta>(`/api/turnos/${encodeURIComponent(turnoId)}/salteo`, {});
+  }
+
+  enviarDibujo(turnoId: string, body: EnviarDibujoBody) {
+    return this.http.post<EnviarDibujoRespuesta>(`/api/turnos/${encodeURIComponent(turnoId)}/dibujo`, body);
+  }
+
+  dibujo(turnoId: string) {
+    return this.http.get<DibujoGuardado>(`/api/turnos/${encodeURIComponent(turnoId)}/dibujo`);
   }
 }

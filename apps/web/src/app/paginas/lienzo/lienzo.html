@@ -20,6 +20,7 @@
     [color]="colorDelTrazo()"
     [grosor]="anchoDelTrazo()"
     [tiempo]="dibujo.tiempo"
+    [bloqueado]="enviando()"
     (terminado)="trazoTerminado($event)"
   />
 
@@ -59,12 +60,21 @@
   </div>
 
   <div class="pie">
-    @if (confirmandoBorrado()) {
-      <p class="mensaje-error" role="status">Tocá de nuevo el tacho para borrar todo el dibujo.</p>
-    } @else if (aviso(); as a) {
-      <p class="aviso" role="status">{{ a }}</p>
+    @if (cerrado(); as c) {
+      <p class="mensaje-error" role="alert">{{ c }}</p>
+      <button type="button" class="btn-principal" (click)="irAlInicio()">Volver al inicio</button>
+    } @else {
+      @if (confirmandoBorrado()) {
+        <p class="mensaje-error" role="status">Tocá de nuevo el tacho para borrar todo el dibujo.</p>
+      } @else if (fallo(); as f) {
+        <p class="mensaje-error" role="alert">{{ f }}</p>
+      } @else if (aviso(); as a) {
+        <p class="aviso" role="status">{{ a }}</p>
+      }
+      <button type="button" class="btn-principal" [disabled]="enviando()" (click)="mandar()">
+        {{ enviando() ? 'Mandando…' : fallo() ? 'Reintentar' : 'Mandar dibujo' }}
+      </button>
     }
-    <button type="button" class="btn-principal" (click)="mandar()">Mandar dibujo</button>
   </div>
 </main>
 <app-aviso-girar />

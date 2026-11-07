@@ -1,10 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import type { Salteos, SalteoRespuesta, TurnoActual } from '@garabato/shared';
+import type { DibujoGuardado, EnviarDibujoRespuesta, Salteos, SalteoRespuesta, Stroke, TurnoActual } from '@garabato/shared';
 import { Prisma, type Jugador, type Turno } from '../generated/prisma/client.js';
 import { PrismaService } from '../db/prisma.service.js';
 import { Reloj } from '../comun/reloj.js';
 import { normalizar } from '../comun/texto.js';
-import { datosInvalidos, noEsTuTurno, sinSalteos, turnoCerrado, turnoNoEncontrado } from '../comun/errores.js';
+import {
+  datosInvalidos,
+  dibujoNoDisponible,
+  noEsTuTurno,
+  sinSalteos,
+  turnoCerrado,
+  turnoNoEncontrado,
+} from '../comun/errores.js';
+import { duracionDe } from '../dibujos/reglas.js';
 import { sortearOpciones } from './sorteo.js';
 import { contarSalteos, inicioDeLaVentana } from './salteos.js';
 import type { PalabraValidada } from './palabra.js';
@@ -143,6 +151,52 @@ export class TurnosService {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') throw cerrado();
       throw e;
     }
+  }
+
+  /**
+   * Guarda el dibujo y pasa el turno a "adivinando". Es idempotente: si el dibujo de este turno
+   * ya se mandó (un reintento, un doble toque), no lo reemplaza y responde igual que la primera vez.
+   */
+  async enviarDibujo(yo: Jugador, turnoId: string, trazos: Stroke[]): Promise<EnviarDibujoRespuesta> {
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        const turno = await this.turnoQueDibujo(yo, turnoId, tx);
+        if (turno.estado === 'adivinando' || turno.estado === 'adivinado') return; // ya mandado
+        if (turno.estado === 'eligiendo') throw turnoCerrado('Elegí la palabra antes de mandar el dibujo.');
+        if (turno.estado === 'salteado') throw turnoCerrado('Este turno se salteó: el dibujo no se puede mandar.');
+
+        // Si dos pedidos llegan juntos, el segundo espera el bloqueo de esta fila y no encuentra nada que cambiar.
+        const r = await tx.turno.updateMany({
+          where: { id: turno.id, estado: 'dibujando' },
+          data: { estado: 'adivinando', enviadoEn: this.reloj.ahora() },
+        });
+        if (r.count === 0) return;
+        await tx.dibujo.create({
+          data: { turnoId: turno.id, autorId: yo.id, trazos, duracionMs: duracionDe(trazos), creadoEn: this.reloj.ahora() },
+        });
+      });
+    } catch (e) {
+      if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002')) throw e;
+    }
+
+    const turno = await this.prisma.turno.findUniqueOrThrow({
+      where: { id: turnoId },
+      include: { _count: { select: { intentos: true } } },
+    });
+    return {
+      turno: turno.estado === 'adivinando' ? vistaDelTurno(turno, yo.id, turno._count.intentos) : null,
+    };
+  }
+
+  /** El dibujo del turno, para quien lo dibujó o quien adivina, una vez mandado. Nunca trae la palabra. */
+  async dibujoDe(yo: Jugador, turnoId: string): Promise<DibujoGuardado> {
+    const turno = await this.prisma.turno.findFirst({
+      where: { id: turnoId, salaId: yo.salaId },
+      include: { dibujo: true },
+    });
+    if (!turno) throw turnoNoEncontrado();
+    if (!turno.dibujo) throw dibujoNoDisponible();
+    return { trazos: turno.dibujo.trazos as Stroke[], duracionMs: turno.dibujo.duracionMs };
   }
 
   /** El turno, si es de la sala de quien pide y lo dibuja esa persona. */
