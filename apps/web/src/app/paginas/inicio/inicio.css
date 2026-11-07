@@ -1,0 +1,35 @@
+.pantalla {
+  gap: 20px;
+  padding: 24px 20px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.etiqueta-turno {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--texto-suave);
+}
+
+h2 {
+  font-size: 30px;
+}
+
+.cuerpo {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.aviso {
+  font-size: 14px;
+}

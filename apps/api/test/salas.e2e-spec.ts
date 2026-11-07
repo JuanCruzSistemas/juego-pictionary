@@ -116,7 +116,7 @@ describe('Salas y sesión', () => {
       const conA = () => http().get('/api/estado').set('Authorization', `Bearer ${a.body.token}`);
 
       const antes = await conA().expect(200);
-      expect(antes.body).toEqual({ yo: a.body.jugador, otro: null, invitacion });
+      expect(antes.body).toEqual({ yo: a.body.jugador, otro: null, invitacion, turno: null, anterior: null });
 
       const b = await entrar('Ana').expect(201);
       const despues = await conA().expect(200);

@@ -1,0 +1,30 @@
+<main class="pantalla">
+  <header>
+    <h1 class="titulo logo"><span class="resaltado">Garabato</span></h1>
+  </header>
+
+  @if (tarjeta(); as t) {
+    <section class="tarjeta" aria-live="polite">
+      <p class="etiqueta-turno">{{ t.etiqueta }}</p>
+      <h2 class="titulo">{{ t.titulo }}</h2>
+      <p class="cuerpo">{{ t.texto }}</p>
+      @if (t.accion; as a) {
+        <a class="btn-principal" [routerLink]="a.ruta">{{ a.texto }}</a>
+      }
+      @if (t.compartir) {
+        <app-compartir-link [url]="link()" />
+      }
+    </section>
+    @if (error()) {
+      <p class="aviso texto-suave" role="status">No pudimos actualizar. Volvemos a probar en unos segundos.</p>
+    }
+  } @else if (error()) {
+    <section class="tarjeta">
+      <h2 class="titulo">No pudimos cargar la sala</h2>
+      <p class="cuerpo">Revisá tu conexión.</p>
+      <button type="button" class="btn-principal" (click)="reintentar()">Probar de nuevo</button>
+    </section>
+  } @else {
+    <p class="cuerpo texto-suave" role="status">Cargando…</p>
+  }
+</main>

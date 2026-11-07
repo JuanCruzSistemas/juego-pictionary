@@ -1,54 +1,39 @@
-import { Component, inject, signal } from '@angular/core';
-import type { Estado } from '@garabato/shared';
-import { ApiService } from '../../api/api.service';
+import { Component, DestroyRef, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { EstadoService } from '../../estado/estado.service';
+import { CompartirLink } from '../../comun/compartir-link';
+import { tarjetaDeInicio } from './textos';
 
-/** Provisoria del paso 3: confirma la sesión. En el paso 4 pasa a ser Main con los estados del turno. */
+/**
+ * Inicio. Diseño: docs/diseno/Main.dc.html.
+ * En la etapa 1 se muestra solo la tarjeta del turno: racha, dibujos libres, modo en vivo
+ * y últimos dibujos llegan en las etapas 2 y 4.
+ */
 @Component({
   selector: 'app-inicio',
-  template: `
-    <main class="pantalla">
-      <h1 class="titulo logo"><span class="resaltado">Garabato</span></h1>
-      <section class="tarjeta">
-        @if (estado(); as e) {
-          <p class="etiqueta texto-suave">Sesión iniciada</p>
-          <h2 class="titulo subtitulo">Hola, {{ e.yo.nombre }}</h2>
-          <p class="cuerpo">
-            @if (e.otro) {
-              También está {{ e.otro.nombre }}. Ya son dos.
-            } @else {
-              Falta que entre la otra persona.
-            }
-          </p>
-        } @else if (error()) {
-          <p class="cuerpo">No pudimos cargar la sala. Revisá tu conexión.</p>
-          <button type="button" class="btn-principal" (click)="cargar()">Probar de nuevo</button>
-        } @else {
-          <p class="cuerpo texto-suave" role="status">Cargando…</p>
-        }
-      </section>
-    </main>
-  `,
-  styles: `
-    .pantalla { gap: 20px; padding: 24px 20px; }
-    .logo { font-size: 30px; line-height: 1.1; }
-    .subtitulo { font-size: 30px; }
-    .cuerpo { font-size: 16px; line-height: 1.4; }
-  `,
+  imports: [RouterLink, CompartirLink],
+  templateUrl: './inicio.html',
+  styleUrl: './inicio.css',
 })
 export class InicioPage {
-  private readonly api = inject(ApiService);
-  protected readonly estado = signal<Estado | null>(null);
-  protected readonly error = signal(false);
+  private readonly estados = inject(EstadoService);
+
+  protected readonly estado = this.estados.estado;
+  protected readonly error = this.estados.error;
+  protected readonly tarjeta = computed(() => {
+    const e = this.estado();
+    return e ? tarjetaDeInicio(e) : null;
+  });
+  protected readonly link = computed(() => {
+    const e = this.estado();
+    return e ? `${location.origin}/s/${e.invitacion}` : '';
+  });
 
   constructor() {
-    this.cargar();
+    this.estados.seguir(inject(DestroyRef));
   }
 
-  protected cargar(): void {
-    this.error.set(false);
-    this.api.estado().subscribe({
-      next: (e) => this.estado.set(e),
-      error: () => this.error.set(true),
-    });
+  protected reintentar(): void {
+    this.estados.actualizar();
   }
 }

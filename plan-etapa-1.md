@@ -53,7 +53,8 @@ garabato/
 
 **Estados del turno:** `eligiendo → dibujando → adivinando → adivinado`, o `salteado` desde `eligiendo` o `dibujando`.
 
-- Las 3 opciones se sortean una sola vez, al crear el turno. Si se recarga la página, no cambian.
+- Las 3 opciones se sortean una sola vez, al crear el turno. Si se recarga la página, no cambian. No traen palabras parecidas entre sí: a distancia 1 o una dentro de la otra, como Gato/Pato o Flor/Florero.
+- El turno 1 se crea cuando entra la segunda persona, y lo dibuja quien entró primero.
 - Cada cambio de estado y la creación del turno siguiente pasan en una transacción. La restricción única `(salaId, numero)` evita que se dupliquen turnos.
 - Los trazos van en un único jsonb por dibujo. Se leen y se escriben siempre juntos, y la etapa 2 los va a reproducir con los `t` que ya trae cada punto.
 
@@ -74,7 +75,7 @@ Todos van con el prefijo `/api`, salvo `/health`. Los que requieren sesión usan
 | GET | `/health` | Responde sin tocar la base, para el uptime bot. |
 | GET | `/salas/:invitacion` | Público. Devuelve si la sala está llena y el nombre de quien ya entró, para el texto "Juan te invitó". |
 | POST | `/salas/:invitacion/jugadores` | `{nombre}` → `{token, jugador}`. Da 409 si ya hay dos personas. |
-| GET | `/estado` | Devuelve la persona actual, la otra persona, el turno actual con su rol y su estado, la cantidad de intentos y los salteos (cuántos quedan y cuándo vuelve el próximo). A quien dibuja también le trae las opciones. |
+| GET | `/estado` | Devuelve la persona actual, la otra persona, el turno actual con su rol y su estado, la cantidad de intentos, cómo terminó el turno anterior y los salteos (cuántos quedan y cuándo vuelve el próximo; se suman en el paso 5). A quien dibuja también le trae las opciones. |
 | POST | `/turnos/:id/palabra` | `{opcion}` o `{propia}`. Solo quien dibuja, en `eligiendo` o `dibujando`, así puede volver y cambiarla. |
 | POST | `/turnos/:id/dibujo` | `{trazos, duracionMs}`. Valida coordenadas entre 0 y 1 y un tamaño máximo, y pasa el turno a `adivinando`. |
 | GET | `/turnos/:id/dibujo` | Los trazos, para quien dibujó o quien adivina, una vez enviado. |

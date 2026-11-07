@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process';
 import pg from 'pg';
 import { urlDeTest } from './base-de-test.js';
 
-/** globalSetup de vitest: crea garabato_test si falta y le aplica las migraciones. */
+/** globalSetup de vitest: crea garabato_test si falta, le aplica las migraciones y carga las palabras base. */
 export default async function prepararBase(): Promise<void> {
   const test = new URL(urlDeTest());
   const admin = new URL(test);
@@ -14,8 +14,7 @@ export default async function prepararBase(): Promise<void> {
   if (existe.rowCount === 0) await cliente.query('CREATE DATABASE garabato_test');
   await cliente.end();
 
-  execSync('npx prisma migrate deploy', {
-    stdio: 'ignore',
-    env: { ...process.env, DIRECT_URL: test.toString() },
-  });
+  const env = { ...process.env, DIRECT_URL: test.toString(), DATABASE_URL: test.toString() };
+  execSync('npx prisma migrate deploy', { stdio: 'ignore', env });
+  execSync('npx prisma db seed', { stdio: 'ignore', env });
 }

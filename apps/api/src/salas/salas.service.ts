@@ -4,12 +4,16 @@ import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../db/prisma.service.js';
 import { salaLlena, salaNoEncontrada } from '../comun/errores.js';
 import { generarToken, hashToken } from '../sesion/tokens.js';
+import { TurnosService } from '../turnos/turnos.service.js';
 
 const LUGARES = 2;
 
 @Injectable()
 export class SalasService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly turnos: TurnosService,
+  ) {}
 
   async publica(invitacion: string): Promise<SalaPublica> {
     const sala = await this.buscar(invitacion);
@@ -20,6 +24,7 @@ export class SalasService {
   /**
    * Suma a alguien a la sala. Si dos entran a la vez y chocan por el mismo lugar,
    * la restricción única (salaId, lugar) rechaza a uno y se reintenta con el lugar que queda.
+   * Cuando entra la segunda persona se crea el turno 1, que dibuja quien entró primero.
    */
   async entrar(invitacion: string, nombre: string): Promise<EntrarRespuesta> {
     for (let intento = 0; intento < LUGARES; intento++) {
@@ -31,8 +36,20 @@ export class SalasService {
       const token = generarToken();
 
       try {
-        const jugador = await this.prisma.jugador.create({
-          data: { salaId: sala.id, nombre, lugar, sesionHash: hashToken(token) },
+        const jugador = await this.prisma.$transaction(async (tx) => {
+          const nuevo = await tx.jugador.create({
+            data: { salaId: sala.id, nombre, lugar, sesionHash: hashToken(token) },
+          });
+          const primero = await tx.jugador.findFirst({ where: { salaId: sala.id, id: { not: nuevo.id } } });
+          if (primero) {
+            await this.turnos.crear(tx, {
+              salaId: sala.id,
+              numero: 1,
+              dibujaId: primero.id,
+              adivinaId: nuevo.id,
+            });
+          }
+          return nuevo;
         });
         return { token, jugador: { id: jugador.id, nombre: jugador.nombre, lugar: jugador.lugar } };
       } catch (e) {

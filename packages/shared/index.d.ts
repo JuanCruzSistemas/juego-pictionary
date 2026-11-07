@@ -42,10 +42,39 @@ export type JugadorPublico = { id: string; nombre: string; lugar: number };
 export type EntrarBody = { nombre: string };
 export type EntrarRespuesta = { token: string; jugador: JugadorPublico };
 
-/** GET /api/estado. En el paso 4 se suma el turno actual. */
+/** Lo que hace cada persona en el turno. */
+export type RolTurno = 'dibuja' | 'adivina';
+
+/** Estados de un turno en curso. `adivinado` y `salteado` son de turnos cerrados. */
+export type EstadoTurnoActual = 'eligiendo' | 'dibujando' | 'adivinando';
+
+export type TurnoActual = {
+  id: string;
+  numero: number;
+  rol: RolTurno;
+  estado: EstadoTurnoActual;
+  /** Intentos de quien adivina en este turno. */
+  intentos: number;
+  /** Solo para quien dibuja, mientras elige o dibuja. */
+  opciones?: string[];
+  /** Solo para quien dibuja, una vez elegida. Quien adivina nunca la recibe acá. */
+  palabra?: string;
+};
+
+/** Cómo terminó el turno anterior, para el texto de Inicio. */
+export type TurnoAnterior = {
+  resultado: 'adivinado' | 'salteado';
+  /** true si quien pregunta era quien dibujaba. */
+  dibuje: boolean;
+};
+
+/** GET /api/estado */
 export type Estado = {
   yo: JugadorPublico;
   otro: JugadorPublico | null;
   /** Para compartir el link mientras falta la otra persona. */
   invitacion: string;
+  /** null mientras falta la otra persona. */
+  turno: TurnoActual | null;
+  anterior: TurnoAnterior | null;
 };

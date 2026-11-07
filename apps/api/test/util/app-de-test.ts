@@ -15,7 +15,10 @@ export async function crearAppDeTest(): Promise<AppDeTest> {
   return { app, prisma: app.get(PrismaService) };
 }
 
-/** Borra salas y todo lo que cuelga de ellas. Deja las palabras base. */
+/**
+ * Borra las salas y, por ON DELETE CASCADE, lo que cuelga de ellas. Deja las palabras base.
+ * No usa TRUNCATE ... CASCADE porque vaciaría toda la tabla palabras, que referencia a salas.
+ */
 export async function limpiar(prisma: PrismaService): Promise<void> {
-  await prisma.$executeRawUnsafe('TRUNCATE TABLE salas CASCADE');
+  await prisma.sala.deleteMany();
 }

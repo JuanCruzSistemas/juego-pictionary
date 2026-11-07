@@ -4,10 +4,11 @@ import type { Jugador } from '../generated/prisma/client.js';
 import { PrismaService } from '../db/prisma.service.js';
 import { SesionGuard } from '../sesion/sesion.guard.js';
 import { JugadorActual } from '../sesion/jugador-actual.decorator.js';
+import { vistaDelAnterior, vistaDelTurno } from '../turnos/vista.js';
 
 const publico = (j: Jugador) => ({ id: j.id, nombre: j.nombre, lugar: j.lugar });
 
-/** Estado del juego para quien pregunta. En el paso 4 se suma el turno actual. */
+/** Estado del juego para quien pregunta. Inicio lo consulta cada 5 s. */
 @Controller('estado')
 @UseGuards(SesionGuard)
 export class EstadoController {
@@ -17,9 +18,21 @@ export class EstadoController {
   async estado(@JugadorActual() yo: Jugador): Promise<Estado> {
     const sala = await this.prisma.sala.findUniqueOrThrow({
       where: { id: yo.salaId },
-      include: { jugadores: true },
+      include: {
+        jugadores: true,
+        // El actual y el anterior.
+        turnos: { orderBy: { numero: 'desc' }, take: 2, include: { _count: { select: { intentos: true } } } },
+      },
     });
     const otro = sala.jugadores.find((j) => j.id !== yo.id);
-    return { yo: publico(yo), otro: otro ? publico(otro) : null, invitacion: sala.invitacion };
+    const [actual, anterior] = sala.turnos;
+
+    return {
+      yo: publico(yo),
+      otro: otro ? publico(otro) : null,
+      invitacion: sala.invitacion,
+      turno: actual ? vistaDelTurno(actual, yo.id, actual._count.intentos) : null,
+      anterior: vistaDelAnterior(anterior, yo.id),
+    };
   }
 }
