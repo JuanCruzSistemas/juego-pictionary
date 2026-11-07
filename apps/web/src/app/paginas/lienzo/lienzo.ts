@@ -4,6 +4,7 @@ import type { Stroke } from '@garabato/shared';
 import { EstadoService } from '../../estado/estado.service';
 import { DibujoService } from '../../dibujo/dibujo.service';
 import { LienzoCanvas } from '../../dibujo/lienzo-canvas';
+import { AvisoGirar } from '../../comun/aviso-girar';
 import { COLOR_HOJA } from '../../dibujo/trazos';
 import { COLORES, FACTOR_GOMA, GROSORES, type Grosor } from '../../dibujo/herramientas';
 
@@ -16,7 +17,7 @@ const ESPERA_CONFIRMACION_MS = 3000;
  */
 @Component({
   selector: 'app-lienzo',
-  imports: [RouterLink, LienzoCanvas],
+  imports: [RouterLink, LienzoCanvas, AvisoGirar],
   templateUrl: './lienzo.html',
   styleUrl: './lienzo.css',
 })

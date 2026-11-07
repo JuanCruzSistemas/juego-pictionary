@@ -188,6 +188,10 @@ Cada paso queda andando y se puede probar.
 - [x] **Estados de Main que no están en los diseños.** "Ella está dibujando", para cuando te toca adivinar y la otra persona todavía no mandó el dibujo, y "Esperando que entre", con el link para compartir. Usan la misma tarjeta con otro texto. "Ella está adivinando" va sin el botón de pistas, que es de la etapa 2.
 - [x] **Lienzo cuadrado (1:1).** Para que las coordenadas de 0 a 1 no se deformen entre pantallas. El grosor se guarda relativo al lado del lienzo y la goma, como un trazo del color de la hoja. Grosores: fino 0,01, medio 0,02 y grueso 0,04 del lado; la goma usa el doble del grosor elegido. Se descartan los puntos a menos de 0,003 del anterior y x e y van redondeadas a 4 decimales.
 
-## 8. Producción
+## 8. Para la etapa 3
+
+- **Orientación vertical fija** en el manifest de la PWA (`"orientation": "portrait"`). Mientras tanto, Lienzo y Adivinar tapan la pantalla con "Girá el celu para dibujar" si el celular está acostado (`AvisoGirar`).
+
+## 9. Producción
 
 Ver `docs/produccion.md`: con Neon, Prisma necesita `DATABASE_URL` con pooling y `DIRECT_URL` para las migraciones.
