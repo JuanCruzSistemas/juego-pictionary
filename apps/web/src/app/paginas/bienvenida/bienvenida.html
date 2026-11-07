@@ -97,7 +97,7 @@
     @case ('sin-conexion') {
       <div class="encabezado">
         <h1 class="titulo">No pudimos abrir la sala</h1>
-        <p class="cuerpo">Revisá tu conexión y probá de nuevo.</p>
+        <p class="cuerpo">{{ motivo() }}</p>
       </div>
       <div class="acciones">
         <button type="button" class="btn-principal" (click)="cargar()">Probar de nuevo</button>

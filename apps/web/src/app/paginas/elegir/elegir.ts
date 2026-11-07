@@ -2,7 +2,7 @@ import { Component, DestroyRef, computed, effect, inject, signal } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import type { PalabraBody } from '@garabato/shared';
 import { ApiService } from '../../api/api.service';
-import { errorDeApi } from '../../api/errores';
+import { errorDeApi, mensajeDeError } from '../../api/errores';
 import { EstadoService } from '../../estado/estado.service';
 import { PALABRA_MAXIMA, problemaDeLaPalabra, textoDeSalteos } from './reglas';
 
@@ -39,6 +39,8 @@ export class ElegirPage {
   protected readonly confirmando = signal(false);
   protected readonly ocupado = computed(() => this.guardando() || this.salteando());
   protected readonly maximo = PALABRA_MAXIMA;
+  protected readonly errorDeCarga = computed(() => !this.estado() && this.estados.error());
+  protected readonly cargandoEstado = this.estados.cargando;
 
   private inicializada = false;
 
@@ -111,9 +113,13 @@ export class ElegirPage {
         this.guardando.set(false);
         const err = errorDeApi(e);
         if (err?.codigo === 'datos_invalidos') this.problema.set(err.mensaje);
-        else this.error.set(err?.mensaje ?? 'No pudimos guardar la palabra. Revisá tu conexión.');
+        else this.error.set(mensajeDeError(e, 'No pudimos guardar la palabra. Probá de nuevo.'));
       },
     });
+  }
+
+  protected reintentarCarga(): void {
+    this.estados.actualizar();
   }
 
   /** Primer toque: pide confirmación en la misma pantalla. */
@@ -141,7 +147,7 @@ export class ElegirPage {
         this.salteando.set(false);
         this.confirmando.set(false);
         this.estados.actualizar();
-        this.error.set(errorDeApi(e)?.mensaje ?? 'No pudimos saltear el turno. Revisá tu conexión.');
+        this.error.set(mensajeDeError(e, 'No pudimos saltear el turno. Probá de nuevo.'));
       },
     });
   }

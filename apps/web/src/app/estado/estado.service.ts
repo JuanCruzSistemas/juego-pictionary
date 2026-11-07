@@ -18,6 +18,9 @@ export class EstadoService {
 
   private readonly valor = signal<Estado | null>(null);
   private readonly fallo = signal(false);
+  private readonly pidiendo = signal(false);
+  /** true mientras viaja un pedido del estado. */
+  readonly cargando = this.pidiendo.asReadonly();
   readonly estado = this.valor.asReadonly();
   /** true si la última actualización falló. Se sigue reintentando solo. */
   readonly error = this.fallo.asReadonly();
@@ -57,10 +60,16 @@ export class EstadoService {
   actualizar(): void {
     if (this.enCurso) return;
     this.enCurso = true;
+    this.pidiendo.set(true);
     const version = this.version;
     this.api
       .estado()
-      .pipe(finalize(() => (this.enCurso = false)))
+      .pipe(
+        finalize(() => {
+          this.enCurso = false;
+          this.pidiendo.set(false);
+        }),
+      )
       .subscribe({
         next: (e) => {
           this.completarInvitacion(e.invitacion);

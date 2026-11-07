@@ -23,13 +23,15 @@
         <a routerLink="/" replaceUrl class="btn-principal btn-birome">Volver al inicio</a>
       }
     </div>
-  } @else if (error()) {
+  } @else if (error(); as e) {
     <div class="encabezado">
       <h1 class="titulo chico">No pudimos cargar el acierto</h1>
-      <p>Revisá tu conexión y probá de nuevo.</p>
+      <p>{{ e }}</p>
     </div>
     <div class="acciones">
-      <button type="button" class="btn-principal btn-birome" (click)="cargar()">Probar de nuevo</button>
+      <button type="button" class="btn-principal btn-birome" [disabled]="cargando()" (click)="cargar()">
+        {{ cargando() ? 'Probando…' : 'Probar de nuevo' }}
+      </button>
       <a routerLink="/" class="enlace">Volver al inicio</a>
     </div>
   } @else {

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import type { SalaPublica } from '@garabato/shared';
 import { ApiService } from '../../api/api.service';
-import { errorDeApi } from '../../api/errores';
+import { errorDeApi, mensajeDeError } from '../../api/errores';
 import { SesionService } from '../../sesion/sesion.service';
 import { EstadoService } from '../../estado/estado.service';
 import { NOMBRE_MAXIMO, problemaDelNombre } from '../../sesion/nombre';
@@ -32,6 +32,7 @@ export class BienvenidaPage implements OnInit {
   protected readonly problema = signal<string | null>(null);
   protected readonly errorDeEnvio = signal<string | null>(null);
   protected readonly enviando = signal(false);
+  protected readonly motivo = signal('Revisá tu conexión y probá de nuevo.');
   protected readonly maximo = NOMBRE_MAXIMO;
   protected readonly nombreDeLaSesion = computed(() => this.sesion.actual()?.jugador.nombre ?? '');
 
@@ -56,6 +57,7 @@ export class BienvenidaPage implements OnInit {
       if (!sala.llena) this.invitadoPor.set(sala.invitadoPor);
       this.vista.set(vistaDeBienvenida(sala, propia));
     } catch (e) {
+      this.motivo.set(mensajeDeError(e, 'Revisá tu conexión y probá de nuevo.'));
       this.vista.set(errorDeApi(e)?.codigo === 'sala_no_encontrada' ? 'no-encontrada' : 'sin-conexion');
     }
   }
@@ -100,7 +102,7 @@ export class BienvenidaPage implements OnInit {
         if (error?.codigo === 'sala_llena') this.vista.set('llena');
         else if (error?.codigo === 'sala_no_encontrada') this.vista.set('no-encontrada');
         else if (error?.codigo === 'datos_invalidos') this.problema.set(error.mensaje);
-        else this.errorDeEnvio.set('No pudimos conectarnos. Revisá tu conexión y probá de nuevo.');
+        else this.errorDeEnvio.set(mensajeDeError(e, 'No pudimos entrar. Probá de nuevo.'));
       },
     });
   }

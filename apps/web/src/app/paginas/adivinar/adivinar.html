@@ -10,15 +10,23 @@
   <div class="zona-dibujo">
     @if (trazos(); as t) {
       <app-dibujo-vista class="vista" [trazos]="t" descripcion="El dibujo para adivinar" />
-    } @else if (errorDeCarga()) {
+    } @else if (errorDeCarga() || errorDeEstado()) {
       <div class="estado">
-        <p>No pudimos cargar el dibujo.</p>
-        <button type="button" class="btn-secundario" (click)="reintentarCarga()">Probar de nuevo</button>
+        <p>No pudimos cargar el dibujo. Revisá tu conexión y probá de nuevo.</p>
+        <button type="button" class="btn-secundario" [disabled]="cargandoDibujo() || cargandoEstado()"
+          (click)="reintentarCarga()">{{ cargandoDibujo() || cargandoEstado() ? 'Probando…' : 'Probar de nuevo' }}</button>
       </div>
     } @else {
       <p class="estado texto-suave" role="status">Cargando el dibujo…</p>
     }
   </div>
+
+  @if (errorDeIntentos()) {
+    <p class="mensaje-error" role="alert">
+      No pudimos traer lo que ya probaste.
+      <button type="button" class="enlace en-linea" (click)="reintentarCarga()">Reintentar</button>
+    </p>
+  }
 
   @if (fallidos().length > 0) {
     <div class="probadas" aria-live="polite">

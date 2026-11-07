@@ -1,8 +1,9 @@
-import { Component, DestroyRef, computed, inject } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EstadoService } from '../../estado/estado.service';
 import { CompartirLink } from '../../comun/compartir-link';
 import { tarjetaDeInicio } from './textos';
+import { DibujoService } from '../../dibujo/dibujo.service';
 
 /**
  * Inicio. Diseño: docs/diseno/Main.dc.html.
@@ -20,6 +21,8 @@ export class InicioPage {
 
   protected readonly estado = this.estados.estado;
   protected readonly error = this.estados.error;
+  protected readonly cargando = this.estados.cargando;
+  private readonly dibujo = inject(DibujoService);
   protected readonly tarjeta = computed(() => {
     const e = this.estado();
     return e ? tarjetaDeInicio(e) : null;
@@ -31,6 +34,12 @@ export class InicioPage {
 
   constructor() {
     this.estados.seguir(inject(DestroyRef));
+    // Si el turno cambió (se mandó, se salteó, adivinaron), el borrador de un turno viejo se borra.
+    effect(() => {
+      const t = this.estado()?.turno;
+      if (this.estado() === null) return;
+      this.dibujo.descartarSiNoEs(t && t.rol === 'dibuja' && t.estado !== 'adivinando' ? t.id : null);
+    });
   }
 
   protected reintentar(): void {

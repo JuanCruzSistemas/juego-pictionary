@@ -2,7 +2,7 @@ import { Component, DestroyRef, computed, effect, inject, signal } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import type { IntentoPublico, Stroke } from '@garabato/shared';
 import { ApiService } from '../../api/api.service';
-import { errorDeApi } from '../../api/errores';
+import { errorDeApi, mensajeDeError } from '../../api/errores';
 import { EstadoService } from '../../estado/estado.service';
 import { DibujoVista } from '../../dibujo/dibujo-vista';
 import { AvisoGirar } from '../../comun/aviso-girar';
@@ -25,6 +25,11 @@ export class AdivinarPage {
 
   protected readonly trazos = signal<Stroke[] | null>(null);
   protected readonly errorDeCarga = signal(false);
+  protected readonly cargandoDibujo = signal(false);
+  protected readonly errorDeIntentos = signal(false);
+  /** El estado nunca llegó: sin esto la pantalla quedaría en "Cargando…" para siempre. */
+  protected readonly errorDeEstado = computed(() => !this.estados.estado() && this.estados.error());
+  protected readonly cargandoEstado = this.estados.cargando;
   protected readonly intentos = signal<IntentoPublico[]>([]);
   protected readonly fallidos = computed(() => this.intentos().filter((i) => !i.correcto));
   protected readonly texto = signal('');
@@ -91,10 +96,8 @@ export class AdivinarPage {
         if (err?.codigo === 'turno_cerrado') {
           this.estados.actualizar();
           this.mensaje.set(err.mensaje);
-        } else if (err?.codigo === 'datos_invalidos') {
-          this.mensaje.set(err.mensaje);
         } else {
-          this.mensaje.set('No se pudo mandar. Revisá la conexión y probá de nuevo.');
+          this.mensaje.set(mensajeDeError(e, 'No se pudo mandar. Probá de nuevo.'));
         }
       },
     });
@@ -102,14 +105,26 @@ export class AdivinarPage {
 
   protected reintentarCarga(): void {
     if (this.turnoId) this.cargar(this.turnoId);
+    else this.estados.actualizar();
   }
 
   private cargar(turnoId: string): void {
     this.errorDeCarga.set(false);
+    this.errorDeIntentos.set(false);
+    this.cargandoDibujo.set(true);
     this.api.dibujo(turnoId).subscribe({
-      next: (d) => this.trazos.set(d.trazos),
-      error: () => this.errorDeCarga.set(true),
+      next: (d) => {
+        this.trazos.set(d.trazos);
+        this.cargandoDibujo.set(false);
+      },
+      error: () => {
+        this.errorDeCarga.set(true);
+        this.cargandoDibujo.set(false);
+      },
     });
-    this.api.intentos(turnoId).subscribe({ next: (i) => this.intentos.set(i) });
+    this.api.intentos(turnoId).subscribe({
+      next: (i) => this.intentos.set(i),
+      error: () => this.errorDeIntentos.set(true),
+    });
   }
 }

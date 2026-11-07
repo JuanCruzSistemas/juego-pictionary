@@ -66,6 +66,13 @@
         </div>
       }
     </div>
+  } @else if (errorDeCarga()) {
+    <div class="falla">
+      <p>No pudimos cargar tu turno. Revisá tu conexión y probá de nuevo.</p>
+      <button type="button" class="btn-principal" [disabled]="cargandoEstado()" (click)="reintentarCarga()">
+        {{ cargandoEstado() ? 'Probando…' : 'Probar de nuevo' }}
+      </button>
+    </div>
   } @else {
     <p class="texto-suave" role="status">Cargando…</p>
   }

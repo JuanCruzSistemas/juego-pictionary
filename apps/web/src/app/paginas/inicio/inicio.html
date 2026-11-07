@@ -24,8 +24,10 @@
   } @else if (error()) {
     <section class="tarjeta">
       <h2 class="titulo">No pudimos cargar la sala</h2>
-      <p class="cuerpo">Revisá tu conexión.</p>
-      <button type="button" class="btn-principal" (click)="reintentar()">Probar de nuevo</button>
+      <p class="cuerpo">Revisá tu conexión y probá de nuevo.</p>
+      <button type="button" class="btn-principal" [disabled]="cargando()" (click)="reintentar()">
+        {{ cargando() ? 'Probando…' : 'Probar de nuevo' }}
+      </button>
     </section>
   } @else {
     <p class="cuerpo texto-suave" role="status">Cargando…</p>

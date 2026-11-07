@@ -92,3 +92,9 @@ h1 {
   border-color: var(--correccion);
   color: var(--correccion-texto);
 }
+
+.falla {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

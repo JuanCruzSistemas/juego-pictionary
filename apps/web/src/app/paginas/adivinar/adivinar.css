@@ -108,3 +108,9 @@ h1 {
   opacity: 0.5;
   cursor: default;
 }
+
+.en-linea {
+  display: inline-flex;
+  min-height: 0;
+  font-size: 14px;
+}

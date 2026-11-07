@@ -1,9 +1,8 @@
 import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import type { Stroke } from '@garabato/shared';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../../api/api.service';
-import { errorDeApi } from '../../api/errores';
+import { errorDeApi, mensajeDeError, servidorNoRespondio } from '../../api/errores';
 import { EstadoService } from '../../estado/estado.service';
 import { DibujoService } from '../../dibujo/dibujo.service';
 import { LienzoCanvas } from '../../dibujo/lienzo-canvas';
@@ -46,6 +45,9 @@ export class LienzoPage {
   protected readonly anchoDelTrazo = computed(
     () => GROSORES[this.grosor()].valor * (this.goma() ? FACTOR_GOMA : 1),
   );
+
+  protected readonly errorDeCarga = computed(() => !this.estados.estado() && this.estados.error());
+  protected readonly cargandoEstado = this.estados.cargando;
 
   private temporizadorBorrado: ReturnType<typeof setTimeout> | null = null;
 
@@ -126,16 +128,19 @@ export class LienzoPage {
       error: (e: unknown) => {
         this.enviando.set(false);
         const err = errorDeApi(e);
-        const deRed = e instanceof HttpErrorResponse && (e.status === 0 || e.status >= 500);
         if (err?.codigo === 'turno_cerrado' || err?.codigo === 'no_es_tu_turno') {
           this.cerrado.set(err.mensaje);
-        } else if (err && !deRed) {
-          this.fallo.set(err.mensaje);
+        } else if (servidorNoRespondio(e)) {
+          this.fallo.set(`No se pudo mandar. Tu dibujo sigue acá. ${mensajeDeError(e, '')}`);
         } else {
-          this.fallo.set('No se pudo mandar. Tu dibujo sigue acá: revisá la conexión y reintentá.');
+          this.fallo.set(mensajeDeError(e, 'No se pudo mandar. Tu dibujo sigue acá: reintentá.'));
         }
       },
     });
+  }
+
+  protected reintentarCarga(): void {
+    this.estados.actualizar();
   }
 
   protected irAlInicio(): void {
