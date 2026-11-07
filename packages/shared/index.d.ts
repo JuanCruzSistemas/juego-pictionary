@@ -21,7 +21,12 @@ export type CodigoError =
   | 'datos_invalidos'
   | 'sala_no_encontrada'
   | 'sala_llena'
-  | 'sesion_invalida';
+  | 'sesion_invalida'
+  | 'turno_no_encontrado'
+  | 'no_es_tu_turno'
+  /** El turno ya no admite el cambio: por ejemplo, el dibujo ya se mandó. */
+  | 'turno_cerrado'
+  | 'sin_salteos';
 
 /** Cuerpo de toda respuesta de error de la API. */
 export type ErrorApi = { codigo: CodigoError; mensaje: string };
@@ -68,6 +73,20 @@ export type TurnoAnterior = {
   dibuje: boolean;
 };
 
+/** Salteos de quien pregunta. Cada uno vuelve 30 minutos después de usado. */
+export type Salteos = {
+  quedan: number;
+  maximo: number;
+  /** ISO 8601. Cuándo vuelve el próximo, o null si están todos. */
+  proximoEn: string | null;
+};
+
+/** POST /api/turnos/:id/palabra: una de las opciones o una propia, no las dos. */
+export type PalabraBody = { opcion: string } | { propia: string };
+
+/** POST /api/turnos/:id/salteo */
+export type SalteoRespuesta = { salteos: Salteos };
+
 /** GET /api/estado */
 export type Estado = {
   yo: JugadorPublico;
@@ -77,4 +96,5 @@ export type Estado = {
   /** null mientras falta la otra persona. */
   turno: TurnoActual | null;
   anterior: TurnoAnterior | null;
+  salteos: Salteos;
 };

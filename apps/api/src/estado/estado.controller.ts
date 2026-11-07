@@ -34,6 +34,7 @@ export class EstadoController {
       invitacion: sala.invitacion,
       turno: actual ? vistaDelTurno(actual, yo.id, actual._count.intentos) : null,
       anterior: vistaDelAnterior(anterior, yo.id),
+      salteos: await this.turnos.salteosDe(yo.id),
     };
   }
 

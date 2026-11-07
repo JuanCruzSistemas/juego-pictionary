@@ -1,0 +1,72 @@
+<main class="pantalla">
+  <a routerLink="/" class="volver" aria-label="Volver al inicio">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+  </a>
+  <h1 class="titulo">¿Qué vas a dibujar?</h1>
+
+  @if (turno(); as t) {
+    <div class="opciones" role="group" aria-label="Opciones">
+      @for (op of t.opciones ?? []; track op) {
+        <button type="button" class="opcion" [attr.aria-pressed]="elegida() === op" [disabled]="ocupado()"
+          (click)="elegir(op)">{{ op }}</button>
+      }
+    </div>
+
+    <div class="grupo">
+      <label for="propia" class="etiqueta">O escribí la tuya</label>
+      <input
+        id="propia"
+        type="text"
+        class="campo"
+        placeholder="Una palabra que solo ustedes entiendan"
+        autocomplete="off"
+        enterkeyhint="done"
+        [attr.maxlength]="maximo"
+        [value]="propia()"
+        [disabled]="ocupado()"
+        [attr.aria-invalid]="problema() ? true : null"
+        [attr.aria-describedby]="problema() ? 'palabra-error' : null"
+        (input)="escribir($any($event.target).value)"
+      />
+      @if (problema(); as p) {
+        <p id="palabra-error" class="mensaje-error" role="alert">{{ p }}</p>
+      }
+    </div>
+
+    <div class="acciones">
+      @if (error(); as e) {
+        <p class="mensaje-error" role="alert">{{ e }}</p>
+      }
+      <button type="button" class="btn-principal" [disabled]="ocupado()" (click)="empezar()">
+        {{ guardando() ? 'Guardando…' : 'Empezar a dibujar' }}
+      </button>
+
+      @if (contador(); as c) {
+        <div class="salteos">
+          @if (confirmando()) {
+            <span class="texto">
+              <strong>¿Le pasás el turno a {{ otro() }}?</strong>
+              <span class="detalle">Gastás 1 de tus {{ salteos()?.quedan }} salteos.</span>
+            </span>
+            <span class="botones">
+              <button type="button" class="enlace" [disabled]="salteando()" (click)="cancelarSalteo()">Cancelar</button>
+              <button type="button" class="btn-secundario confirmar" [disabled]="salteando()" (click)="saltear()">
+                {{ salteando() ? 'Salteando…' : 'Sí, saltear' }}
+              </button>
+            </span>
+          } @else {
+            <span class="texto">
+              <strong>{{ c.titulo }}</strong>
+              <span class="detalle">{{ c.detalle }}</span>
+            </span>
+            <button type="button" class="btn-secundario" [disabled]="ocupado() || salteos()?.quedan === 0"
+              (click)="pedirSalteo()">Saltear turno</button>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="texto-suave" role="status">Cargando…</p>
+  }
+</main>

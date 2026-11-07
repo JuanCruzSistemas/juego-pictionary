@@ -76,12 +76,12 @@ Todos van con el prefijo `/api`, salvo `/health`. Los que requieren sesión usan
 | GET | `/salas/:invitacion` | Público. Devuelve si la sala está llena y el nombre de quien ya entró, para el texto "Juan te invitó". |
 | POST | `/salas/:invitacion/jugadores` | `{nombre}` → `{token, jugador}`. Da 409 si ya hay dos personas. |
 | GET | `/estado` | Devuelve la persona actual, la otra persona, el turno actual con su rol y su estado, la cantidad de intentos, cómo terminó el turno anterior y los salteos (cuántos quedan y cuándo vuelve el próximo; se suman en el paso 5). A quien dibuja también le trae las opciones. |
-| POST | `/turnos/:id/palabra` | `{opcion}` o `{propia}`. Solo quien dibuja, en `eligiendo` o `dibujando`, así puede volver y cambiarla. |
+| POST | `/turnos/:id/palabra` | `{opcion}` o `{propia}`, no las dos. Solo quien dibuja, en `eligiendo` o `dibujando`, así puede volver y cambiarla. La propia: sin espacios en los bordes, de 1 a 40 caracteres y con al menos una letra o un número. Se guarda tal cual y normalizada. |
 | POST | `/turnos/:id/dibujo` | `{trazos, duracionMs}`. Valida coordenadas entre 0 y 1 y un tamaño máximo, y pasa el turno a `adivinando`. |
 | GET | `/turnos/:id/dibujo` | Los trazos, para quien dibujó o quien adivina, una vez enviado. |
 | GET | `/turnos/:id/intentos` | La lista de "Ya probaste". |
 | POST | `/turnos/:id/intentos` | `{texto}` → `{correcto, intentos}`. Si acierta, cierra el turno y crea el siguiente. |
-| POST | `/turnos/:id/salteo` | Solo quien dibuja y antes de enviar. Gasta un salteo y crea el turno siguiente. |
+| POST | `/turnos/:id/salteo` | Solo quien dibuja y antes de enviar. Gasta un salteo y crea el turno siguiente, que dibuja la otra persona con 3 opciones nuevas. Un doble toque saltea una sola vez. |
 | GET | `/turnos/:id/resumen` | Para la pantalla de Acierto: la palabra, el dibujo y la cantidad de intentos. |
 
 ### Comparación de la respuesta

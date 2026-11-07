@@ -20,3 +20,14 @@ export const sesionInvalida = () =>
 
 export const datosInvalidos = (mensaje: string) =>
   new ErrorDeApi(HttpStatus.BAD_REQUEST, 'datos_invalidos', mensaje);
+
+export const turnoNoEncontrado = () =>
+  new ErrorDeApi(HttpStatus.NOT_FOUND, 'turno_no_encontrado', 'No encontramos ese turno.');
+
+export const noEsTuTurno = () =>
+  new ErrorDeApi(HttpStatus.FORBIDDEN, 'no_es_tu_turno', 'Este turno lo dibuja la otra persona.');
+
+export const turnoCerrado = (mensaje: string) => new ErrorDeApi(HttpStatus.CONFLICT, 'turno_cerrado', mensaje);
+
+export const sinSalteos = () =>
+  new ErrorDeApi(HttpStatus.CONFLICT, 'sin_salteos', 'Ya usaste tus 3 salteos. Cada uno vuelve a la media hora de usarlo.');

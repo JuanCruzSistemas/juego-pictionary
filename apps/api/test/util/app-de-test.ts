@@ -4,15 +4,36 @@ import type { App } from 'supertest/types.js';
 import { AppModule } from '../../src/app.module.js';
 import { configurarApp } from '../../src/configurar.js';
 import { PrismaService } from '../../src/db/prisma.service.js';
+import { Reloj } from '../../src/comun/reloj.js';
 
-export type AppDeTest = { app: INestApplication<App>; prisma: PrismaService };
+/** Reloj que solo avanza cuando el test lo pide. */
+export class RelojDeTest extends Reloj {
+  static readonly INICIO = new Date('2026-11-07T13:00:00.000Z');
+  private actual = RelojDeTest.INICIO;
+  /** Vuelve a las 13:00 UTC del 7/11/2026. */
+  reiniciar(): void {
+    this.actual = RelojDeTest.INICIO;
+  }
+  ahora(): Date {
+    return new Date(this.actual);
+  }
+  avanzarMinutos(n: number): void {
+    this.actual = new Date(this.actual.getTime() + n * 60 * 1000);
+  }
+}
+
+export type AppDeTest = { app: INestApplication<App>; prisma: PrismaService; reloj: RelojDeTest };
 
 export async function crearAppDeTest(): Promise<AppDeTest> {
-  const modulo = await Test.createTestingModule({ imports: [AppModule] }).compile();
+  const reloj = new RelojDeTest();
+  const modulo = await Test.createTestingModule({ imports: [AppModule] })
+    .overrideProvider(Reloj)
+    .useValue(reloj)
+    .compile();
   const app = modulo.createNestApplication<INestApplication<App>>();
   configurarApp(app);
   await app.init();
-  return { app, prisma: app.get(PrismaService) };
+  return { app, prisma: app.get(PrismaService), reloj };
 }
 
 /**

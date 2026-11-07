@@ -1,6 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import type { EntrarBody, EntrarRespuesta, Estado, SalaPublica } from '@garabato/shared';
+import type {
+  EntrarBody,
+  EntrarRespuesta,
+  Estado,
+  PalabraBody,
+  SalaPublica,
+  SalteoRespuesta,
+  TurnoActual,
+} from '@garabato/shared';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -16,5 +24,13 @@ export class ApiService {
 
   estado() {
     return this.http.get<Estado>('/api/estado');
+  }
+
+  elegirPalabra(turnoId: string, body: PalabraBody) {
+    return this.http.post<TurnoActual>(`/api/turnos/${encodeURIComponent(turnoId)}/palabra`, body);
+  }
+
+  saltear(turnoId: string) {
+    return this.http.post<SalteoRespuesta>(`/api/turnos/${encodeURIComponent(turnoId)}/salteo`, {});
   }
 }

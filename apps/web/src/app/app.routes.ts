@@ -18,5 +18,10 @@ export const routes: Routes = [
     canActivate: [conSesion],
     loadComponent: () => import('./paginas/inicio/inicio').then((m) => m.InicioPage),
   },
+  {
+    path: 'elegir',
+    canActivate: [conSesion],
+    loadComponent: () => import('./paginas/elegir/elegir').then((m) => m.ElegirPage),
+  },
   { path: '**', redirectTo: '' },
 ];

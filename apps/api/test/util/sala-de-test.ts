@@ -3,7 +3,12 @@ import type { JugadorPublico } from '@garabato/shared';
 import { generarToken } from '../../src/sesion/tokens.js';
 import type { AppDeTest } from './app-de-test.js';
 
-export type Persona = { token: string; jugador: JugadorPublico; get: (ruta: string) => request.Test };
+export type Persona = {
+  token: string;
+  jugador: JugadorPublico;
+  get: (ruta: string) => request.Test;
+  post: (ruta: string, body?: object) => request.Test;
+};
 
 /** Crea una sala y hace entrar a las personas indicadas, en orden. */
 export async function salaCon(t: AppDeTest, ...nombres: string[]) {
@@ -20,6 +25,8 @@ export async function salaCon(t: AppDeTest, ...nombres: string[]) {
       token,
       jugador: r.body.jugador,
       get: (ruta) => request(t.app.getHttpServer()).get(ruta).set('Authorization', `Bearer ${token}`),
+      post: (ruta, body = {}) =>
+        request(t.app.getHttpServer()).post(ruta).set('Authorization', `Bearer ${token}`).send(body),
     });
   }
   return { sala, invitacion, personas };
