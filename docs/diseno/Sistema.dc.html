@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Sistema visual</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B2A7A}a:hover{color:#0F1A55}
+</style>
+</helmet>
+<main style="width:1200px;height:844px;box-sizing:border-box;padding:48px;display:flex;flex-direction:column;gap:32px;overflow:hidden;font-family:Figtree,sans-serif;color:#1B2A7A;background-color:#FFFFFF;background-image:linear-gradient(#E6EBF7 1px,transparent 1px),linear-gradient(90deg,#E6EBF7 1px,transparent 1px);background-size:24px 24px">
+  <h1 style="margin:0;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:48px"><span style="background:#FFE74C;padding:0 8px">Cuaderno, birome y resaltador</span></h1>
+
+  <section style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px">
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="height:96px;background:#1B2A7A;border:2px solid #1B2A7A;border-radius:12px"></div><strong style="font-size:15px">Birome</strong><span style="font-size:14px">#1B2A7A</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="height:96px;background:#FFE74C;border:2px solid #1B2A7A;border-radius:12px"></div><strong style="font-size:15px">Resaltador</strong><span style="font-size:14px">#FFE74C</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="height:96px;background:#D6293E;border:2px solid #1B2A7A;border-radius:12px"></div><strong style="font-size:15px">Corrección</strong><span style="font-size:14px">#D6293E</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="height:96px;background:#46528A;border:2px solid #1B2A7A;border-radius:12px"></div><strong style="font-size:15px">Texto suave</strong><span style="font-size:14px">#46528A</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="height:96px;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:12px"></div><strong style="font-size:15px">Hoja</strong><span style="font-size:14px">#FFFFFF</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="height:96px;background:#E6EBF7;border:2px solid #1B2A7A;border-radius:12px"></div><strong style="font-size:15px">Cuadrícula</strong><span style="font-size:14px">#E6EBF7, cada 24 px</span></div>
+  </section>
+
+  <section style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <p style="margin:0;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:40px;line-height:1.1">Shantell Sans 800</p>
+      <p style="margin:0;font-size:16px">Títulos: 22 a 48 px. Botones: Shantell Sans 700, 18 px.</p>
+      <p style="margin:0;font-size:24px;font-weight:600">Figtree 400 a 700</p>
+      <p style="margin:0;font-size:16px;line-height:1.45">Texto: 15 y 16 px. Etiquetas: 13 y 14 px. Campos de escritura: 16 px, para que Android no haga zoom.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <a href="#" style="display:flex;align-items:center;justify-content:center;min-height:52px;box-sizing:border-box;padding:12px 20px;background:#FFE74C;color:#1B2A7A;border:2.5px solid #1B2A7A;border-radius:255px 18px 225px 18px/18px 225px 18px 255px;box-shadow:3px 3px 0 #1B2A7A;font-family:'Shantell Sans',sans-serif;font-weight:700;font-size:18px;text-decoration:none">Botón principal</a>
+      <a href="#" style="display:flex;align-items:center;justify-content:center;min-height:48px;box-sizing:border-box;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none">Botón secundario</a>
+      <label for="muestra" style="font-size:15px;font-weight:700">Campo</label>
+      <input id="muestra" type="text" placeholder="Escribí acá" style="min-height:52px;box-sizing:border-box;padding:0 14px;background:#FFFFFF;color:#1B2A7A;border:2px solid #1B2A7A;border-radius:12px;font-family:Figtree,sans-serif;font-size:16px">
+    </div>
+  </section>
+
+  <p style="margin:0;font-size:16px">Toques: mínimo 44 × 44 px. Tarjetas: borde de 2 a 2,5 px, radios de 12 a 18 px y sombra dura sin desenfoque.</p>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1200,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

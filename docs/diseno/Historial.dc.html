@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Historial</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B2A7A}a:hover{color:#0F1A55}
+</style>
+</helmet>
+<main style="width:390px;height:844px;box-sizing:border-box;padding:24px 20px;display:flex;flex-direction:column;gap:16px;overflow:hidden;font-family:Figtree,sans-serif;color:#1B2A7A;background-color:#FFFFFF;background-image:linear-gradient(#E6EBF7 1px,transparent 1px),linear-gradient(90deg,#E6EBF7 1px,transparent 1px);background-size:24px 24px">
+  <header style="display:flex;align-items:center;gap:8px">
+    <a href="Main.dc.html" aria-label="Volver al inicio" style="display:flex;align-items:center;width:44px;height:44px;text-decoration:none">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1B2A7A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+    </a>
+    <h1 style="margin:0;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:28px">Historial</h1>
+  </header>
+
+  <div role="group" aria-label="Filtrar dibujos" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+    <button type="button" aria-pressed="true" style="min-height:44px;background:#FFE74C;color:#1B2A7A;border:2px solid #1B2A7A;border-radius:12px;font-family:Figtree,sans-serif;font-size:15px;font-weight:700;cursor:pointer">Todos</button>
+    <button type="button" aria-pressed="false" style="min-height:44px;background:#FFFFFF;color:#1B2A7A;border:2px solid #1B2A7A;border-radius:12px;font-family:Figtree,sans-serif;font-size:15px;font-weight:600;cursor:pointer">Juego</button>
+    <button type="button" aria-pressed="false" style="min-height:44px;background:#FFFFFF;color:#1B2A7A;border:2px solid #1B2A7A;border-radius:12px;font-family:Figtree,sans-serif;font-size:15px;font-weight:600;cursor:pointer">Libres</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+    <a href="Acierto.dc.html" style="display:flex;flex-direction:column;gap:6px;box-sizing:border-box;padding:8px;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:14px;text-decoration:none">
+      <span style="display:flex;justify-content:center;height:128px;align-items:center"><svg width="116" height="116" viewBox="0 0 300 300" fill="none" stroke="#1B2A7A" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Dibujo de un mate"><path d="M95 130C85 200 110 248 150 248s65-48 55-118"></path><path d="M92 130c28-15 88-15 116 0"></path><path stroke="#D6293E" d="M165 122 205 55l25-8"></path></svg></span>
+      <strong style="font-size:16px;font-weight:700">Mate</strong>
+      <span style="font-size:13px;color:#46528A">Vos · 4 intentos</span>
+    </a>
+    <a href="Recibido.dc.html" style="display:flex;flex-direction:column;gap:6px;box-sizing:border-box;padding:8px;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:14px;text-decoration:none">
+      <span style="display:flex;justify-content:center;height:128px;align-items:center"><svg width="116" height="116" viewBox="0 0 300 300" fill="none" stroke="#E0A800" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Dibujo de un sol"><circle cx="150" cy="150" r="58"></circle><path d="M150 50v30M150 220v30M50 150h30M220 150h30M80 80l20 20M200 200l20 20M220 80l-20 20M100 200l-20 20"></path></svg></span>
+      <strong style="font-size:16px;font-weight:700">Dibujo libre</strong>
+      <span style="font-size:13px;color:#46528A">Ella · Hoy</span>
+    </a>
+    <a href="Acierto.dc.html" style="display:flex;flex-direction:column;gap:6px;box-sizing:border-box;padding:8px;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:14px;text-decoration:none">
+      <span style="display:flex;justify-content:center;height:128px;align-items:center"><svg width="116" height="116" viewBox="0 0 300 300" fill="none" stroke="#1B2A7A" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Dibujo de un paraguas"><path d="M50 160C60 70 240 70 250 160c-30-20-55-20-75 0-15-20-35-20-50 0-20-20-45-20-75 0Z"></path><path d="M150 90v140c0 30-45 30-45 0"></path></svg></span>
+      <strong style="font-size:16px;font-weight:700">Paraguas</strong>
+      <span style="font-size:13px;color:#46528A">Ella · 2 intentos</span>
+    </a>
+    <a href="Acierto.dc.html" style="display:flex;flex-direction:column;gap:6px;box-sizing:border-box;padding:8px;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:14px;text-decoration:none">
+      <span style="display:flex;justify-content:center;height:128px;align-items:center"><svg width="116" height="116" viewBox="0 0 300 300" fill="none" stroke="#1B2A7A" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Dibujo de una bicicleta"><circle cx="85" cy="195" r="48"></circle><circle cx="215" cy="195" r="48"></circle><path d="m85 195 45-80h65l20 80M130 115l30 80h-75M160 195l35-80M120 95h28M185 90h32"></path></svg></span>
+      <strong style="font-size:16px;font-weight:700">Bicicleta</strong>
+      <span style="font-size:13px;color:#46528A">Vos · 1 intento</span>
+    </a>
+  </div>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

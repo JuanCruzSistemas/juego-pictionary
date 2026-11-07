@@ -1,0 +1,184 @@
+/* Estilos base y componentes globales. Fuente: docs/diseno/Sistema.dc.html */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  /* En Android evita el "tirar para recargar" y el rebote al dibujar. */
+  overscroll-behavior: none;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--fuente-texto);
+  font-size: 16px;
+  color: var(--birome);
+  background-color: var(--hoja);
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: var(--birome);
+}
+
+a:hover {
+  color: var(--birome-hover);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--birome);
+  outline-offset: 3px;
+}
+
+/* Hoja cuadriculada cada 24 px. */
+.hoja {
+  background-color: var(--hoja);
+  background-image:
+    linear-gradient(var(--cuadricula) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cuadricula) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Contenedor de cada pantalla: ocupa el alto visible y no se estira en pantallas anchas. */
+.pantalla {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+}
+
+/* Textos */
+.titulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.resaltado {
+  background: var(--resaltador);
+  padding: 0 6px;
+}
+
+.etiqueta {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.texto-suave {
+  color: var(--texto-suave);
+}
+
+/* Botón principal: resaltador, borde irregular y sombra dura. */
+.btn-principal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 12px 20px;
+  background: var(--resaltador);
+  color: var(--birome);
+  border: 2.5px solid var(--birome);
+  border-radius: var(--radio-boton-principal);
+  box-shadow: var(--sombra-boton);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 18px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-principal:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+/* Variante en birome, como "Ahora te toca dibujar" en Acierto. */
+.btn-principal.btn-birome {
+  background: var(--birome);
+  color: var(--hoja);
+  box-shadow: none;
+}
+
+/* Botón secundario */
+.btn-secundario {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 14px;
+  background: var(--hoja);
+  color: var(--birome);
+  border: 2px solid var(--birome);
+  border-radius: var(--radio-campo);
+  font-family: var(--fuente-texto);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-principal:disabled,
+.btn-secundario:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Enlace de texto con área de toque mínima. */
+.enlace {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--toque-minimo);
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--birome);
+  font-family: var(--fuente-texto);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Campo de escritura: 16 px para que Android no haga zoom. */
+.campo {
+  min-height: 52px;
+  width: 100%;
+  padding: 0 14px;
+  background: var(--hoja);
+  color: var(--birome);
+  border: 2px solid var(--birome);
+  border-radius: var(--radio-campo);
+  font-family: var(--fuente-texto);
+  font-size: 16px;
+}
+
+.campo::placeholder {
+  color: var(--texto-suave);
+}
+
+/* Tarjeta con borde grueso y sombra dura. */
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: var(--hoja);
+  border: 2.5px solid var(--birome);
+  border-radius: var(--radio-tarjeta);
+  box-shadow: var(--sombra-tarjeta);
+}

@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: garabato
+      POSTGRES_PASSWORD: garabato
+      POSTGRES_DB: garabato
+    ports:
+      - "5432:5432"
+    volumes:
+      - datos:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U garabato -d garabato"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  datos:

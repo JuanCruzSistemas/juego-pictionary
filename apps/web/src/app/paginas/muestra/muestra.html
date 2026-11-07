@@ -1,0 +1,24 @@
+<main class="pantalla">
+  <h1 class="titulo logo"><span class="resaltado">Garabato</span></h1>
+
+  <section class="tarjeta">
+    <p class="etiqueta texto-suave">Paso 1</p>
+    <h2 class="titulo subtitulo">Esqueleto listo</h2>
+    <p class="cuerpo">
+      @switch (api()) {
+        @case ('probando') { Probando la conexión con la API… }
+        @case ('ok') { La API responde. }
+        @case ('error') { No se pudo conectar con la API. ¿Está corriendo <code>npm run dev:api</code>? }
+      }
+    </p>
+    <button type="button" class="btn-principal" (click)="probar()">Probar de nuevo</button>
+  </section>
+
+  <div class="grupo">
+    <label for="muestra" class="etiqueta">Campo</label>
+    <input id="muestra" type="text" class="campo" placeholder="Escribí acá" />
+  </div>
+
+  <button type="button" class="btn-secundario">Botón secundario</button>
+  <button type="button" class="enlace">Enlace de texto</button>
+</main>

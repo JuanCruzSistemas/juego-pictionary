@@ -1,0 +1,26 @@
+/* Sistema visual "Cuaderno, birome y resaltador". Fuente: docs/diseno/Sistema.dc.html */
+:root {
+  /* Colores */
+  --birome: #1b2a7a;
+  --birome-hover: #0f1a55;
+  --resaltador: #ffe74c;
+  --correccion: #d6293e;
+  --correccion-texto: #b31f32;
+  --texto-suave: #46528a;
+  --hoja: #ffffff;
+  --cuadricula: #e6ebf7;
+
+  /* Tipografías */
+  --fuente-titulo: 'Shantell Sans', sans-serif;
+  --fuente-texto: Figtree, sans-serif;
+
+  /* Formas */
+  --radio-boton-principal: 255px 18px 225px 18px / 18px 225px 18px 255px;
+  --radio-campo: 12px;
+  --radio-tarjeta: 18px;
+  --sombra-boton: 3px 3px 0 var(--birome);
+  --sombra-tarjeta: 4px 4px 0 var(--birome);
+
+  /* Toques */
+  --toque-minimo: 44px;
+}

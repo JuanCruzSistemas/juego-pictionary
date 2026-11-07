@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>En vivo: dibuja</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B2A7A}a:hover{color:#0F1A55}
+</style>
+</helmet>
+<main style="width:390px;height:844px;box-sizing:border-box;padding:16px;display:flex;flex-direction:column;gap:10px;overflow:hidden;font-family:Figtree,sans-serif;color:#1B2A7A;background-color:#FFFFFF;background-image:linear-gradient(#E6EBF7 1px,transparent 1px),linear-gradient(90deg,#E6EBF7 1px,transparent 1px);background-size:24px 24px">
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px">
+    <p style="margin:0;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:22px">Dibujá: <span style="background:#FFE74C;padding:0 6px">Mate</span></p>
+    <span style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:#B31F32"><span aria-hidden="true" style="width:10px;height:10px;background:#D6293E;border-radius:50%"></span>En vivo</span>
+  </header>
+
+  <div style="flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;background:#FFFFFF;border:2.5px solid #1B2A7A;border-radius:18px">
+    <svg width="280" height="280" viewBox="0 0 300 300" fill="none" stroke="#1B2A7A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Dibujo de un mate a medio hacer">
+      <path d="M95 130C85 200 110 248 150 248s65-48 55-118"></path><path d="M92 130c28-15 88-15 116 0"></path>
+    </svg>
+  </div>
+
+  <section aria-label="Intentos de Ella" style="display:flex;flex-direction:column;gap:6px;box-sizing:border-box;padding:10px 12px;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:12px">
+    <p style="margin:0;font-size:14px;font-weight:700">Ella está probando</p>
+    <p style="margin:0;font-size:15px">Taza · Florero · Termo</p>
+  </section>
+
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <button type="button" aria-label="Azul birome" aria-pressed="true" style="width:44px;height:44px;padding:0;border-radius:50%;cursor:pointer;background:#1B2A7A;border:4px solid #FFFFFF;box-shadow:0 0 0 3px #1B2A7A"></button>
+    <button type="button" aria-label="Negro" aria-pressed="false" style="width:44px;height:44px;padding:0;border-radius:50%;cursor:pointer;background:#111111;border:2px solid #1B2A7A"></button>
+    <button type="button" aria-label="Rojo" aria-pressed="false" style="width:44px;height:44px;padding:0;border-radius:50%;cursor:pointer;background:#D6293E;border:2px solid #1B2A7A"></button>
+    <button type="button" aria-label="Amarillo" aria-pressed="false" style="width:44px;height:44px;padding:0;border-radius:50%;cursor:pointer;background:#FFD400;border:2px solid #1B2A7A"></button>
+    <button type="button" aria-label="Verde" aria-pressed="false" style="width:44px;height:44px;padding:0;border-radius:50%;cursor:pointer;background:#1E9E5A;border:2px solid #1B2A7A"></button>
+    <button type="button" aria-label="Marrón" aria-pressed="false" style="width:44px;height:44px;padding:0;border-radius:50%;cursor:pointer;background:#8A4B2A;border:2px solid #1B2A7A"></button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+    <a href="VivoAdivina.dc.html" style="display:flex;align-items:center;justify-content:center;min-height:48px;box-sizing:border-box;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none">Saltear (2 de 3)</a>
+    <a href="Main.dc.html" style="display:flex;align-items:center;justify-content:center;min-height:48px;box-sizing:border-box;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none">Terminar partida</a>
+  </div>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

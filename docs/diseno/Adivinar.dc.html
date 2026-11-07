@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Adivinar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B2A7A}a:hover{color:#0F1A55}
+</style>
+</helmet>
+<main style="width:390px;height:844px;box-sizing:border-box;padding:16px;display:flex;flex-direction:column;gap:12px;overflow:hidden;font-family:Figtree,sans-serif;color:#1B2A7A;background-color:#FFFFFF;background-image:linear-gradient(#E6EBF7 1px,transparent 1px),linear-gradient(90deg,#E6EBF7 1px,transparent 1px);background-size:24px 24px">
+  <header style="display:flex;align-items:center;gap:8px">
+    <a href="Main.dc.html" aria-label="Volver al inicio" style="display:flex;align-items:center;width:44px;height:44px;text-decoration:none">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1B2A7A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+    </a>
+    <h1 style="margin:0;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:24px">¿Qué te dibujó?</h1>
+  </header>
+
+  <div style="position:relative;display:flex;align-items:center;justify-content:center;height:340px;flex:0 0 auto;background:#FFFFFF;border:2.5px solid #1B2A7A;border-radius:18px">
+    <svg width="290" height="290" viewBox="0 0 300 300" fill="none" stroke="#1B2A7A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Dibujo de un mate">
+      <path stroke="#FFD400" stroke-width="14" d="M112 150c20-6 56-6 78 0M108 170c24-6 62-6 86 0M112 192c20-6 56-6 78 0M122 214c14-5 38-5 58 0"></path>
+      <path d="M95 130C85 200 110 248 150 248s65-48 55-118"></path><path d="M92 130c28-15 88-15 116 0"></path><path stroke="#D6293E" d="M165 122 205 55l25-8"></path><path d="M120 95c-10-15 10-25 0-40M92 100c-10-13 8-22 0-34"></path>
+    </svg>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px">
+    <button type="button" aria-label="Reproducir el dibujo otra vez" style="display:flex;align-items:center;justify-content:center;flex:0 0 44px;height:44px;padding:0;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:50%;cursor:pointer">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="#1B2A7A" aria-hidden="true"><path d="M6 3.5v13l10-6.5Z"></path></svg>
+    </button>
+    <div role="progressbar" aria-label="Avance de la reproducción" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="flex:1 1 auto;height:10px;background:#1B2A7A;border-radius:5px"></div>
+    <span style="font-size:14px;font-weight:600">0:24</span>
+  </div>
+
+  <p style="margin:0;align-self:flex-start;max-width:300px;box-sizing:border-box;padding:10px 12px;background:#FFE74C;border:2px solid #1B2A7A;border-radius:14px 14px 14px 2px;font-size:16px"><strong>Pista:</strong> lo tomás todas las mañanas</p>
+
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+    <span style="font-size:14px;font-weight:600;color:#46528A">Ya probaste:</span>
+    <s style="box-sizing:border-box;padding:4px 10px;background:#FFFFFF;border:1.5px solid #D6293E;border-radius:12px;font-size:14px;color:#B31F32">Taza</s>
+    <s style="box-sizing:border-box;padding:4px 10px;background:#FFFFFF;border:1.5px solid #D6293E;border-radius:12px;font-size:14px;color:#B31F32">Florero</s>
+    <s style="box-sizing:border-box;padding:4px 10px;background:#FFFFFF;border:1.5px solid #D6293E;border-radius:12px;font-size:14px;color:#B31F32">Termo</s>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:6px;margin-top:auto">
+    <label for="respuesta" style="font-size:15px;font-weight:700">Tu respuesta</label>
+    <div style="display:flex;gap:8px">
+      <input id="respuesta" type="text" placeholder="Escribí lo que ves" style="flex:1 1 auto;min-width:0;min-height:52px;box-sizing:border-box;padding:0 14px;background:#FFFFFF;color:#1B2A7A;border:2px solid #1B2A7A;border-radius:12px;font-family:Figtree,sans-serif;font-size:16px">
+      <a href="Acierto.dc.html" style="display:flex;align-items:center;justify-content:center;min-height:52px;box-sizing:border-box;padding:0 18px;background:#FFE74C;color:#1B2A7A;border:2.5px solid #1B2A7A;border-radius:12px;box-shadow:3px 3px 0 #1B2A7A;font-family:'Shantell Sans',sans-serif;font-weight:700;font-size:17px;text-decoration:none">Probar</a>
+    </div>
+  </div>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

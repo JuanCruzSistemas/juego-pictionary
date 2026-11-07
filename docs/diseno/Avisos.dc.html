@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Notificaciones</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B2A7A}a:hover{color:#0F1A55}
+</style>
+</helmet>
+<main style="width:390px;height:844px;box-sizing:border-box;padding:32px 16px;display:flex;flex-direction:column;gap:12px;overflow:hidden;font-family:Figtree,sans-serif;color:#1B2A7A;background:#1B2A7A">
+  <h1 style="margin:0 4px 8px;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:26px;color:#FFFFFF">Avisos en Android</h1>
+
+  <article style="display:flex;gap:12px;box-sizing:border-box;padding:14px;background:#FFFFFF;border-radius:18px">
+    <span aria-hidden="true" style="display:flex;align-items:center;justify-content:center;flex:0 0 40px;height:40px;background:#FFE74C;border:2px solid #1B2A7A;border-radius:50%;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:20px">G</span>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <strong style="font-size:16px;font-weight:700">Te dibujaron algo</strong>
+      <p style="margin:0;font-size:15px;line-height:1.35">Ella terminó su dibujo. Te toca adivinar.</p>
+    </div>
+  </article>
+
+  <article style="display:flex;gap:12px;box-sizing:border-box;padding:14px;background:#FFFFFF;border-radius:18px">
+    <span aria-hidden="true" style="display:flex;align-items:center;justify-content:center;flex:0 0 40px;height:40px;background:#FFE74C;border:2px solid #1B2A7A;border-radius:50%;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:20px">G</span>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <strong style="font-size:16px;font-weight:700">Te dejó un dibujito</strong>
+      <p style="margin:0;font-size:15px;line-height:1.35">Sin nada que adivinar. Abrilo cuando quieras.</p>
+    </div>
+  </article>
+
+  <article style="display:flex;gap:12px;box-sizing:border-box;padding:14px;background:#FFFFFF;border-radius:18px">
+    <span aria-hidden="true" style="display:flex;align-items:center;justify-content:center;flex:0 0 40px;height:40px;background:#FFE74C;border:2px solid #1B2A7A;border-radius:50%;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:20px">G</span>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <strong style="font-size:16px;font-weight:700">Llegó una pista</strong>
+      <p style="margin:0;font-size:15px;line-height:1.35">Lo tomás todas las mañanas</p>
+    </div>
+  </article>
+
+  <article style="display:flex;gap:12px;box-sizing:border-box;padding:14px;background:#FFFFFF;border-radius:18px">
+    <span aria-hidden="true" style="display:flex;align-items:center;justify-content:center;flex:0 0 40px;height:40px;background:#FFE74C;border:2px solid #1B2A7A;border-radius:50%;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:20px">G</span>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <strong style="font-size:16px;font-weight:700">Adivinó tu dibujo</strong>
+      <p style="margin:0;font-size:15px;line-height:1.35">Era Mate. Ahora te toca adivinar a vos.</p>
+    </div>
+  </article>
+
+  <article style="display:flex;gap:12px;box-sizing:border-box;padding:14px;background:#FFFFFF;border-radius:18px">
+    <span aria-hidden="true" style="display:flex;align-items:center;justify-content:center;flex:0 0 40px;height:40px;background:#FFE74C;border:2px solid #1B2A7A;border-radius:50%;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:20px">G</span>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <strong style="font-size:16px;font-weight:700">¿Jugamos en vivo?</strong>
+      <p style="margin:0;font-size:15px;line-height:1.35">Ella te está esperando. Tocá para entrar.</p>
+    </div>
+  </article>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

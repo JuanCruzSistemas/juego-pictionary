@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Palabras propias</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B2A7A}a:hover{color:#0F1A55}
+</style>
+</helmet>
+<main style="width:390px;height:844px;box-sizing:border-box;padding:24px 20px;display:flex;flex-direction:column;gap:16px;overflow:hidden;font-family:Figtree,sans-serif;color:#1B2A7A;background-color:#FFFFFF;background-image:linear-gradient(#E6EBF7 1px,transparent 1px),linear-gradient(90deg,#E6EBF7 1px,transparent 1px);background-size:24px 24px">
+  <header style="display:flex;align-items:center;gap:8px">
+    <a href="Elegir.dc.html" aria-label="Volver" style="display:flex;align-items:center;width:44px;height:44px;text-decoration:none">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1B2A7A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+    </a>
+    <h1 style="margin:0;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:28px">Nuestras palabras</h1>
+  </header>
+  <p style="margin:0;font-size:16px;line-height:1.4">Sumá chistes internos. El juego las mezcla con las palabras base.</p>
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <label for="nueva" style="font-size:15px;font-weight:700">Nueva palabra</label>
+    <div style="display:flex;gap:8px">
+      <input id="nueva" type="text" placeholder="Escribí una palabra" value="{{borrador}}" onChange="{{escribir}}" style="flex:1 1 auto;min-width:0;min-height:52px;box-sizing:border-box;padding:0 14px;background:#FFFFFF;color:#1B2A7A;border:2px solid #1B2A7A;border-radius:12px;font-family:Figtree,sans-serif;font-size:16px">
+      <button type="button" onClick="{{agregar}}" style="min-height:52px;box-sizing:border-box;padding:0 18px;background:#FFE74C;color:#1B2A7A;border:2.5px solid #1B2A7A;border-radius:12px;box-shadow:3px 3px 0 #1B2A7A;font-family:'Shantell Sans',sans-serif;font-weight:700;font-size:17px;cursor:pointer">Sumar</button>
+    </div>
+  </div>
+
+  <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{palabras}}" as="p" hint-placeholder-count="3">
+      <li style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:52px;box-sizing:border-box;padding:0 4px 0 12px;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:12px">
+        <span style="font-size:16px;font-weight:600">{{p.texto}}</span>
+        <button type="button" onClick="{{p.quitar}}" aria-label="Quitar palabra" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;background:none;border:none;cursor:pointer">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#D6293E" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"></path></svg>
+        </button>
+      </li>
+    </sc-for>
+  </ul>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  state = { borrador: '', lista: ['[Chiste interno 1]', '[Chiste interno 2]', '[Chiste interno 3]'] };
+  renderVals() {
+    return {
+      borrador: this.state.borrador,
+      escribir: (e) => this.setState({ borrador: e.target.value }),
+      agregar: () => {
+        const texto = this.state.borrador.trim();
+        if (texto) this.setState({ lista: [texto, ...this.state.lista], borrador: '' });
+      },
+      palabras: this.state.lista.map((texto) => ({
+        texto,
+        quitar: () => this.setState({ lista: this.state.lista.filter((x) => x !== texto) })
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>En vivo: adivina</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B2A7A}a:hover{color:#0F1A55}
+</style>
+</helmet>
+<main style="width:390px;height:844px;box-sizing:border-box;padding:16px;display:flex;flex-direction:column;gap:10px;overflow:hidden;font-family:Figtree,sans-serif;color:#1B2A7A;background-color:#FFFFFF;background-image:linear-gradient(#E6EBF7 1px,transparent 1px),linear-gradient(90deg,#E6EBF7 1px,transparent 1px);background-size:24px 24px">
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px">
+    <h1 style="margin:0;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:22px">Ella está dibujando</h1>
+    <span style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:#B31F32"><span aria-hidden="true" style="width:10px;height:10px;background:#D6293E;border-radius:50%"></span>En vivo</span>
+  </header>
+
+  <div style="flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;background:#FFFFFF;border:2.5px solid #1B2A7A;border-radius:18px">
+    <svg width="290" height="290" viewBox="0 0 300 300" fill="none" stroke="#1B2A7A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Dibujo de un paraguas a medio hacer">
+      <path d="M50 160C60 70 240 70 250 160c-30-20-55-20-75 0-15-20-35-20-50 0-20-20-45-20-75 0Z"></path><path d="M150 90v70"></path>
+    </svg>
+  </div>
+
+  <p style="margin:0;align-self:flex-start;max-width:300px;box-sizing:border-box;padding:10px 12px;background:#FFE74C;border:2px solid #1B2A7A;border-radius:14px 14px 14px 2px;font-size:16px"><strong>Pista:</strong> sirve cuando llueve</p>
+
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+    <span style="font-size:14px;font-weight:600;color:#46528A">Ya probaste:</span>
+    <s style="box-sizing:border-box;padding:4px 10px;background:#FFFFFF;border:1.5px solid #D6293E;border-radius:12px;font-size:14px;color:#B31F32">Hongo</s>
+    <s style="box-sizing:border-box;padding:4px 10px;background:#FFFFFF;border:1.5px solid #D6293E;border-radius:12px;font-size:14px;color:#B31F32">Sombrilla</s>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <label for="respuesta" style="font-size:15px;font-weight:700">Tu respuesta</label>
+    <div style="display:flex;gap:8px">
+      <input id="respuesta" type="text" placeholder="Escribí lo que ves" style="flex:1 1 auto;min-width:0;min-height:52px;box-sizing:border-box;padding:0 14px;background:#FFFFFF;color:#1B2A7A;border:2px solid #1B2A7A;border-radius:12px;font-family:Figtree,sans-serif;font-size:16px">
+      <a href="VivoDibuja.dc.html" style="display:flex;align-items:center;justify-content:center;min-height:52px;box-sizing:border-box;padding:0 18px;background:#FFE74C;color:#1B2A7A;border:2.5px solid #1B2A7A;border-radius:12px;box-shadow:3px 3px 0 #1B2A7A;font-family:'Shantell Sans',sans-serif;font-weight:700;font-size:17px;text-decoration:none">Probar</a>
+    </div>
+  </div>
+
+  <a href="Main.dc.html" style="display:flex;align-items:center;justify-content:center;min-height:44px;font-size:15px;font-weight:600">Terminar partida</a>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

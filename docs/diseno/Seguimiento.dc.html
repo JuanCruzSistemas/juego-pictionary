@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Mandar pistas</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Shantell+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B2A7A}a:hover{color:#0F1A55}
+</style>
+</helmet>
+<main style="width:390px;height:844px;box-sizing:border-box;padding:24px 20px;display:flex;flex-direction:column;gap:16px;overflow:hidden;font-family:Figtree,sans-serif;color:#1B2A7A;background-color:#FFFFFF;background-image:linear-gradient(#E6EBF7 1px,transparent 1px),linear-gradient(90deg,#E6EBF7 1px,transparent 1px);background-size:24px 24px">
+  <a href="Main.dc.html" aria-label="Volver al inicio" style="display:flex;align-items:center;width:44px;height:44px;text-decoration:none">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#1B2A7A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+  </a>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div style="display:flex;align-items:center;justify-content:center;flex:0 0 96px;height:96px;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:12px">
+      <svg width="76" height="76" viewBox="0 0 300 300" fill="none" stroke="#1B2A7A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Tu dibujo de un mate"><path d="M95 130C85 200 110 248 150 248s65-48 55-118"></path><path d="M92 130c28-15 88-15 116 0"></path><path stroke="#D6293E" d="M165 122 205 55l25-8"></path></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <h1 style="margin:0;font-family:'Shantell Sans',sans-serif;font-weight:800;font-size:26px;line-height:1.15">Ella está adivinando</h1>
+      <p style="margin:0;font-size:15px">Tu palabra: <strong>Mate</strong></p>
+    </div>
+  </div>
+
+  <section style="display:flex;flex-direction:column;gap:8px;min-height:0">
+    <h2 style="margin:0;font-size:16px;font-weight:700">Sus intentos</h2>
+    <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px">
+      <li style="box-sizing:border-box;padding:10px 12px;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:12px;font-size:16px">Taza</li>
+      <li style="box-sizing:border-box;padding:10px 12px;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:12px;font-size:16px">Florero</li>
+      <li style="box-sizing:border-box;padding:10px 12px;background:#FFFFFF;border:2px solid #1B2A7A;border-radius:12px;font-size:16px">Termo</li>
+    </ul>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:8px">
+    <h2 style="margin:0;font-size:16px;font-weight:700">Pistas que mandaste</h2>
+    <p style="margin:0;align-self:flex-end;max-width:280px;box-sizing:border-box;padding:10px 12px;background:#FFE74C;border:2px solid #1B2A7A;border-radius:14px 14px 2px 14px;font-size:16px">Lo tomás todas las mañanas</p>
+  </section>
+
+  <form style="display:flex;flex-direction:column;gap:8px;margin-top:auto">
+    <label for="pista" style="font-size:15px;font-weight:700">Mandale una pista</label>
+    <div style="display:flex;gap:8px">
+      <input id="pista" type="text" placeholder="Escribí tu pista" style="flex:1 1 auto;min-width:0;min-height:52px;box-sizing:border-box;padding:0 14px;background:#FFFFFF;color:#1B2A7A;border:2px solid #1B2A7A;border-radius:12px;font-family:Figtree,sans-serif;font-size:16px">
+      <button type="button" style="min-height:52px;box-sizing:border-box;padding:0 18px;background:#FFE74C;color:#1B2A7A;border:2.5px solid #1B2A7A;border-radius:12px;box-shadow:3px 3px 0 #1B2A7A;font-family:'Shantell Sans',sans-serif;font-weight:700;font-size:17px;cursor:pointer">Mandar</button>
+    </div>
+  </form>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
