@@ -3,8 +3,8 @@ import { conSesion, sinSesion } from './sesion/guards';
 
 export const routes: Routes = [
   {
+    // Sin guard: Bienvenida decide según la sesión del dispositivo y la sala del link.
     path: 's/:invitacion',
-    canActivate: [sinSesion],
     loadComponent: () => import('./paginas/bienvenida/bienvenida').then((m) => m.BienvenidaPage),
   },
   {

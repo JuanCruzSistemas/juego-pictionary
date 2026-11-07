@@ -58,6 +58,33 @@
       </div>
     }
 
+    @case ('otra-sala') {
+      <div class="encabezado">
+        <h1 class="titulo">Ya entraste a otra sala</h1>
+        <p class="cuerpo">
+          En este dispositivo entraste como <strong>{{ nombreDeLaSesion() }}</strong> a otra sala.
+          Si entrás a esta, vas a salir de aquella en este dispositivo.
+        </p>
+      </div>
+      <div class="acciones">
+        <button type="button" class="btn-principal" (click)="irAMiSala()">Ir a mi sala</button>
+        <button type="button" class="btn-secundario" (click)="entrarAEsta()">Entrar a esta</button>
+      </div>
+    }
+
+    @case ('otra-sala-llena') {
+      <div class="encabezado">
+        <h1 class="titulo">Esta sala ya está completa</h1>
+        <p class="cuerpo">
+          Las dos personas de esta sala ya entraron. En este dispositivo entraste como
+          <strong>{{ nombreDeLaSesion() }}</strong> a otra sala.
+        </p>
+      </div>
+      <div class="acciones">
+        <button type="button" class="btn-principal" (click)="irAMiSala()">Ir a mi sala</button>
+      </div>
+    }
+
     @case ('no-encontrada') {
       <div class="encabezado">
         <h1 class="titulo">Este link no anda</h1>

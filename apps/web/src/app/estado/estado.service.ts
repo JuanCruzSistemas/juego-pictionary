@@ -2,6 +2,7 @@ import { DOCUMENT, DestroyRef, Injectable, inject, signal } from '@angular/core'
 import { finalize } from 'rxjs';
 import type { Estado } from '@garabato/shared';
 import { ApiService } from '../api/api.service';
+import { SesionService } from '../sesion/sesion.service';
 
 export const INTERVALO_MS = 5000;
 
@@ -13,6 +14,7 @@ export const INTERVALO_MS = 5000;
 export class EstadoService {
   private readonly api = inject(ApiService);
   private readonly doc = inject(DOCUMENT);
+  private readonly sesion = inject(SesionService);
 
   private readonly valor = signal<Estado | null>(null);
   private readonly fallo = signal(false);
@@ -58,6 +60,7 @@ export class EstadoService {
       .pipe(finalize(() => (this.enCurso = false)))
       .subscribe({
         next: (e) => {
+          this.completarInvitacion(e.invitacion);
           this.valor.set(e);
           this.fallo.set(false);
         },
@@ -69,6 +72,12 @@ export class EstadoService {
   olvidar(): void {
     this.valor.set(null);
     this.fallo.set(false);
+  }
+
+  /** Para sesiones guardadas antes de que se guardara la invitación. */
+  private completarInvitacion(invitacion: string): void {
+    const s = this.sesion.actual();
+    if (s && s.invitacion !== invitacion) this.sesion.guardar({ ...s, invitacion });
   }
 
   private visible(): boolean {

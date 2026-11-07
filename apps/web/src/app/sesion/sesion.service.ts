@@ -1,7 +1,11 @@
 import { Injectable, computed, signal } from '@angular/core';
 import type { JugadorPublico } from '@garabato/shared';
 
-export type Sesion = { token: string; jugador: JugadorPublico };
+/**
+ * `invitacion` es la de la sala de esta sesión. Las sesiones guardadas antes de que existiera
+ * no la tienen: EstadoService la completa con la primera respuesta de /api/estado.
+ */
+export type Sesion = { token: string; jugador: JugadorPublico; invitacion?: string };
 
 const CLAVE = 'garabato.sesion';
 
