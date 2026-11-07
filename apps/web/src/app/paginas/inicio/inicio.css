@@ -10,6 +10,12 @@ header {
   gap: 12px;
 }
 
+.quien {
+  font-size: 14px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
 .logo {
   font-size: 30px;
   line-height: 1.1;

@@ -13,13 +13,18 @@ export type Tarjeta = {
 /** Qué tarjeta va en Inicio según el estado. Usa el nombre real de la otra persona en todos los textos. */
 export function tarjetaDeInicio(e: Estado): Tarjeta {
   const otro = e.otro?.nombre;
-  if (!otro || !e.turno) {
+  if (!otro) {
     return {
       etiqueta: 'Falta una persona',
       titulo: 'Esperando que entre',
       texto: 'Mandale este link a la otra persona. Cuando entre, arrancás dibujando vos.',
       compartir: true,
     };
+  }
+
+  // La API crea el turno 1 apenas están las dos personas; esto cubre el instante entre una cosa y otra.
+  if (!e.turno) {
+    return { etiqueta: 'Turno 1', titulo: 'Preparando el primer turno', texto: `Ya están vos y ${otro}. En un momento arrancan.` };
   }
 
   const { turno, anterior } = e;

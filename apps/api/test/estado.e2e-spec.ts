@@ -34,6 +34,31 @@ describe('GET /api/estado con turnos', () => {
     expect(deAna.turno).toEqual({ id: deJuan.turno.id, numero: 1, rol: 'adivina', estado: 'eligiendo', intentos: 0 });
   });
 
+  it('una sala llena sin turno (gente que entró antes del paso 4) recibe el turno 1 al pedir el estado', async () => {
+    // Reproduce la sala dIYr…: dos personas y ningún turno. Antes /estado devolvía turno null
+    // y la tarjeta mostraba "Esperando que entre" con la sala llena.
+    const { personas: [juan, ana] } = await salaCon(t, 'Juan', 'Ana');
+    await t.prisma.turno.deleteMany();
+
+    const deAna = (await ana.get('/api/estado').expect(200)).body;
+    expect(deAna.otro).toEqual(juan.jugador);
+    expect(deAna.turno).toMatchObject({ numero: 1, rol: 'adivina', estado: 'eligiendo' });
+
+    const deJuan = (await juan.get('/api/estado').expect(200)).body;
+    expect(deJuan.turno).toMatchObject({ numero: 1, rol: 'dibuja' });
+    expect(deJuan.turno.opciones).toHaveLength(3);
+  });
+
+  it('si las dos personas piden el estado a la vez, se crea un solo turno 1', async () => {
+    const { personas: [juan, ana] } = await salaCon(t, 'Juan', 'Ana');
+    await t.prisma.turno.deleteMany();
+
+    const r = await Promise.all([juan.get('/api/estado'), ana.get('/api/estado'), juan.get('/api/estado')]);
+    expect(r.map((x) => x.status)).toEqual([200, 200, 200]);
+    expect(new Set(r.map((x) => x.body.turno?.id)).size).toBe(1);
+    expect(await t.prisma.turno.count()).toBe(1);
+  });
+
   it('las 3 opciones son de la lista base y no se parecen entre sí', async () => {
     const { personas: [juan] } = await salaCon(t, 'Juan', 'Ana');
     const { opciones } = (await juan.get('/api/estado').expect(200)).body.turno as { opciones: string[] };

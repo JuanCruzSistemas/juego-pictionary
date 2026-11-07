@@ -1,6 +1,9 @@
 <main class="pantalla">
   <header>
     <h1 class="titulo logo"><span class="resaltado">Garabato</span></h1>
+    @if (estado(); as e) {
+      <p class="quien texto-suave">Entraste como {{ e.yo.nombre }}</p>
+    }
   </header>
 
   @if (tarjeta(); as t) {

@@ -40,15 +40,7 @@ export class SalasService {
           const nuevo = await tx.jugador.create({
             data: { salaId: sala.id, nombre, lugar, sesionHash: hashToken(token) },
           });
-          const primero = await tx.jugador.findFirst({ where: { salaId: sala.id, id: { not: nuevo.id } } });
-          if (primero) {
-            await this.turnos.crear(tx, {
-              salaId: sala.id,
-              numero: 1,
-              dibujaId: primero.id,
-              adivinaId: nuevo.id,
-            });
-          }
+          await this.turnos.crearPrimerTurnoSiFalta(tx, sala.id);
           return nuevo;
         });
         return { token, jugador: { id: jugador.id, nombre: jugador.nombre, lugar: jugador.lugar } };

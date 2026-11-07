@@ -21,6 +21,13 @@ describe('tarjetaDeInicio', () => {
     expect(t.compartir).toBe(true);
   });
 
+  it('con la otra persona adentro nunca dice "Esperando que entre", aunque todavía no haya turno', () => {
+    const t = tarjetaDeInicio({ ...estado(null), otro: ana });
+    expect(t.titulo).not.toBe('Esperando que entre');
+    expect(t.compartir).toBeUndefined();
+    expect(t.texto).toContain('Ana');
+  });
+
   it('dibujar: elegir palabra o seguir dibujando', () => {
     expect(tarjetaDeInicio(estado({ estado: 'eligiendo' })).accion).toEqual({ texto: 'Elegir palabra', ruta: '/elegir' });
     expect(tarjetaDeInicio(estado({ estado: 'dibujando' })).accion?.ruta).toBe('/dibujar');
