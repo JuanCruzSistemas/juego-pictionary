@@ -14,6 +14,7 @@
     "build": "npm run build -w @garabato/api && npm run build -w @garabato/web",
     "db:migrate": "npm run db:migrate -w @garabato/api",
     "db:seed": "npm run db:seed -w @garabato/api",
-    "crear-sala": "npm run crear-sala -w @garabato/api --"
+    "crear-sala": "npm run crear-sala -w @garabato/api --",
+    "db:limpiar-salas": "npm run db:limpiar-salas -w @garabato/api"
   }
 }

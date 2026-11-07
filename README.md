@@ -27,6 +27,14 @@ npm run crear-sala -- --url http://192.168.0.10:4200  # link con la IP de la com
 
 El comando imprime el link `/s/<invitacion>`. Mandáselo a cada persona.
 
+## Limpiar salas
+
+```sh
+npm run db:limpiar-salas
+```
+
+Borra todas las salas con sus jugadores, turnos, dibujos, intentos y salteos, y deja las palabras base. Pide escribir `BORRAR` para confirmar y no corre si `DATABASE_URL` no apunta a localhost.
+
 ## Tests
 
 ```sh

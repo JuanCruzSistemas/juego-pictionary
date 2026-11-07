@@ -24,7 +24,8 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
-    "crear-sala": "tsx src/scripts/crear-sala.ts"
+    "crear-sala": "tsx src/scripts/crear-sala.ts",
+    "db:limpiar-salas": "tsx src/scripts/limpiar-salas.ts"
   },
   "dependencies": {
     "@garabato/shared": "*",
