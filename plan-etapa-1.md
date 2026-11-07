@@ -94,6 +94,13 @@ La respuesta se compara solo en el backend. Quien adivina nunca recibe la palabr
    - de 5 a 7 letras: tolera 1 error;
    - con 8 o más: tolera 2.
 
+Antes de comparar, a la respuesta y a la palabra:
+
+- se les saca un artículo al principio (el, la, los, las, un, una, unos, unas): "el mate" acierta "Mate";
+- se acepta una "s" o "es" de más en cualquiera de las dos: "mates" acierta "Mate" y "Las Flores" acierta "Flor".
+
+Una respuesta igual a una anterior (normalizada) no se guarda y se muestra "Ya probaste esa".
+
 Esta función va con tests unitarios desde el primer día, entre ellos:
 
 - "maet" acierta "mate";

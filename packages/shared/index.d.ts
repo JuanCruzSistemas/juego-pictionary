@@ -98,6 +98,21 @@ export type EnviarDibujoRespuesta = { turno: TurnoActual | null };
 /** GET /api/turnos/:id/dibujo */
 export type DibujoGuardado = { trazos: Stroke[]; duracionMs: number };
 
+export type IntentoPublico = { id: string; texto: string; correcto: boolean; creadoEn: string };
+
+/** POST /api/turnos/:id/intentos */
+export type IntentoBody = { texto: string };
+
+/**
+ * `repetido`: ya se había probado lo mismo (sin tildes ni mayúsculas) y no se guardó.
+ * `palabra` solo viene si acertó. `intentos` va del más nuevo al más viejo.
+ */
+export type IntentoRespuesta = {
+  resultado: 'correcto' | 'incorrecto' | 'repetido';
+  intentos: IntentoPublico[];
+  palabra?: string;
+};
+
 /** GET /api/estado */
 export type Estado = {
   yo: JugadorPublico;

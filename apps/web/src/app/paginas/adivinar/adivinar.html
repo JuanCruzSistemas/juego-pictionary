@@ -10,16 +10,48 @@
   <div class="zona-dibujo">
     @if (trazos(); as t) {
       <app-dibujo-vista class="vista" [trazos]="t" descripcion="El dibujo para adivinar" />
-    } @else if (error()) {
+    } @else if (errorDeCarga()) {
       <div class="estado">
         <p>No pudimos cargar el dibujo.</p>
-        <button type="button" class="btn-secundario" (click)="reintentar()">Probar de nuevo</button>
+        <button type="button" class="btn-secundario" (click)="reintentarCarga()">Probar de nuevo</button>
       </div>
     } @else {
       <p class="estado texto-suave" role="status">Cargando el dibujo…</p>
     }
   </div>
 
-  <p class="nota texto-suave">Para escribir tu respuesta falta el paso 8.</p>
+  @if (fallidos().length > 0) {
+    <div class="probadas" aria-live="polite">
+      <span class="etiqueta-probadas">Ya probaste:</span>
+      @for (i of fallidos(); track i.id) {
+        <s class="probada">{{ i.texto }}</s>
+      }
+    </div>
+  }
+
+  <form class="respuesta" novalidate (submit)="probar($event)">
+    <label for="respuesta" class="etiqueta">Tu respuesta</label>
+    <div class="fila">
+      <input
+        id="respuesta"
+        type="text"
+        class="campo"
+        placeholder="Escribí lo que ves"
+        autocomplete="off"
+        autocapitalize="none"
+        enterkeyhint="send"
+        maxlength="60"
+        [value]="texto()"
+        [attr.aria-describedby]="mensaje() ? 'respuesta-mensaje' : null"
+        (input)="escribir($any($event.target).value)"
+      />
+      <button type="submit" class="probar" [disabled]="!sePuedeMandar()">
+        {{ enviando() ? '…' : 'Probar' }}
+      </button>
+    </div>
+    @if (mensaje(); as m) {
+      <p id="respuesta-mensaje" class="mensaje-error" role="alert">{{ m }}</p>
+    }
+  </form>
 </main>
-<app-aviso-girar />
+<app-aviso-girar texto="Girá el celu para ver el dibujo" />

@@ -7,6 +7,8 @@ import type {
   EntrarBody,
   EntrarRespuesta,
   Estado,
+  IntentoPublico,
+  IntentoRespuesta,
   PalabraBody,
   SalaPublica,
   SalteoRespuesta,
@@ -43,5 +45,13 @@ export class ApiService {
 
   dibujo(turnoId: string) {
     return this.http.get<DibujoGuardado>(`/api/turnos/${encodeURIComponent(turnoId)}/dibujo`);
+  }
+
+  intentos(turnoId: string) {
+    return this.http.get<IntentoPublico[]>(`/api/turnos/${encodeURIComponent(turnoId)}/intentos`);
+  }
+
+  probar(turnoId: string, texto: string) {
+    return this.http.post<IntentoRespuesta>(`/api/turnos/${encodeURIComponent(turnoId)}/intentos`, { texto });
   }
 }

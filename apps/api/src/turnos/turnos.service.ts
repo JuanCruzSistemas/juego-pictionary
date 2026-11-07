@@ -1,5 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import type { DibujoGuardado, EnviarDibujoRespuesta, Salteos, SalteoRespuesta, Stroke, TurnoActual } from '@garabato/shared';
+import type {
+  DibujoGuardado,
+  EnviarDibujoRespuesta,
+  IntentoPublico,
+  IntentoRespuesta,
+  Salteos,
+  SalteoRespuesta,
+  Stroke,
+  TurnoActual,
+} from '@garabato/shared';
+import { acierta } from './acierto.js';
 import { Prisma, type Jugador, type Turno } from '../generated/prisma/client.js';
 import { PrismaService } from '../db/prisma.service.js';
 import { Reloj } from '../comun/reloj.js';
@@ -197,6 +207,69 @@ export class TurnosService {
     if (!turno) throw turnoNoEncontrado();
     if (!turno.dibujo) throw dibujoNoDisponible();
     return { trazos: turno.dibujo.trazos as Stroke[], duracionMs: turno.dibujo.duracionMs };
+  }
+
+  /** Los intentos del turno, del más nuevo al más viejo. Para quien adivina y quien dibujó. */
+  async intentosDe(yo: Jugador, turnoId: string): Promise<IntentoPublico[]> {
+    const turno = await this.prisma.turno.findFirst({ where: { id: turnoId, salaId: yo.salaId } });
+    if (!turno) throw turnoNoEncontrado();
+    return this.listarIntentos(this.prisma, turnoId);
+  }
+
+  /**
+   * Prueba una respuesta. Si ya se había probado lo mismo (normalizado), no la guarda.
+   * Si acierta, en la misma transacción cierra el turno y crea el siguiente, que dibuja quien adivinó.
+   * La palabra solo sale en la respuesta cuando acierta.
+   */
+  async probar(yo: Jugador, turnoId: string, texto: string): Promise<IntentoRespuesta> {
+    return this.prisma.$transaction(async (tx) => {
+      // Bloquea el turno: dos respuestas que llegan juntas se procesan de a una,
+      // así una repetida no se guarda dos veces y un acierto doble no crea dos turnos.
+      await tx.$queryRaw`SELECT id FROM turnos WHERE id = ${turnoId} FOR UPDATE`;
+      const turno = await tx.turno.findFirst({ where: { id: turnoId, salaId: yo.salaId } });
+      if (!turno) throw turnoNoEncontrado();
+      if (turno.adivinaId !== yo.id) throw noEsTuTurno('Este turno lo adivina la otra persona.');
+      if (turno.estado !== 'adivinando' || !turno.palabra) throw turnoCerrado('Este turno ya no admite respuestas.');
+
+      const previos = await this.listarIntentos(tx, turno.id);
+      const clave = normalizar(texto);
+      if (previos.some((i) => normalizar(i.texto) === clave)) {
+        return { resultado: 'repetido', intentos: previos };
+      }
+
+      const correcto = acierta(texto, turno.palabra);
+      if (correcto) {
+        // Condicionado al estado: si dos aciertos llegan juntos, el segundo no crea otro turno.
+        const r = await tx.turno.updateMany({
+          where: { id: turno.id, estado: 'adivinando' },
+          data: { estado: 'adivinado', adivinadoEn: this.reloj.ahora() },
+        });
+        if (r.count === 0) throw turnoCerrado('Este turno ya no admite respuestas.');
+      }
+      // creadoEn lo pone la base: solo sirve para ordenar, y así no depende del reloj simulado de los tests.
+      await tx.intento.create({ data: { turnoId: turno.id, jugadorId: yo.id, texto, correcto } });
+      if (correcto) {
+        await this.crear(tx, {
+          salaId: turno.salaId,
+          numero: turno.numero + 1,
+          dibujaId: yo.id,
+          adivinaId: turno.dibujaId,
+        });
+      }
+
+      const intentos = await this.listarIntentos(tx, turno.id);
+      return correcto
+        ? { resultado: 'correcto', intentos, palabra: turno.palabra }
+        : { resultado: 'incorrecto', intentos };
+    });
+  }
+
+  private async listarIntentos(tx: Tx, turnoId: string): Promise<IntentoPublico[]> {
+    const intentos = await tx.intento.findMany({
+      where: { turnoId },
+      orderBy: [{ creadoEn: 'desc' }, { id: 'desc' }],
+    });
+    return intentos.map((i) => ({ id: i.id, texto: i.texto, correcto: i.correcto, creadoEn: i.creadoEn.toISOString() }));
   }
 
   /** El turno, si es de la sala de quien pide y lo dibuja esa persona. */

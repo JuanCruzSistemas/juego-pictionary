@@ -1,5 +1,14 @@
 import { Body, Controller, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
-import type { DibujoGuardado, EnviarDibujoRespuesta, SalteoRespuesta, Stroke, TurnoActual } from '@garabato/shared';
+import type {
+  DibujoGuardado,
+  EnviarDibujoRespuesta,
+  IntentoPublico,
+  IntentoRespuesta,
+  SalteoRespuesta,
+  Stroke,
+  TurnoActual,
+} from '@garabato/shared';
+import { intentoSchema } from './intento.js';
 import type { Jugador } from '../generated/prisma/client.js';
 import { SesionGuard } from '../sesion/sesion.guard.js';
 import { JugadorActual } from '../sesion/jugador-actual.decorator.js';
@@ -41,5 +50,20 @@ export class TurnosController {
   @Get(':id/dibujo')
   dibujo(@JugadorActual() yo: Jugador, @Param('id') id: string): Promise<DibujoGuardado> {
     return this.turnos.dibujoDe(yo, id);
+  }
+
+  @Get(':id/intentos')
+  intentos(@JugadorActual() yo: Jugador, @Param('id') id: string): Promise<IntentoPublico[]> {
+    return this.turnos.intentosDe(yo, id);
+  }
+
+  @Post(':id/intentos')
+  @HttpCode(200)
+  probar(
+    @JugadorActual() yo: Jugador,
+    @Param('id') id: string,
+    @Body({ schema: intentoSchema }) body: { texto: string },
+  ): Promise<IntentoRespuesta> {
+    return this.turnos.probar(yo, id, body.texto);
   }
 }

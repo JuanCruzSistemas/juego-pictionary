@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 /**
- * Con el celular acostado tapa la pantalla con "Girá el celu para dibujar".
+ * Con el celular acostado tapa la pantalla con un aviso para girarlo.
  * Es solo CSS: lo que hay debajo (el lienzo, el dibujo) sigue ahí y vuelve al girar.
  * Solo aparece en pantallas bajas (celulares); en una tablet acostada el lienzo entra bien.
  * La orientación vertical fija va en el manifest de la PWA, en la etapa 3.
@@ -17,7 +17,7 @@ import { Component } from '@angular/core';
         <path d="M60 30c0-10-6-18-15-21" stroke="var(--correccion)"></path>
         <path d="m41 5 4 4-4 4" stroke="var(--correccion)"></path>
       </svg>
-      <p class="titulo">Girá el celu para dibujar</p>
+      <p class="titulo">{{ texto() }}</p>
     </div>
   `,
   styles: `
@@ -52,4 +52,6 @@ import { Component } from '@angular/core';
     }
   `,
 })
-export class AvisoGirar {}
+export class AvisoGirar {
+  readonly texto = input('Girá el celu para dibujar');
+}

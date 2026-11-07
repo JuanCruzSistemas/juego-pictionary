@@ -24,8 +24,8 @@ export const datosInvalidos = (mensaje: string) =>
 export const turnoNoEncontrado = () =>
   new ErrorDeApi(HttpStatus.NOT_FOUND, 'turno_no_encontrado', 'No encontramos ese turno.');
 
-export const noEsTuTurno = () =>
-  new ErrorDeApi(HttpStatus.FORBIDDEN, 'no_es_tu_turno', 'Este turno lo dibuja la otra persona.');
+export const noEsTuTurno = (mensaje = 'Este turno lo dibuja la otra persona.') =>
+  new ErrorDeApi(HttpStatus.FORBIDDEN, 'no_es_tu_turno', mensaje);
 
 export const turnoCerrado = (mensaje: string) => new ErrorDeApi(HttpStatus.CONFLICT, 'turno_cerrado', mensaje);
 

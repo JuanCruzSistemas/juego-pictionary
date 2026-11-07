@@ -41,6 +41,70 @@ h1 {
   gap: 12px;
 }
 
-.nota {
+
+.probadas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.etiqueta-probadas {
   font-size: 14px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.probada {
+  padding: 4px 10px;
+  background: var(--hoja);
+  border: 1.5px solid var(--correccion);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--correccion-texto);
+}
+
+.respuesta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.fila {
+  display: flex;
+  gap: 8px;
+}
+
+.fila .campo {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.probar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  min-height: 52px;
+  padding: 0 18px;
+  background: var(--resaltador);
+  color: var(--birome);
+  border: 2.5px solid var(--birome);
+  border-radius: 12px;
+  box-shadow: var(--sombra-boton);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.probar:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.probar:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
