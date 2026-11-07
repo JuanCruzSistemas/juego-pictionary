@@ -1,0 +1,87 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--resaltador);
+}
+
+.pantalla {
+  gap: 20px;
+  padding: 40px 24px 28px;
+}
+
+.encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+}
+
+.festejo {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 48px;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+h1.chico {
+  font-size: 32px;
+}
+
+/* Diseño: tarjeta de 300 px de alto, levemente torcida. */
+.tarjeta-dibujo {
+  display: flex;
+  height: 300px;
+  flex: none;
+  background: var(--hoja);
+  border: 2.5px solid var(--birome);
+  border-radius: var(--radio-tarjeta);
+  box-shadow: var(--sombra-tarjeta);
+  transform: rotate(-1.5deg);
+}
+
+.vista {
+  flex: 1 1 auto;
+}
+
+.datos {
+  display: flex;
+  justify-content: center;
+}
+
+.dato {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 108px;
+  padding: 10px 16px;
+  background: var(--hoja);
+  border: 2px solid var(--birome);
+  border-radius: 12px;
+}
+
+.dato strong {
+  font-family: var(--fuente-titulo);
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.dato span {
+  font-size: 14px;
+}
+
+.acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.cargando {
+  margin: auto;
+  font-weight: 600;
+}

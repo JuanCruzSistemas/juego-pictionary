@@ -1,0 +1,38 @@
+<main class="pantalla">
+  @if (resumen(); as r) {
+    <div class="encabezado">
+      <p class="festejo">{{ r.adivine ? '¡Adivinaste!' : '¡Lo adivinó!' }}</p>
+      <h1 class="titulo">Era {{ r.palabra }}</h1>
+    </div>
+
+    <div class="tarjeta-dibujo">
+      <app-dibujo-vista class="vista" [trazos]="r.trazos" [conMarco]="false" [descripcion]="'Dibujo de ' + r.palabra" />
+    </div>
+
+    <div class="datos">
+      <div class="dato">
+        <strong>{{ r.intentos }}</strong>
+        <span>{{ r.intentos === 1 ? 'intento' : 'intentos' }}</span>
+      </div>
+    </div>
+
+    <div class="acciones">
+      @if (r.adivine) {
+        <a routerLink="/elegir" replaceUrl class="btn-principal btn-birome">Ahora te toca dibujar</a>
+      } @else {
+        <a routerLink="/" replaceUrl class="btn-principal btn-birome">Volver al inicio</a>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="encabezado">
+      <h1 class="titulo chico">No pudimos cargar el acierto</h1>
+      <p>Revisá tu conexión y probá de nuevo.</p>
+    </div>
+    <div class="acciones">
+      <button type="button" class="btn-principal btn-birome" (click)="cargar()">Probar de nuevo</button>
+      <a routerLink="/" class="enlace">Volver al inicio</a>
+    </div>
+  } @else {
+    <p class="cargando" role="status">Cargando…</p>
+  }
+</main>

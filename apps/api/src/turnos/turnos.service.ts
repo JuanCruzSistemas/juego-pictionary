@@ -4,6 +4,7 @@ import type {
   EnviarDibujoRespuesta,
   IntentoPublico,
   IntentoRespuesta,
+  ResumenTurno,
   Salteos,
   SalteoRespuesta,
   Stroke,
@@ -18,6 +19,7 @@ import {
   datosInvalidos,
   dibujoNoDisponible,
   noEsTuTurno,
+  resumenNoDisponible,
   sinSalteos,
   turnoCerrado,
   turnoNoEncontrado,
@@ -262,6 +264,28 @@ export class TurnosService {
         ? { resultado: 'correcto', intentos, palabra: turno.palabra }
         : { resultado: 'incorrecto', intentos };
     });
+  }
+
+  /**
+   * Resumen de un turno adivinado: la palabra, el dibujo y los intentos. Es el único lugar, junto con
+   * la respuesta del acierto, donde la palabra le llega a quien adivinaba. Solo para las dos personas
+   * del turno, y solo si ya está adivinado.
+   */
+  async resumen(yo: Jugador, turnoId: string): Promise<ResumenTurno> {
+    const turno = await this.prisma.turno.findFirst({
+      where: { id: turnoId, salaId: yo.salaId },
+      include: { dibujo: true, _count: { select: { intentos: true } } },
+    });
+    if (!turno || (turno.dibujaId !== yo.id && turno.adivinaId !== yo.id)) throw turnoNoEncontrado();
+    if (turno.estado !== 'adivinado' || !turno.palabra || !turno.dibujo) throw resumenNoDisponible();
+    return {
+      turnoId: turno.id,
+      numero: turno.numero,
+      palabra: turno.palabra,
+      intentos: turno._count.intentos,
+      trazos: turno.dibujo.trazos as Stroke[],
+      adivine: turno.adivinaId === yo.id,
+    };
   }
 
   private async listarIntentos(tx: Tx, turnoId: string): Promise<IntentoPublico[]> {

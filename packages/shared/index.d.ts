@@ -28,7 +28,9 @@ export type CodigoError =
   | 'turno_cerrado'
   | 'sin_salteos'
   /** El dibujo todavía no se mandó. */
-  | 'dibujo_no_disponible';
+  | 'dibujo_no_disponible'
+  /** El turno todavía no se adivinó: no hay resumen. */
+  | 'resumen_no_disponible';
 
 /** Cuerpo de toda respuesta de error de la API. */
 export type ErrorApi = { codigo: CodigoError; mensaje: string };
@@ -111,6 +113,18 @@ export type IntentoRespuesta = {
   resultado: 'correcto' | 'incorrecto' | 'repetido';
   intentos: IntentoPublico[];
   palabra?: string;
+};
+
+/** GET /api/turnos/:id/resumen: solo de un turno adivinado, para una de sus dos personas. */
+export type ResumenTurno = {
+  turnoId: string;
+  numero: number;
+  palabra: string;
+  /** Intentos de quien adivinó, contando el que acertó. */
+  intentos: number;
+  trazos: Stroke[];
+  /** true si quien pide es quien adivinó. */
+  adivine: boolean;
 };
 
 /** GET /api/estado */

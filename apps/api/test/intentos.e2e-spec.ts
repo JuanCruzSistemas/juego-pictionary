@@ -148,6 +148,9 @@ describe('Intentos', () => {
       guardar(await ana.get('/api/estado').expect(200));
       guardar(await ana.get(`/api/turnos/${turnoId}/intentos`).expect(200));
       guardar(await ana.get(`/api/turnos/${turnoId}/dibujo`).expect(200));
+      const resumen = guardar(await ana.get(`/api/turnos/${turnoId}/resumen`).expect(409));
+      expect(resumen.body.codigo).toBe('resumen_no_disponible');
+      guardar(await juan.get(`/api/turnos/${turnoId}/resumen`).expect(409));
     }
     guardar(await http().get(`/api/salas/${invitacion}`).expect(200));
     // Lo que intente quien adivina sobre endpoints de quien dibuja también falla sin filtrar nada.
@@ -159,8 +162,31 @@ describe('Intentos', () => {
     expect(textos.length).toBeGreaterThan(20);
     for (const texto of textos) expect(texto).not.toMatch(/zeppelin/i);
 
-    // Después de acertar, sí.
+    // Después de acertar, sí: en la respuesta del acierto y en el resumen.
     const r = await probar(ana, 'zepelin').expect(200);
     expect(r.body).toMatchObject({ resultado: 'correcto', palabra: 'Zeppelin' });
+    const resumen = (await ana.get(`/api/turnos/${turnoId}/resumen`).expect(200)).body;
+    expect(resumen).toEqual({
+      turnoId,
+      numero: 1,
+      palabra: 'Zeppelin',
+      intentos: 5, // 4 fallidas ("avion" repite a "Avión") y el acierto
+      trazos: dibujo,
+      adivine: true,
+    });
+    expect((await juan.get(`/api/turnos/${turnoId}/resumen`).expect(200)).body).toMatchObject({ palabra: 'Zeppelin', adivine: false });
+  });
+
+  it('el resumen no existe para alguien de otra sala, ni siquiera adivinado', async () => {
+    await prepararTurno('Mate');
+    await probar(ana, 'mate').expect(200);
+    const [intrusa] = (await salaCon(t, 'Intrusa')).personas;
+    const r = await intrusa.get(`/api/turnos/${turnoId}/resumen`).expect(404);
+    expect(r.text).not.toMatch(/mate/i);
+  });
+
+  it('un turno salteado no tiene resumen', async () => {
+    await juan.post(`/api/turnos/${turnoId}/salteo`).expect(200);
+    expect((await ana.get(`/api/turnos/${turnoId}/resumen`).expect(409)).body.codigo).toBe('resumen_no_disponible');
   });
 });

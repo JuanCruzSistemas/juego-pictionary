@@ -33,5 +33,10 @@ export const routes: Routes = [
     canActivate: [conSesion],
     loadComponent: () => import('./paginas/adivinar/adivinar').then((m) => m.AdivinarPage),
   },
+  {
+    path: 'acierto/:turnoId',
+    canActivate: [conSesion],
+    loadComponent: () => import('./paginas/acierto/acierto').then((m) => m.AciertoPage),
+  },
   { path: '**', redirectTo: '' },
 ];

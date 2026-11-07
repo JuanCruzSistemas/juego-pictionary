@@ -20,7 +20,7 @@ import { COLOR_HOJA, pintarTrazos } from './trazos';
 @Component({
   selector: 'app-dibujo-vista',
   template: `
-    <div class="marco" #marco>
+    <div class="marco" [class.sin-marco]="!conMarco()" #marco>
       <canvas #lienzo role="img" [attr.aria-label]="descripcion()"></canvas>
     </div>
   `,
@@ -40,6 +40,10 @@ import { COLOR_HOJA, pintarTrazos } from './trazos';
       border: 2.5px solid var(--birome);
       border-radius: var(--radio-tarjeta);
     }
+    /* Dentro de una tarjeta que ya tiene borde, como en Acierto. */
+    .marco.sin-marco {
+      border-color: transparent;
+    }
     canvas {
       display: block;
     }
@@ -48,6 +52,8 @@ import { COLOR_HOJA, pintarTrazos } from './trazos';
 export class DibujoVista implements AfterViewInit, OnDestroy {
   readonly trazos = input.required<readonly Stroke[]>();
   readonly descripcion = input('Dibujo');
+  /** false para usarlo dentro de una tarjeta con borde propio. */
+  readonly conMarco = input(true);
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>('lienzo');

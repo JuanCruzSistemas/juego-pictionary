@@ -76,10 +76,9 @@ export class AdivinarPage {
         this.enviando.set(false);
         this.intentos.set(r.intentos);
         if (r.resultado === 'correcto') {
-          // La pantalla de Acierto llega en el paso 9: por ahora, al inicio con el turno nuevo.
           this.acerto = true;
           this.estados.actualizar();
-          void this.router.navigate(['/'], { replaceUrl: true });
+          void this.router.navigate(['/acierto', turnoId], { replaceUrl: true });
           return;
         }
         this.texto.set('');

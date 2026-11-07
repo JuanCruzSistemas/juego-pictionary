@@ -82,7 +82,7 @@ Todos van con el prefijo `/api`, salvo `/health`. Los que requieren sesión usan
 | GET | `/turnos/:id/intentos` | La lista de "Ya probaste". |
 | POST | `/turnos/:id/intentos` | `{texto}` → `{correcto, intentos}`. Si acierta, cierra el turno y crea el siguiente. |
 | POST | `/turnos/:id/salteo` | Solo quien dibuja y antes de enviar. Gasta un salteo y crea el turno siguiente, que dibuja la otra persona con 3 opciones nuevas. Un doble toque saltea una sola vez. |
-| GET | `/turnos/:id/resumen` | Para la pantalla de Acierto: la palabra, el dibujo y la cantidad de intentos. |
+| GET | `/turnos/:id/resumen` | Para la pantalla de Acierto: la palabra, el dibujo y la cantidad de intentos (contando el acierto). Solo si el turno está adivinado y pide una de sus dos personas; si no, 409 o 404, sin la palabra. |
 
 ### Comparación de la respuesta
 
