@@ -1,0 +1,43 @@
+.pantalla {
+  gap: 24px;
+  padding: 48px 24px 32px;
+}
+
+.logo {
+  font-size: 24px;
+}
+
+.encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+h1 {
+  font-size: 32px;
+}
+
+.cuerpo {
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.formulario {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.campo-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}

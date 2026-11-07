@@ -182,3 +182,14 @@ p {
   border-radius: var(--radio-tarjeta);
   box-shadow: var(--sombra-tarjeta);
 }
+
+/* Mensaje de error bajo un campo o un botón. */
+.mensaje-error {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--correccion-texto);
+}
+
+.campo[aria-invalid='true'] {
+  border-color: var(--correccion);
+}

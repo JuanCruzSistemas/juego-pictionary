@@ -1,6 +1,10 @@
+import { existsSync } from 'node:fs';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { configurarApp } from './configurar.js';
+
+// En local las variables vienen de apps/api/.env; en producción, del entorno.
+if (existsSync('.env')) process.loadEnvFile('.env');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

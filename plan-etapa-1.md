@@ -108,6 +108,7 @@ Ni `/estado` ni `/turnos/:id/resumen` devuelven la palabra a quien adivina antes
 | Ruta | Componente | Pantalla |
 | --- | --- | --- |
 | `/s/:invitacion` | `BienvenidaPage` | `Bienvenida.dc.html` |
+| `/entrar` | `EntrarPage` | Sin diseño propio: "Abrí tu link para entrar", con el estilo de Bienvenida |
 | `/` | `InicioPage` | `Main.dc.html` |
 | `/elegir` | `ElegirPage` | `Elegir.dc.html` |
 | `/dibujar` | `LienzoPage` | `Lienzo.dc.html` |
@@ -153,7 +154,7 @@ Son funciones de etapas siguientes:
 2. Cada persona abre el link, pone su nombre y la API le da un token de sesión aleatorio. En la base solo queda el hash.
 3. El token se guarda en `localStorage` y se manda como Bearer. Se usa Bearer y no cookie porque en producción el front y la API van a estar en dominios distintos de Render, y ahí las cookies de terceros dan problemas.
 4. Cuando entran dos personas, la sala se cierra. Si alguien abre el link de nuevo y ya tiene sesión, entra directo.
-5. **Límite conocido:** si alguien borra los datos del navegador, pierde su lugar. Se resuelve con un script `liberar-lugar` en vez de un flujo de recuperación, para no abrir un agujero si el link se filtra.
+5. **Límite conocido:** si alguien borra los datos del navegador, pierde su lugar. Se resuelve con un script `liberar-lugar` en vez de un flujo de recuperación, para no abrir un agujero si el link se filtra. Pendiente: borrar al jugador también borraría sus turnos, así que el script tiene que reasignar el lugar sin perder la historia.
 
 ## 6. Orden de construcción
 

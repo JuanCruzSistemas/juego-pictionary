@@ -1,0 +1,80 @@
+<main class="pantalla">
+  <p class="titulo logo"><span class="resaltado">Garabato</span></p>
+  <app-ilustracion-pareja />
+
+  @switch (vista()) {
+    @case ('cargando') {
+      <p class="cuerpo texto-suave" role="status">Abriendo la sala…</p>
+    }
+
+    @case ('formulario') {
+      <div class="encabezado">
+        <h1 class="titulo">{{ titulo() }}</h1>
+        <p class="cuerpo">Un juego solo para ustedes dos. Se dibujan, se adivinan y mantienen la racha.</p>
+      </div>
+
+      <form class="formulario" novalidate (submit)="entrar($event)">
+        <div class="campo-grupo">
+          <label for="nombre" class="etiqueta">¿Cómo te decimos?</label>
+          <input
+            id="nombre"
+            type="text"
+            class="campo"
+            placeholder="Tu nombre o apodo"
+            autocomplete="nickname"
+            autocapitalize="words"
+            enterkeyhint="go"
+            [attr.maxlength]="maximo"
+            [value]="nombre()"
+            [attr.aria-invalid]="problema() ? true : null"
+            [attr.aria-describedby]="problema() ? 'nombre-error' : null"
+            (input)="escribir($any($event.target).value)"
+          />
+          @if (problema(); as p) {
+            <p id="nombre-error" class="mensaje-error" role="alert">{{ p }}</p>
+          }
+        </div>
+
+        <div class="acciones">
+          @if (errorDeEnvio(); as e) {
+            <p class="mensaje-error" role="alert">{{ e }}</p>
+          }
+          <button type="submit" class="btn-principal" [disabled]="enviando()">
+            {{ enviando() ? 'Entrando…' : 'Entrar' }}
+          </button>
+        </div>
+      </form>
+    }
+
+    @case ('llena') {
+      <div class="encabezado">
+        <h1 class="titulo">Esta sala ya está completa</h1>
+        <p class="cuerpo">
+          Garabato es para dos, y las dos personas de esta sala ya entraron.
+        </p>
+        <p class="cuerpo texto-suave">
+          Si sos una de ellas, abrí el link desde el celular y el navegador con los que entraste la primera vez.
+        </p>
+      </div>
+    }
+
+    @case ('no-encontrada') {
+      <div class="encabezado">
+        <h1 class="titulo">Este link no anda</h1>
+        <p class="cuerpo">
+          Revisá que lo hayas copiado entero, o pedile a quien te lo pasó que te lo mande de nuevo.
+        </p>
+      </div>
+    }
+
+    @case ('sin-conexion') {
+      <div class="encabezado">
+        <h1 class="titulo">No pudimos abrir la sala</h1>
+        <p class="cuerpo">Revisá tu conexión y probá de nuevo.</p>
+      </div>
+      <div class="acciones">
+        <button type="button" class="btn-principal" (click)="cargar()">Probar de nuevo</button>
+      </div>
+    }
+  }
+</main>
