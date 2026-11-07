@@ -1,0 +1,129 @@
+/* La pantalla entra justa en el alto visible: nada scrollea mientras se dibuja. */
+.pantalla {
+  height: 100dvh;
+  min-height: 0;
+  gap: 12px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--birome);
+  cursor: pointer;
+}
+
+.icono:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.consigna {
+  min-width: 0;
+  font-size: 22px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.lienzo {
+  flex: 1 1 auto;
+}
+
+.colores {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.color {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid var(--birome);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.color[aria-pressed='true'] {
+  border: 4px solid var(--hoja);
+  box-shadow: 0 0 0 3px var(--birome);
+}
+
+.herramientas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.grupo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.herramienta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: var(--hoja);
+  color: var(--birome);
+  border: 2px solid var(--birome);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.herramienta[aria-pressed='true'] {
+  background: var(--resaltador);
+}
+
+.herramienta:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.punto {
+  display: block;
+  border-radius: 50%;
+  background: var(--birome);
+}
+
+.borrar {
+  color: var(--correccion);
+}
+
+.borrar.confirmando {
+  background: var(--correccion);
+  color: var(--hoja);
+  border-color: var(--correccion);
+}
+
+.pie {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aviso {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}

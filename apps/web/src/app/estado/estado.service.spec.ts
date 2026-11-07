@@ -1,7 +1,7 @@
 import { DestroyRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import type { Estado } from '@garabato/shared';
+import { Subject, of, type Observable } from 'rxjs';
+import type { Estado, TurnoActual } from '@garabato/shared';
 import { ApiService } from '../api/api.service';
 import { EstadoService, INTERVALO_MS } from './estado.service';
 
@@ -67,5 +67,31 @@ describe('EstadoService', () => {
     vi.advanceTimersByTime(INTERVALO_MS * 5);
     mostrar();
     expect(pedidos).toBe(1);
+  });
+});
+
+describe('EstadoService.aplicarTurno', () => {
+  it('descarta una respuesta que salió antes del cambio local', () => {
+    const enCamino = new Subject<Estado>();
+    let respuesta: Observable<Estado> = enCamino;
+    TestBed.configureTestingModule({ providers: [{ provide: ApiService, useValue: { estado: () => respuesta } }] });
+    const s = TestBed.inject(EstadoService);
+
+    const viejo = (estado: TurnoActual['estado']) =>
+      ({ yo: { id: 'j', nombre: 'Juan', lugar: 1 }, turno: { id: 't', estado } }) as Estado;
+    respuesta = of(viejo('eligiendo'));
+    s.actualizar();
+    expect(s.estado()?.turno?.estado).toBe('eligiendo');
+
+    respuesta = enCamino;
+    s.actualizar(); // sale un pedido...
+    s.aplicarTurno({ id: 't', numero: 1, rol: 'dibuja', estado: 'dibujando', intentos: 0, palabra: 'Mate' });
+    enCamino.next(viejo('eligiendo')); // ...y vuelve con el estado de antes de elegir
+    enCamino.complete();
+    expect(s.estado()?.turno).toMatchObject({ estado: 'dibujando', palabra: 'Mate' });
+
+    respuesta = of(viejo('adivinando'));
+    s.actualizar(); // los pedidos nuevos sí se aplican
+    expect(s.estado()?.turno?.estado).toBe('adivinando');
   });
 });

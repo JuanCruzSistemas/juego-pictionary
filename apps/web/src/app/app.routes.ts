@@ -23,5 +23,10 @@ export const routes: Routes = [
     canActivate: [conSesion],
     loadComponent: () => import('./paginas/elegir/elegir').then((m) => m.ElegirPage),
   },
+  {
+    path: 'dibujar',
+    canActivate: [conSesion],
+    loadComponent: () => import('./paginas/lienzo/lienzo').then((m) => m.LienzoPage),
+  },
   { path: '**', redirectTo: '' },
 ];

@@ -102,8 +102,9 @@ export class ElegirPage {
 
     this.guardando.set(true);
     this.api.elegirPalabra(t.id, body).subscribe({
-      next: () => {
-        this.estados.actualizar();
+      next: (turno) => {
+        // Sin esto, el lienzo vería el estado viejo ("eligiendo") y mandaría de vuelta acá.
+        this.estados.aplicarTurno(turno);
         void this.router.navigate(['/dibujar']);
       },
       error: (e: unknown) => {

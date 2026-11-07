@@ -1,6 +1,6 @@
 import { DOCUMENT, DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
-import type { Estado } from '@garabato/shared';
+import type { Estado, TurnoActual } from '@garabato/shared';
 import { ApiService } from '../api/api.service';
 import { SesionService } from '../sesion/sesion.service';
 
@@ -23,6 +23,8 @@ export class EstadoService {
   readonly error = this.fallo.asReadonly();
 
   private temporizador: ReturnType<typeof setInterval> | null = null;
+  /** Sube con cada cambio local; una respuesta pedida antes de un cambio local llega vieja y se descarta. */
+  private version = 0;
   private enCurso = false;
   private seguidores = 0;
 
@@ -55,12 +57,14 @@ export class EstadoService {
   actualizar(): void {
     if (this.enCurso) return;
     this.enCurso = true;
+    const version = this.version;
     this.api
       .estado()
       .pipe(finalize(() => (this.enCurso = false)))
       .subscribe({
         next: (e) => {
           this.completarInvitacion(e.invitacion);
+          if (version !== this.version) return;
           this.valor.set(e);
           this.fallo.set(false);
         },
@@ -68,8 +72,18 @@ export class EstadoService {
       });
   }
 
+  /**
+   * Aplica el turno que devolvió la API después de un cambio (por ejemplo, elegir la palabra),
+   * sin esperar al próximo pedido. Las respuestas que estaban en camino se descartan.
+   */
+  aplicarTurno(turno: TurnoActual): void {
+    this.version++;
+    this.valor.update((e) => (e ? { ...e, turno } : e));
+  }
+
   /** Al cerrar la sesión, para que otra persona en el mismo dispositivo no vea datos viejos. */
   olvidar(): void {
+    this.version++;
     this.valor.set(null);
     this.fallo.set(false);
   }
