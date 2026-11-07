@@ -1,0 +1,144 @@
+// Modelo de datos de la etapa 1. Ver plan-etapa-1.md, sección 2.
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EstadoTurno {
+  eligiendo
+  dibujando
+  adivinando
+  adivinado
+  salteado
+}
+
+enum OrigenPalabra {
+  sugerida
+  propia
+}
+
+model Sala {
+  id         String   @id @default(uuid())
+  /// Token aleatorio del link de invitación.
+  invitacion String   @unique
+  creadaEn   DateTime @default(now())
+
+  jugadores Jugador[]
+  turnos    Turno[]
+  palabras  Palabra[]
+
+  @@map("salas")
+}
+
+model Jugador {
+  id         String   @id @default(uuid())
+  salaId     String
+  nombre     String
+  /// 1 o 2: el orden en que entraron a la sala.
+  lugar      Int
+  /// SHA-256 del token de sesión. El token en claro solo lo tiene el dispositivo.
+  sesionHash String   @unique
+  creadoEn   DateTime @default(now())
+
+  sala          Sala      @relation(fields: [salaId], references: [id], onDelete: Cascade)
+  turnosDibuja  Turno[]   @relation("dibuja")
+  turnosAdivina Turno[]   @relation("adivina")
+  dibujos       Dibujo[]
+  intentos      Intento[]
+  salteos       Salteo[]
+
+  @@unique([salaId, lugar])
+  @@map("jugadores")
+}
+
+model Turno {
+  id                 String         @id @default(uuid())
+  salaId             String
+  numero             Int
+  dibujaId           String
+  adivinaId          String
+  estado             EstadoTurno    @default(eligiendo)
+  /// Las 3 palabras ofrecidas, sorteadas una sola vez al crear el turno.
+  opciones           String[]
+  palabra            String?
+  palabraNormalizada String?
+  origen             OrigenPalabra?
+  creadoEn           DateTime       @default(now())
+  enviadoEn          DateTime?
+  adivinadoEn        DateTime?
+
+  sala     Sala      @relation(fields: [salaId], references: [id], onDelete: Cascade)
+  dibuja   Jugador   @relation("dibuja", fields: [dibujaId], references: [id], onDelete: Cascade)
+  adivina  Jugador   @relation("adivina", fields: [adivinaId], references: [id], onDelete: Cascade)
+  dibujo   Dibujo?
+  intentos Intento[]
+  salteo   Salteo?
+
+  @@unique([salaId, numero])
+  @@map("turnos")
+}
+
+model Dibujo {
+  id         String   @id @default(uuid())
+  /// Null para los dibujos libres de la etapa 2.
+  turnoId    String?  @unique
+  autorId    String
+  /// Stroke[] de @garabato/shared.
+  trazos     Json
+  duracionMs Int
+  creadoEn   DateTime @default(now())
+
+  turno Turno?  @relation(fields: [turnoId], references: [id], onDelete: Cascade)
+  autor Jugador @relation(fields: [autorId], references: [id], onDelete: Cascade)
+
+  @@map("dibujos")
+}
+
+model Intento {
+  id        String   @id @default(uuid())
+  turnoId   String
+  jugadorId String
+  texto     String
+  correcto  Boolean
+  creadoEn  DateTime @default(now())
+
+  turno   Turno   @relation(fields: [turnoId], references: [id], onDelete: Cascade)
+  jugador Jugador @relation(fields: [jugadorId], references: [id], onDelete: Cascade)
+
+  @@index([turnoId, creadoEn])
+  @@map("intentos")
+}
+
+model Salteo {
+  id        String   @id @default(uuid())
+  jugadorId String
+  turnoId   String   @unique
+  creadoEn  DateTime @default(now())
+
+  jugador Jugador @relation(fields: [jugadorId], references: [id], onDelete: Cascade)
+  turno   Turno   @relation(fields: [turnoId], references: [id], onDelete: Cascade)
+
+  /// Para contar los salteos de la última media hora.
+  @@index([jugadorId, creadoEn])
+  @@map("salteos")
+}
+
+model Palabra {
+  id       String   @id @default(uuid())
+  texto    String
+  /// Null = lista base. La etapa 2 suma las palabras propias de cada sala.
+  salaId   String?
+  creadaEn DateTime @default(now())
+
+  sala Sala? @relation(fields: [salaId], references: [id], onDelete: Cascade)
+
+  @@index([salaId])
+  @@map("palabras")
+}

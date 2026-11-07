@@ -34,7 +34,7 @@ garabato/
 └── docs/
 ```
 
-- **ORM: Prisma.** Las migraciones son simples y anda igual con Postgres local y con Neon.
+- **ORM: Prisma 7.10.1**, con versión fija. Las migraciones son simples y anda igual con Postgres local y con Neon.
 - **`packages/shared`** tiene el tipo `Stroke` y los contratos de la API. Así el front y el back no se desfasan. Son solo tipos y no se compila aparte.
 - **Para probar en los dos celulares en local:** `ng serve --host 0.0.0.0` con un proxy `/api → localhost:3000`. Los celulares, en el mismo Wi-Fi, solo necesitan la IP de la compu.
 - `@angular/pwa` se suma en la etapa 3, que es la de instalación y push.
@@ -45,7 +45,7 @@ garabato/
 | --- | --- |
 | **Sala** | `id`, `invitacion` (token aleatorio del link, único), `creadaEn` |
 | **Jugador** | `id`, `salaId`, `nombre`, `lugar` (1 o 2, único por sala), `sesionHash` (SHA-256 del token), `creadoEn` |
-| **Turno** | `id`, `salaId`, `numero` (único por sala), `dibujaId`, `adivinaId`, `estado`, `opciones` (jsonb, las 3 palabras ofrecidas), `palabra`, `palabraNormalizada`, `origen` (`sugerida` o `propia`), `creadoEn`, `enviadoEn`, `adivinadoEn` |
+| **Turno** | `id`, `salaId`, `numero` (único por sala), `dibujaId`, `adivinaId`, `estado`, `opciones` (`text[]`, las 3 palabras ofrecidas), `palabra`, `palabraNormalizada`, `origen` (`sugerida` o `propia`), `creadoEn`, `enviadoEn`, `adivinadoEn` |
 | **Dibujo** | `id`, `turnoId` (único, nullable para los dibujos libres de la etapa 2), `autorId`, `trazos` (jsonb `Stroke[]`), `duracionMs`, `creadoEn` |
 | **Intento** | `id`, `turnoId`, `jugadorId`, `texto`, `correcto`, `creadoEn` |
 | **Salteo** | `id`, `jugadorId`, `turnoId`, `creadoEn` |
