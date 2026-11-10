@@ -4,14 +4,14 @@ Deploy de la etapa 1: API en Render como servicio web, web en Render como sitio 
 
 ## Arquitectura
 
-| Pieza | Dónde | Nombre | URL esperada |
+| Pieza | Dónde | Nombre | URL |
 | --- | --- | --- | --- |
 | API NestJS | Render, servicio web gratis, Ohio | `garabato-api` | `https://garabato-api.onrender.com` |
-| Web Angular | Render, sitio estático | `garabato` | `https://garabato.onrender.com` |
+| Web Angular | Render, sitio estático | `garabato` | `https://garabato-alw3.onrender.com` |
 | PostgreSQL | Neon, plan gratis, AWS us-east-2 (Ohio) | `garabato` | — |
 | Uptime bot | UptimeRobot, cada 5 minutos | — | `GET /health` de la API |
 
-Si Render ya tiene tomado un nombre, le agrega un sufijo y la URL cambia. En ese caso hay que actualizar `API_BASE` o `WEB_ORIGIN` (ver «Si una URL no es la esperada»).
+El nombre `garabato` ya estaba tomado en Render, que le agregó el sufijo `-alw3` a la web. Por eso `WEB_ORIGIN` es `https://garabato-alw3.onrender.com`. La API sí quedó como `garabato-api`, así que `API_BASE` no cambió. Si alguna URL cambia, ver «Si una URL no es la esperada».
 
 ## Variables de entorno
 
@@ -108,25 +108,32 @@ Esto prueba las dos cadenas antes de tocar Render. Las variables pasadas así ti
 3. Render lee `render.yaml` y muestra dos servicios, `garabato-api` y `garabato`. Te pide los valores `sync: false`:
    - `DATABASE_URL`: la cadena con pooling;
    - `DIRECT_URL`: la cadena directa;
-   - `WEB_ORIGIN`: `https://garabato.onrender.com`.
+   - `WEB_ORIGIN`: `https://garabato-alw3.onrender.com`. En el primer deploy se puso `https://garabato.onrender.com` y después se corrigió en el panel, cuando Render mostró la URL con sufijo.
 4. **Apply**. El primer build de cada servicio tarda unos minutos.
 
 ### 4. Comprobar las URL
 
 1. En el panel de cada servicio, mirá la URL que le dio Render.
-2. Si no son exactamente `https://garabato-api.onrender.com` y `https://garabato.onrender.com`, seguí «Si una URL no es la esperada».
+2. Tienen que ser `https://garabato-api.onrender.com` y `https://garabato-alw3.onrender.com`. Si no, seguí «Si una URL no es la esperada».
 3. Abrí `https://garabato-api.onrender.com/health`: tiene que responder `{"ok":true}`.
-4. Abrí `https://garabato.onrender.com`: tiene que mostrar «Abrí tu link para entrar».
+4. Abrí `https://garabato-alw3.onrender.com`: tiene que mostrar «Abrí tu link para entrar».
+5. Comprobá el CORS desde la URL de la web. La respuesta tiene que traer `access-control-allow-origin: https://garabato-alw3.onrender.com` y `access-control-max-age: 600`:
+
+   ```sh
+   curl -s -o /dev/null -D - -X OPTIONS https://garabato-api.onrender.com/api/estado \
+     -H "Origin: https://garabato-alw3.onrender.com" \
+     -H "Access-Control-Request-Method: GET" -H "Access-Control-Request-Headers: authorization"
+   ```
 
 ### 5. Crear la sala de producción
 
 ```sh
 cd apps/api
-env $(grep -E '^(DATABASE_URL|DIRECT_URL)=' .env.produccion | xargs) npm run crear-sala -- --url https://garabato.onrender.com
+env $(grep -E '^(DATABASE_URL|DIRECT_URL)=' .env.produccion | xargs) npm run crear-sala -- --url https://garabato-alw3.onrender.com
 cd ../..
 ```
 
-Imprime `https://garabato.onrender.com/s/<invitacion>`. Mandá ese link a cada persona por un canal privado: mientras quede un lugar, cualquiera con el link puede entrar. `npm run db:limpiar-salas` se niega a correr contra Neon a propósito.
+Imprime `https://garabato-alw3.onrender.com/s/<invitacion>`. Mandá ese link a cada persona por un canal privado: mientras quede un lugar, cualquiera con el link puede entrar. `npm run db:limpiar-salas` se niega a correr contra Neon a propósito.
 
 ### 6. UptimeRobot
 
@@ -154,7 +161,7 @@ Así la API no se duerme a los 15 minutos sin tráfico. Un solo servicio encendi
 | --- | --- |
 | La web muestra «Despertando el servidor…» un rato largo | La API estaba dormida (sin UptimeRobot) o arrancando después de un deploy. Tarda hasta un minuto. |
 | En la consola del navegador: «blocked by CORS policy» | `WEB_ORIGIN` no coincide con la URL de la web (barra final, http/https, sufijo de Render). |
-| Las llamadas van a `https://garabato.onrender.com/api/...` y dan 404 | El build de la web no tenía `API_BASE`: no debería pasar, porque en Render el build falla. |
+| Las llamadas van a `https://garabato-alw3.onrender.com/api/...` y dan 404 | El build de la web no tenía `API_BASE`: no debería pasar, porque en Render el build falla. |
 | `prisma migrate deploy` falla en el inicio | `DIRECT_URL` tiene la cadena con pooling, o falta. |
 | Error de conexión de `pg` con `channel_binding` | Probar la cadena sin `&channel_binding=require`, primero en el paso 2. |
 
