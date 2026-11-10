@@ -40,7 +40,7 @@ h2 {
   font-size: 14px;
 }
 
-/* Tarjetas extra (instalar; en el paso 5, avisos). Estilo punteado, como "Ella te dejó un dibujito" en Main. */
+/* Tarjetas extra (avisos e instalar). Estilo punteado, como "Ella te dejó un dibujito" en Main. */
 .extra {
   display: flex;
   align-items: flex-start;
@@ -86,4 +86,9 @@ h2 {
 
 .extra-acciones .btn-secundario {
   min-height: 44px;
+}
+
+.extra-cuerpo {
+  font-size: 14px;
+  line-height: 1.35;
 }

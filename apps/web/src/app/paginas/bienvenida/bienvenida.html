@@ -39,9 +39,18 @@
           @if (errorDeEnvio(); as e) {
             <p class="mensaje-error" role="alert">{{ e }}</p>
           }
-          <button type="submit" class="btn-principal" [disabled]="enviando()">
-            {{ enviando() ? 'Entrando…' : 'Entrar' }}
-          </button>
+          @if (avisos.ofrecerTarjeta()) {
+            <button type="submit" class="btn-principal" [disabled]="enviando()">
+              {{ enviando() ? 'Entrando…' : 'Activar avisos y entrar' }}
+            </button>
+            <button type="button" class="enlace" [disabled]="enviando()" (click)="entrarSinAvisos()">
+              Entrar sin avisos
+            </button>
+          } @else {
+            <button type="submit" class="btn-principal" [disabled]="enviando()">
+              {{ enviando() ? 'Entrando…' : 'Entrar' }}
+            </button>
+          }
         </div>
       </form>
     }

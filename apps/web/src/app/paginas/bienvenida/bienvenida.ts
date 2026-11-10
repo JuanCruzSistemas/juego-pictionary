@@ -8,9 +8,14 @@ import { SesionService } from '../../sesion/sesion.service';
 import { EstadoService } from '../../estado/estado.service';
 import { NOMBRE_MAXIMO, problemaDelNombre } from '../../sesion/nombre';
 import { IlustracionPareja } from '../../comun/ilustracion-pareja';
+import { AvisosService } from '../../pwa/avisos.service';
 import { vistaDeBienvenida, type Vista } from './vista';
 
-/** Entrada por link. Diseño: docs/diseno/Bienvenida.dc.html. Los avisos llegan en la etapa 3. */
+/**
+ * Entrada por link. Diseño: docs/diseno/Bienvenida.dc.html.
+ * Con avisos disponibles: "Activar avisos y entrar" y "Entrar sin avisos". Si no (navegador sin
+ * push, permiso ya decidido o avisos apagados en el servidor), un solo botón "Entrar".
+ */
 @Component({
   selector: 'app-bienvenida',
   imports: [IlustracionPareja],
@@ -22,6 +27,7 @@ export class BienvenidaPage implements OnInit {
   private readonly sesion = inject(SesionService);
   private readonly estados = inject(EstadoService);
   private readonly router = inject(Router);
+  protected readonly avisos = inject(AvisosService);
 
   /** Viene de la ruta /s/:invitacion. */
   readonly invitacion = input.required<string>();
@@ -79,8 +85,18 @@ export class BienvenidaPage implements OnInit {
     this.problema.set(null);
   }
 
+  /** "Activar avisos y entrar" (o "Entrar", si no hay avisos para ofrecer), y Enter en el campo. */
   protected entrar(evento: Event): void {
     evento.preventDefault();
+    this.entrarCon(this.avisos.ofrecerTarjeta());
+  }
+
+  /** "Entrar sin avisos": entra y no vuelve a ofrecer los avisos en este dispositivo. */
+  protected entrarSinAvisos(): void {
+    this.entrarCon(false);
+  }
+
+  private entrarCon(conAvisos: boolean): void {
     if (this.enviando()) return;
 
     // El teclado de Android suele dejar un espacio al final: se recorta antes de validar.
@@ -89,6 +105,11 @@ export class BienvenidaPage implements OnInit {
     this.problema.set(problema);
     this.errorDeEnvio.set(null);
     if (problema) return;
+
+    // El permiso se pide ya, dentro del toque, antes de esperar la red. Cuando la sesión quede
+    // guardada y el permiso esté dado, AvisosService suscribe el dispositivo.
+    if (conAvisos) void this.avisos.pedirPermiso();
+    else if (this.avisos.sePuedePedir()) this.avisos.ahoraNo();
 
     this.enviando.set(true);
     this.api.entrar(this.invitacion(), { nombre }).subscribe({

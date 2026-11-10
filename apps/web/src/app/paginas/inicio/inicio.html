@@ -21,6 +21,23 @@
 
     @for (extra of extras(); track extra) {
       @switch (extra) {
+        @case ('avisos') {
+          <section class="extra" aria-labelledby="titulo-avisos">
+            <span class="insignia" aria-hidden="true">G</span>
+            <div class="extra-texto">
+              <h2 id="titulo-avisos" class="extra-titulo">Activá los avisos</h2>
+              <p class="extra-cuerpo texto-suave">
+                Te avisamos cuando {{ estado()?.otro?.nombre ?? 'la otra persona' }} te dibuje algo o adivine tu dibujo.
+              </p>
+              <div class="extra-acciones">
+                <button type="button" class="btn-secundario" [disabled]="avisos.activando()" (click)="avisos.activar()">
+                  {{ avisos.activando() ? 'Activando…' : 'Activar avisos' }}
+                </button>
+                <button type="button" class="enlace" [disabled]="avisos.activando()" (click)="avisos.ahoraNo()">Ahora no</button>
+              </div>
+            </div>
+          </section>
+        }
         @case ('instalar') {
           <section class="extra" aria-labelledby="titulo-instalar">
             <span class="insignia" aria-hidden="true">G</span>

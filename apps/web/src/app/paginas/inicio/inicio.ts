@@ -5,6 +5,7 @@ import { CompartirLink } from '../../comun/compartir-link';
 import { tarjetaDeInicio } from './textos';
 import { DibujoService } from '../../dibujo/dibujo.service';
 import { InstalacionService } from '../../pwa/instalacion.service';
+import { AvisosService } from '../../pwa/avisos.service';
 import { tarjetasExtra } from '../../pwa/tarjetas';
 
 /**
@@ -26,9 +27,12 @@ export class InicioPage {
   protected readonly cargando = this.estados.cargando;
   private readonly dibujo = inject(DibujoService);
   protected readonly instalacion = inject(InstalacionService);
-  /** Tarjetas debajo del turno. La de avisos llega en el paso 5 de la etapa 3. */
+  protected readonly avisos = inject(AvisosService);
+  /** Tarjetas debajo del turno: primero la de avisos, después la de instalar. */
   protected readonly extras = computed(() =>
-    this.estado() ? tarjetasExtra({ avisos: false, instalar: this.instalacion.ofrecer() }) : [],
+    this.estado()
+      ? tarjetasExtra({ avisos: this.avisos.ofrecerTarjeta(), instalar: this.instalacion.ofrecer() })
+      : [],
   );
   protected readonly tarjeta = computed(() => {
     const e = this.estado();

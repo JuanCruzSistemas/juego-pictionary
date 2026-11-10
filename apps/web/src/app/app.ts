@@ -4,6 +4,7 @@ import { AvisoConexion } from './comun/aviso-conexion';
 import { AvisoVersion } from './pwa/aviso-version';
 import { ActualizacionService } from './pwa/actualizacion.service';
 import { InstalacionService } from './pwa/instalacion.service';
+import { AvisosService } from './pwa/avisos.service';
 
 @Component({
   selector: 'app-root',
@@ -34,6 +35,7 @@ import { InstalacionService } from './pwa/instalacion.service';
 export class App {
   constructor() {
     inject(ActualizacionService).iniciar();
+    inject(AvisosService).iniciar();
     // Se crea ya: el evento para ofrecer la instalación llega una sola vez, al cargar.
     inject(InstalacionService);
   }

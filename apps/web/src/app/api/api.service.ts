@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { rutaApi } from './rutas';
 import type {
+  ClavePush,
+  SuscripcionBody,
   DibujoGuardado,
   EnviarDibujoBody,
   EnviarDibujoRespuesta,
@@ -59,5 +61,13 @@ export class ApiService {
 
   resumen(turnoId: string) {
     return this.http.get<ResumenTurno>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/resumen`));
+  }
+
+  clavePush() {
+    return this.http.get<ClavePush>(rutaApi('push/clave'));
+  }
+
+  suscribirPush(body: SuscripcionBody) {
+    return this.http.post<void>(rutaApi('push/suscripciones'), body);
   }
 }
