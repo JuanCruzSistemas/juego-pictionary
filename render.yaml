@@ -1,0 +1,62 @@
+# Blueprint de Render para Garabato. Ver docs/produccion.md.
+# Node: lo fija .node-version (24.22.2) para los dos servicios.
+# Los secretos (sync: false) se cargan en el panel de Render al crear el Blueprint.
+
+services:
+  # API NestJS. Las migraciones corren al iniciar porque el plan gratis no tiene comando previo al deploy.
+  - type: web
+    name: garabato-api
+    runtime: node
+    region: ohio
+    plan: free
+    branch: main
+    buildCommand: npm ci && npm run build -w @garabato/api
+    startCommand: npm run db:deploy -w @garabato/api && npm run start:prod -w @garabato/api
+    healthCheckPath: /health
+    buildFilter:
+      paths:
+        - apps/api/**
+        - packages/**
+        - package.json
+        - package-lock.json
+        - .node-version
+    envVars:
+      # Neon, cadena con pooling (host con -pooler): la usa la app.
+      - key: DATABASE_URL
+        sync: false
+      # Neon, cadena directa (host sin -pooler): la usa prisma migrate deploy.
+      - key: DIRECT_URL
+        sync: false
+      # URL del sitio estático "garabato", sin barra final: único origen permitido por CORS.
+      - key: WEB_ORIGIN
+        sync: false
+
+  # Web Angular como sitio estático.
+  - type: web
+    name: garabato
+    runtime: static
+    branch: main
+    buildCommand: npm ci && npm run build -w @garabato/web
+    staticPublishPath: apps/web/dist/web/browser
+    buildFilter:
+      paths:
+        - apps/web/**
+        - packages/**
+        - package.json
+        - package-lock.json
+        - .node-version
+    envVars:
+      # URL de garabato-api. Si Render le agrega un sufijo al nombre, cambiarla acá o en el panel.
+      - key: API_BASE
+        value: https://garabato-api.onrender.com
+    routes:
+      # Las rutas de Angular (/s/..., /elegir, /dibujar...) se sirven con index.html.
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      # Que el navegador siempre revalide: después de un deploy, un index.html viejo
+      # pediría archivos .js que ya no existen y la app quedaría en blanco.
+      - path: /*
+        name: Cache-Control
+        value: no-cache

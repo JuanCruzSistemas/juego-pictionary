@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { rutaApi } from './rutas';
 import type {
   DibujoGuardado,
   EnviarDibujoBody,
@@ -21,42 +22,42 @@ export class ApiService {
   private readonly http = inject(HttpClient);
 
   sala(invitacion: string) {
-    return this.http.get<SalaPublica>(`/api/salas/${encodeURIComponent(invitacion)}`);
+    return this.http.get<SalaPublica>(rutaApi(`salas/${encodeURIComponent(invitacion)}`));
   }
 
   entrar(invitacion: string, body: EntrarBody) {
-    return this.http.post<EntrarRespuesta>(`/api/salas/${encodeURIComponent(invitacion)}/jugadores`, body);
+    return this.http.post<EntrarRespuesta>(rutaApi(`salas/${encodeURIComponent(invitacion)}/jugadores`), body);
   }
 
   estado() {
-    return this.http.get<Estado>('/api/estado');
+    return this.http.get<Estado>(rutaApi('estado'));
   }
 
   elegirPalabra(turnoId: string, body: PalabraBody) {
-    return this.http.post<TurnoActual>(`/api/turnos/${encodeURIComponent(turnoId)}/palabra`, body);
+    return this.http.post<TurnoActual>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/palabra`), body);
   }
 
   saltear(turnoId: string) {
-    return this.http.post<SalteoRespuesta>(`/api/turnos/${encodeURIComponent(turnoId)}/salteo`, {});
+    return this.http.post<SalteoRespuesta>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/salteo`), {});
   }
 
   enviarDibujo(turnoId: string, body: EnviarDibujoBody) {
-    return this.http.post<EnviarDibujoRespuesta>(`/api/turnos/${encodeURIComponent(turnoId)}/dibujo`, body);
+    return this.http.post<EnviarDibujoRespuesta>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/dibujo`), body);
   }
 
   dibujo(turnoId: string) {
-    return this.http.get<DibujoGuardado>(`/api/turnos/${encodeURIComponent(turnoId)}/dibujo`);
+    return this.http.get<DibujoGuardado>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/dibujo`));
   }
 
   intentos(turnoId: string) {
-    return this.http.get<IntentoPublico[]>(`/api/turnos/${encodeURIComponent(turnoId)}/intentos`);
+    return this.http.get<IntentoPublico[]>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/intentos`));
   }
 
   probar(turnoId: string, texto: string) {
-    return this.http.post<IntentoRespuesta>(`/api/turnos/${encodeURIComponent(turnoId)}/intentos`, { texto });
+    return this.http.post<IntentoRespuesta>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/intentos`), { texto });
   }
 
   resumen(turnoId: string) {
-    return this.http.get<ResumenTurno>(`/api/turnos/${encodeURIComponent(turnoId)}/resumen`);
+    return this.http.get<ResumenTurno>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/resumen`));
   }
 }

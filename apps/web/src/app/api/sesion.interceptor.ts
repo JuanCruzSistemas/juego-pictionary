@@ -5,10 +5,11 @@ import { catchError, throwError } from 'rxjs';
 import { SesionService } from '../sesion/sesion.service';
 import { EstadoService } from '../estado/estado.service';
 import { errorDeApi } from './errores';
+import { esDeLaApi } from './rutas';
 
 /** Suma el token a las llamadas a /api. Si la API no reconoce la sesión, la borra. */
 export const sesionInterceptor: HttpInterceptorFn = (req, next) => {
-  if (!req.url.startsWith('/api/')) return next(req);
+  if (!esDeLaApi(req.url) || req.url.endsWith('/health')) return next(req);
 
   const sesion = inject(SesionService);
   const router = inject(Router);

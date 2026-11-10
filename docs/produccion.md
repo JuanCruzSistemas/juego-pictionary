@@ -1,26 +1,163 @@
 # Producción
 
-Notas para el deploy. El plan general está en `alcance.md`.
+Deploy de la etapa 1: API en Render como servicio web, web en Render como sitio estático y base en Neon. Toda la configuración de Render está en `render.yaml` (Blueprint).
 
-## Base de datos en Neon con Prisma
+## Arquitectura
 
-Neon da dos cadenas de conexión, y Prisma necesita las dos:
+| Pieza | Dónde | Nombre | URL esperada |
+| --- | --- | --- | --- |
+| API NestJS | Render, servicio web gratis, Ohio | `garabato-api` | `https://garabato-api.onrender.com` |
+| Web Angular | Render, sitio estático | `garabato` | `https://garabato.onrender.com` |
+| PostgreSQL | Neon, plan gratis, AWS us-east-2 (Ohio) | `garabato` | — |
+| Uptime bot | UptimeRobot, cada 5 minutos | — | `GET /health` de la API |
 
-| Variable | Cadena de Neon | Quién la usa |
-| --- | --- | --- |
-| `DATABASE_URL` | La **pooled**: host con `-pooler` y `?sslmode=require` | La app en Render, a través de `@prisma/adapter-pg` (`apps/api/src/db/cliente.ts`). Pasa por PgBouncer y no agota las conexiones. |
-| `DIRECT_URL` | La **directa**: host sin `-pooler` y `?sslmode=require` | `prisma migrate deploy`, desde `apps/api/prisma.config.ts`. Las migraciones no funcionan a través de PgBouncer. |
+Si Render ya tiene tomado un nombre, le agrega un sufijo y la URL cambia. En ese caso hay que actualizar `API_BASE` o `WEB_ORIGIN` (ver «Si una URL no es la esperada»).
 
-Con Prisma 7 (fijado en 7.10.1) ya no existe `directUrl` en `schema.prisma`, y la URL no va en el esquema:
+## Variables de entorno
 
-- `prisma.config.ts` define `datasource.url` con `DIRECT_URL`, y la usa solo el CLI: migraciones y seed.
-- La app arma el cliente con el adaptador de `pg` y `DATABASE_URL`. No hace falta `pgbouncer=true`, porque ese parámetro era para el motor viejo de Prisma.
+| Variable | Servicio | Valor | En `render.yaml` |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | `garabato-api` | Neon, cadena **con pooling** (host con `-pooler`) | `sync: false` |
+| `DIRECT_URL` | `garabato-api` | Neon, cadena **directa** (host sin `-pooler`) | `sync: false` |
+| `WEB_ORIGIN` | `garabato-api` | URL del sitio estático, sin barra final | `sync: false` |
+| `API_BASE` | `garabato` (en el build) | URL de la API, sin barra final ni `/api` | valor fijo, editable en el panel |
+| `PORT` | `garabato-api` | La pone Render | no se define |
+
+`sync: false` quiere decir que el valor no está en el repo: Render lo pide al crear el Blueprint y queda guardado en el panel.
+
+No hay que definir `NODE_ENV=production` en el build: `npm ci` tiene que instalar las devDependencies, porque `prisma migrate deploy` corre al iniciar.
+
+## Cómo está armado
+
+### Node
+
+`.node-version` fija **24.22.2** (LTS) para los dos servicios, y `engines` en `package.json` pide 24 o más. La suite completa pasa con Node 24.22.2 y npm 11.19.1, con `npm ci` desde cero. En desarrollo se puede seguir usando Node 26.
+
+### Base de datos: Neon con Prisma 7
+
+Prisma 7 (fijado en 7.10.1) ya no usa `url` ni `directUrl` en `schema.prisma`:
+
+- `apps/api/prisma.config.ts` define `datasource.url` con `DIRECT_URL`. La usa solo el CLI (migraciones y seed), porque las migraciones no funcionan a través de PgBouncer.
+- La app arma el cliente con `@prisma/adapter-pg` y `DATABASE_URL`, la cadena con pooling (`apps/api/src/db/cliente.ts`). No hace falta `pgbouncer=true`: ese parámetro era para el motor viejo de Prisma.
 
 En local, con `docker-compose`, no hay pooler: las dos variables apuntan al mismo Postgres.
 
-## Comandos en el deploy
+### Migraciones y seed
+
+- **Migraciones:** el comando de inicio de la API corre `prisma migrate deploy` antes de levantar Nest. El plan gratis de Render no tiene comando previo al deploy. Con una sola instancia es seguro, y sin migraciones pendientes no hace nada.
+- **Seed:** se corre a mano desde una compu, solo la primera vez o cuando cambie la lista de palabras (`apps/api/prisma/palabras-base.ts`). Es idempotente: deja en la base exactamente esa lista y no toca las salas.
+
+### CORS y API_BASE
+
+- La web llama a la API en `${API_BASE}/api/...`. `apps/web/scripts/escribir-api-base.mjs` escribe `src/app/api/api-base.ts` antes de cada build con la variable `API_BASE`:
+  - en desarrollo queda vacía y la web usa el proxy de `ng serve`;
+  - en Render (que define `RENDER`) es obligatoria, y el build falla si falta o si no es un origen sin ruta.
+- La API habilita CORS solo para `WEB_ORIGIN` (`apps/api/src/configurar.ts`), con `maxAge` de 600 s para que el navegador recuerde la consulta previa que dispara el header `Authorization`. Sin `WEB_ORIGIN` válido no habilita CORS para nadie, y en Render lo avisa en el log al arrancar.
+
+### Sitio estático
+
+- Reescritura `/*` → `/index.html`, para que `/s/...`, `/elegir`, `/dibujar`, etc. funcionen al recargar.
+- `Cache-Control: no-cache` en todo: el navegador revalida con ETag. Sin esto, después de un deploy un `index.html` viejo en caché pediría archivos `.js` que ya no existen y la app quedaría en blanco.
+
+### Builds
+
+Cada servicio tiene un `buildFilter`: un cambio solo en la web no redeploya la API, y al revés.
+
+## Primer deploy, paso a paso
+
+### 1. Neon
+
+1. En [console.neon.tech](https://console.neon.tech), **New project**:
+   - **Name:** `garabato`
+   - **Postgres version:** la que ofrezca por defecto
+   - **Cloud provider / Region:** AWS, **US East 2 (Ohio)**
+2. En el proyecto, **Connect**. Dejá la rama, la base (`neondb`) y el rol que vienen por defecto.
+3. Con **Connection pooling activado**, copiá la cadena: es `DATABASE_URL`. El host termina en `-pooler.us-east-2.aws.neon.tech`.
+4. Con **Connection pooling desactivado**, copiá la cadena: es `DIRECT_URL`. Mismo host, sin `-pooler`.
+
+Las dos traen `?sslmode=require` y quizás `&channel_binding=require`: dejalas tal cual.
+
+### 2. En tu compu: migrar y cargar las palabras
+
+Creá `apps/api/.env.produccion`. Ya está ignorado por git (`.env.*`):
 
 ```sh
-npm run db:deploy -w @garabato/api   # aplica las migraciones pendientes con DIRECT_URL
-npm run db:seed -w @garabato/api     # sincroniza la lista base de palabras
+DATABASE_URL=postgresql://...-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require...
+DIRECT_URL=postgresql://....us-east-2.aws.neon.tech/neondb?sslmode=require...
 ```
+
+Y corré, desde la raíz del repo:
+
+```sh
+cd apps/api
+set -a && . ./.env.produccion && set +a
+npx prisma migrate deploy   # con DIRECT_URL: tiene que aplicar 1 migración
+npm run db:seed             # con DATABASE_URL: tiene que decir "Palabras base: 130."
+cd ../..
+```
+
+Esto prueba las dos cadenas antes de tocar Render. Las variables de la terminal tienen prioridad sobre `apps/api/.env`.
+
+### 3. Render: Blueprint
+
+1. En [dashboard.render.com](https://dashboard.render.com), **New → Blueprint**.
+2. Conectá GitHub y dale acceso al repo `JuanCruzSistemas/juego-pictionary`. Elegí la rama `main`.
+3. Render lee `render.yaml` y muestra dos servicios, `garabato-api` y `garabato`. Te pide los valores `sync: false`:
+   - `DATABASE_URL`: la cadena con pooling;
+   - `DIRECT_URL`: la cadena directa;
+   - `WEB_ORIGIN`: `https://garabato.onrender.com`.
+4. **Apply**. El primer build de cada servicio tarda unos minutos.
+
+### 4. Comprobar las URL
+
+1. En el panel de cada servicio, mirá la URL que le dio Render.
+2. Si no son exactamente `https://garabato-api.onrender.com` y `https://garabato.onrender.com`, seguí «Si una URL no es la esperada».
+3. Abrí `https://garabato-api.onrender.com/health`: tiene que responder `{"ok":true}`.
+4. Abrí `https://garabato.onrender.com`: tiene que mostrar «Abrí tu link para entrar».
+
+### 5. Crear la sala de producción
+
+```sh
+cd apps/api
+set -a && . ./.env.produccion && set +a
+npm run crear-sala -- --url https://garabato.onrender.com
+cd ../..
+```
+
+Imprime `https://garabato.onrender.com/s/<invitacion>`. Mandá ese link a cada persona por un canal privado: mientras quede un lugar, cualquiera con el link puede entrar. `npm run db:limpiar-salas` se niega a correr contra Neon a propósito.
+
+### 6. UptimeRobot
+
+En [uptimerobot.com](https://uptimerobot.com), **Add New Monitor**:
+
+- **Monitor type:** HTTP(s)
+- **URL:** `https://garabato-api.onrender.com/health`
+- **Monitoring interval:** 5 minutos
+
+Así la API no se duerme a los 15 minutos sin tráfico. Un solo servicio encendido todo el mes (unas 744 h) entra en las 750 h gratis de Render. `/health` no consulta la base: Neon se suspende sin uso, y la primera consulta tarda alrededor de un segundo más.
+
+### 7. Prueba final
+
+- Una partida completa con los dos celulares, por HTTPS. Ahora «Compartir link» y «Copiar link» funcionan.
+- En los logs de `garabato-api`: sin errores 500 ni avisos de `WEB_ORIGIN`.
+
+## Si una URL no es la esperada
+
+- **La API quedó en otra URL:** en el servicio `garabato` → **Environment**, cambiá `API_BASE` y hacé **Manual Deploy**, porque la variable se usa en el build. Para que quede en el repo, cambiala también en `render.yaml`. Actualizá el monitor de UptimeRobot.
+- **La web quedó en otra URL:** en el servicio `garabato-api` → **Environment**, cambiá `WEB_ORIGIN` y guardá con deploy. Usá esa URL en `crear-sala --url`.
+
+## Problemas comunes
+
+| Síntoma | Causa probable |
+| --- | --- |
+| La web muestra «Despertando el servidor…» un rato largo | La API estaba dormida (sin UptimeRobot) o arrancando después de un deploy. Tarda hasta un minuto. |
+| En la consola del navegador: «blocked by CORS policy» | `WEB_ORIGIN` no coincide con la URL de la web (barra final, http/https, sufijo de Render). |
+| Las llamadas van a `https://garabato.onrender.com/api/...` y dan 404 | El build de la web no tenía `API_BASE`: no debería pasar, porque en Render el build falla. |
+| `prisma migrate deploy` falla en el inicio | `DIRECT_URL` tiene la cadena con pooling, o falta. |
+| Error de conexión de `pg` con `channel_binding` | Probar la cadena sin `&channel_binding=require`, primero en el paso 2. |
+
+## Mantenimiento
+
+- **Cambiar la lista de palabras:** editar `palabras-base.ts`, commit y push, y correr `npm run db:seed` con `.env.produccion` como en el paso 2.
+- **Nueva migración:** `npm run db:migrate` en local, commit y push. Render la aplica al iniciar la API.
+- **Logs:** panel de Render → `garabato-api` → **Logs**.

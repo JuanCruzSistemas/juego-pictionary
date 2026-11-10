@@ -3,6 +3,7 @@ import type { HttpInterceptorFn } from '@angular/common/http';
 import { finalize, retry, tap, throwError, timer } from 'rxjs';
 import { ConexionService } from './conexion.service';
 import { servidorNoRespondio } from './errores';
+import { esDeLaApi } from './rutas';
 
 /** Después de esto sin respuesta, se avisa "Despertando el servidor…". */
 export const ESPERA_LENTA_MS = 2500;
@@ -16,7 +17,7 @@ const espera = (n: number) => Math.min(1000 * 2 ** (n - 1), 8000);
  * así nunca se manda dos veces algo sin que la persona lo pida.
  */
 export const conexionInterceptor: HttpInterceptorFn = (req, next) => {
-  if (!req.url.startsWith('/api/') && req.url !== '/health') return next(req);
+  if (!esDeLaApi(req.url)) return next(req);
   const conexion = inject(ConexionService);
 
   let lento = false;

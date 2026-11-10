@@ -40,3 +40,7 @@ Borra todas las salas con sus jugadores, turnos, dibujos, intentos y salteos, y 
 ```sh
 npm test
 ```
+
+## Producción
+
+Render (API y sitio estático, con `render.yaml`) y Neon. Ver `docs/produccion.md`.

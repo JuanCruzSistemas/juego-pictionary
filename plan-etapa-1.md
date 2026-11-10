@@ -201,4 +201,4 @@ Cada paso queda andando y se puede probar.
 
 ## 9. Producción
 
-Ver `docs/produccion.md`: con Neon, Prisma necesita `DATABASE_URL` con pooling y `DIRECT_URL` para las migraciones.
+Ver `docs/produccion.md`: Render con `render.yaml` (API `garabato-api` y sitio estático `garabato`, región Ohio), Neon en AWS us-east-2 y UptimeRobot a `/health`.
