@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ConexionService } from '../api/conexion.service';
 
-/** Aviso fijo arriba, en todas las pantallas, mientras el servidor despierta o no hay red. */
+/** Aviso de arriba, en todas las pantallas, mientras el servidor despierta o no hay red. Lo ubica App. */
 @Component({
   selector: 'app-aviso-conexion',
   template: `
@@ -18,14 +18,8 @@ import { ConexionService } from '../api/conexion.service';
   `,
   styles: `
     .contenedor {
-      position: fixed;
-      top: max(8px, env(safe-area-inset-top));
-      left: 0;
-      right: 0;
-      z-index: 200;
       display: flex;
       justify-content: center;
-      pointer-events: none;
     }
     .aviso {
       display: flex;

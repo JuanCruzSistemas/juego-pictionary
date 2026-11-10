@@ -39,3 +39,51 @@ h2 {
 .aviso {
   font-size: 14px;
 }
+
+/* Tarjetas extra (instalar; en el paso 5, avisos). Estilo punteado, como "Ella te dejó un dibujito" en Main. */
+.extra {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--hoja);
+  border: 2px dashed var(--birome);
+  border-radius: 14px;
+}
+
+/* La insignia de Avisos.dc.html. */
+.insignia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  height: 40px;
+  background: var(--resaltador);
+  border: 2px solid var(--birome);
+  border-radius: 50%;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.extra-texto {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.extra-titulo {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.extra-acciones {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.extra-acciones .btn-secundario {
+  min-height: 44px;
+}

@@ -18,6 +18,23 @@
         <app-compartir-link [url]="link()" />
       }
     </section>
+
+    @for (extra of extras(); track extra) {
+      @switch (extra) {
+        @case ('instalar') {
+          <section class="extra" aria-labelledby="titulo-instalar">
+            <span class="insignia" aria-hidden="true">G</span>
+            <div class="extra-texto">
+              <h2 id="titulo-instalar" class="extra-titulo">Instalá Garabato en tu celu</h2>
+              <div class="extra-acciones">
+                <button type="button" class="btn-secundario" (click)="instalacion.instalar()">Instalar</button>
+                <button type="button" class="enlace" (click)="instalacion.ahoraNo()">Ahora no</button>
+              </div>
+            </div>
+          </section>
+        }
+      }
+    }
     @if (error()) {
       <p class="aviso texto-suave" role="status">No pudimos actualizar. Volvemos a probar en unos segundos.</p>
     }
