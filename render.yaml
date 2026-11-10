@@ -30,6 +30,15 @@ services:
       # URL del sitio estático "garabato", sin barra final: único origen permitido por CORS.
       - key: WEB_ORIGIN
         sync: false
+      # Avisos push (etapa 3). Par VAPID propio de producción, distinto del local.
+      # Si falta alguna de las tres, la API arranca igual con los avisos apagados.
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      # mailto: con el mail de contacto para los servicios de push.
+      - key: VAPID_SUBJECT
+        sync: false
 
   # Web Angular como sitio estático.
   - type: web

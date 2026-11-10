@@ -20,6 +20,9 @@ El nombre `garabato` ya estaba tomado en Render, que le agregó el sufijo `-alw3
 | `DATABASE_URL` | `garabato-api` | Neon, cadena **con pooling** (host con `-pooler`) | `sync: false` |
 | `DIRECT_URL` | `garabato-api` | Neon, cadena **directa** (host sin `-pooler`) | `sync: false` |
 | `WEB_ORIGIN` | `garabato-api` | URL del sitio estático, sin barra final | `sync: false` |
+| `VAPID_PUBLIC_KEY` | `garabato-api` | Clave VAPID pública de producción | `sync: false` |
+| `VAPID_PRIVATE_KEY` | `garabato-api` | Clave VAPID privada de producción: secreta | `sync: false` |
+| `VAPID_SUBJECT` | `garabato-api` | `mailto:` con el mail de contacto | `sync: false` |
 | `API_BASE` | `garabato` (en el build) | URL de la API, sin barra final ni `/api` | valor fijo, editable en el panel |
 | `PORT` | `garabato-api` | La pone Render | no se define |
 
@@ -58,6 +61,21 @@ En local, con `docker-compose`, no hay pooler: las dos variables apuntan al mism
 
 - Reescritura `/*` → `/index.html`, para que `/s/...`, `/elegir`, `/dibujar`, etc. funcionen al recargar.
 - `Cache-Control: no-cache` en todo: el navegador revalida con ETag. Sin esto, después de un deploy un `index.html` viejo en caché pediría archivos `.js` que ya no existen y la app quedaría en blanco.
+
+### PWA y service worker (etapa 3)
+
+- La app se instala (manifest con orientación vertical) y el service worker guarda la app y las fuentes, nunca la API.
+- Cuando hay un deploy nuevo de la web, la app muestra **"Hay una versión nueva · Actualizar"**. No recarga sola: mientras tanto sigue la versión anterior, completa desde la caché.
+- `Cache-Control: no-cache` del sitio estático también cubre `ngsw.json` y `ngsw-worker.js`, así el service worker ve cada versión nueva.
+- **Plan de rescate:** si alguna vez llegara a producción un service worker roto, publicar el `safety-worker.js` de Angular en lugar de `ngsw-worker.js` (copiarlo de `node_modules/@angular/service-worker/safety-worker.js` al build). Desregistra el service worker en los dispositivos y la app vuelve a cargar de la red.
+
+### Avisos push (etapa 3)
+
+- Par VAPID **propio de producción**, distinto del local. Se genera con `npx web-push generate-vapid-keys` y se carga solo en el panel de Render: nunca en el repo ni en archivos.
+- `VAPID_SUBJECT` es `mailto:` con el mail de contacto: los servicios de push lo usan si necesitan avisar algo.
+- La web pide la clave pública a `GET /api/push/clave`. Si faltan claves, devuelve `null`, la web no ofrece avisos y el juego anda igual.
+- **Cambiar las claves:** invalida las suscripciones existentes. Cada dispositivo se vuelve a suscribir solo la próxima vez que abre la app, sin preguntar nada, porque el permiso ya estaba dado. Hasta entonces no le llegan avisos.
+- Si un servicio de push responde 404 o 410, la suscripción se borra sola. Otros errores quedan en el log de `garabato-api` como `[Avisos]`.
 
 ### Builds
 
@@ -145,7 +163,11 @@ En [uptimerobot.com](https://uptimerobot.com), **Add New Monitor**:
 
 Así la API no se duerme a los 15 minutos sin tráfico. Un solo servicio encendido todo el mes (unas 744 h) entra en las 750 h gratis de Render. `/health` no consulta la base: Neon se suspende sin uso, y la primera consulta tarda alrededor de un segundo más.
 
-### 7. Prueba final
+### 7. Avisos push
+
+En `garabato-api` → **Environment**, cargar `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` y `VAPID_SUBJECT`, y guardar con deploy. Comprobar que `https://garabato-api.onrender.com/api/push/clave` devuelva la clave pública.
+
+### 8. Prueba final
 
 - Una partida completa con los dos celulares, por HTTPS. Ahora «Compartir link» y «Copiar link» funcionan.
 - En los logs de `garabato-api`: sin errores 500 ni avisos de `WEB_ORIGIN`.
@@ -164,6 +186,19 @@ Así la API no se duerme a los 15 minutos sin tráfico. Un solo servicio encendi
 | Las llamadas van a `https://garabato-alw3.onrender.com/api/...` y dan 404 | El build de la web no tenía `API_BASE`: no debería pasar, porque en Render el build falla. |
 | `prisma migrate deploy` falla en el inicio | `DIRECT_URL` tiene la cadena con pooling, o falta. |
 | Error de conexión de `pg` con `channel_binding` | Probar la cadena sin `&channel_binding=require`, primero en el paso 2. |
+
+## Probar por HTTPS antes de pasar a `main`
+
+Push y la instalación necesitan HTTPS. En local:
+
+```sh
+npm run dev:api                          # con claves VAPID locales en apps/api/.env
+npm run build -w @garabato/web
+npm run servir-build -w @garabato/web    # sirve el build como Render, con /api a la API local
+cloudflared tunnel --url http://localhost:4300
+```
+
+La URL `https://….trycloudflare.com` cambia en cada corrida: hay que volver a suscribirse. Para ver el aviso de versión nueva, hacer otro build con algún cambio sin cerrar la app.
 
 ## Mantenimiento
 
