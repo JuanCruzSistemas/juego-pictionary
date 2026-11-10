@@ -1,6 +1,6 @@
 .pantalla {
   gap: 20px;
-  padding: 24px 20px;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
 }
 
 header {
@@ -91,4 +91,14 @@ h2 {
 .extra-cuerpo {
   font-size: 14px;
   line-height: 1.35;
+}
+
+@media (max-height: 700px) {
+  .pantalla {
+    gap: 12px;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+  h2 {
+    font-size: 26px;
+  }
 }

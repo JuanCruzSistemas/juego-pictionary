@@ -1,10 +1,16 @@
 /* La pantalla entra justa en el alto visible: nada scrollea mientras se dibuja. */
 .pantalla {
-  height: 100dvh;
-  min-height: 0;
   gap: 12px;
-  padding: 16px;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
   overflow: hidden;
+}
+
+/* Los controles no se achican: el lienzo toma el alto que queda (el lado es el mínimo con el ancho). */
+header,
+.colores,
+.herramientas,
+.pie {
+  flex: none;
 }
 
 header {
@@ -126,4 +132,14 @@ header {
   font-size: 14px;
   font-weight: 600;
   color: var(--texto-suave);
+}
+
+@media (max-height: 700px) {
+  .pantalla {
+    gap: 8px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  }
+  .consigna {
+    font-size: 20px;
+  }
 }

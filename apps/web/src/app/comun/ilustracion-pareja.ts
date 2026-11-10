@@ -14,8 +14,9 @@ import { Component } from '@angular/core';
     </svg>
   `,
   styles: `
-    :host { display: block; }
-    svg { display: block; width: 100%; max-width: 342px; height: auto; aspect-ratio: 342 / 220; }
+    /* Se achica si falta alto: el svg ocupa la altura que le quede y mantiene la proporción. */
+    :host { display: flex; justify-content: center; min-height: 0; }
+    svg { display: block; height: 100%; max-height: 220px; width: auto; max-width: 100%; aspect-ratio: 342 / 220; }
   `,
 })
 export class IlustracionPareja {}

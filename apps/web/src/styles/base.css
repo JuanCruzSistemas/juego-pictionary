@@ -51,13 +51,19 @@ p {
   background-size: 24px 24px;
 }
 
-/* Contenedor de cada pantalla: ocupa el alto visible y no se estira en pantallas anchas. */
+/*
+ * Contenedor de cada pantalla: mide exactamente el alto visible (100dvh, que en Android ya descuenta
+ * las barras del sistema y el teclado) y no se estira en pantallas anchas. Cada pantalla pone su parte
+ * flexible (ilustración, dibujo, lista) con min-height: 0 para que se achique, y los botones de abajo
+ * con flex: none para que siempre se vean. El overflow es el último recurso, para pantallas mínimas.
+ */
 .pantalla {
   display: flex;
   flex-direction: column;
   width: 100%;
   max-width: 480px;
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow-y: auto;
   margin: 0 auto;
 }
 

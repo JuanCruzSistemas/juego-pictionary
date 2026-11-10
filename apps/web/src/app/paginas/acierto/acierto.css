@@ -6,7 +6,13 @@
 
 .pantalla {
   gap: 20px;
-  padding: 40px 24px 28px;
+  padding: 40px 24px calc(28px + env(safe-area-inset-bottom));
+}
+
+.encabezado,
+.datos,
+.acciones {
+  flex: none;
 }
 
 .encabezado {
@@ -31,20 +37,20 @@ h1.chico {
   font-size: 32px;
 }
 
-/* Diseño: tarjeta de 300 px de alto, levemente torcida. */
-.tarjeta-dibujo {
+/*
+ * El dibujo toma el alto que queda: cuadrado, con el lado mínimo entre ancho y alto disponibles.
+ * El marco de DibujoVista hace de tarjeta: torcida y con sombra dura, como en el diseño.
+ */
+.zona-dibujo {
   display: flex;
-  height: 300px;
-  flex: none;
-  background: var(--hoja);
-  border: 2.5px solid var(--birome);
-  border-radius: var(--radio-tarjeta);
-  box-shadow: var(--sombra-tarjeta);
-  transform: rotate(-1.5deg);
+  flex: 1 1 auto;
+  min-height: 120px;
 }
 
 .vista {
   flex: 1 1 auto;
+  transform: rotate(-1.5deg);
+  filter: drop-shadow(4px 4px 0 var(--birome));
 }
 
 .datos {
@@ -84,4 +90,14 @@ h1.chico {
 .cargando {
   margin: auto;
   font-weight: 600;
+}
+
+@media (max-height: 700px) {
+  .pantalla {
+    gap: 12px;
+    padding: 20px 20px calc(16px + env(safe-area-inset-bottom));
+  }
+  h1 {
+    font-size: 38px;
+  }
 }

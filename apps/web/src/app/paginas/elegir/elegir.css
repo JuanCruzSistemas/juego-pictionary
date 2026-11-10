@@ -1,6 +1,6 @@
 .pantalla {
   gap: 20px;
-  padding: 24px 20px;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
 }
 
 .volver {
@@ -48,6 +48,7 @@ h1 {
 
 .acciones {
   display: flex;
+  flex: none;
   flex-direction: column;
   gap: 12px;
   margin-top: auto;
@@ -97,4 +98,25 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+@media (max-height: 700px) {
+  .pantalla {
+    gap: 12px;
+    padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+  }
+  h1 {
+    font-size: 26px;
+  }
+  .opciones {
+    gap: 8px;
+  }
+  .opcion {
+    min-height: 48px;
+    padding: 8px 14px;
+    font-size: 18px;
+  }
+  .acciones {
+    gap: 8px;
+  }
 }

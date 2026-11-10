@@ -1,6 +1,11 @@
 .pantalla {
   gap: 24px;
-  padding: 48px 24px 32px;
+  padding: 48px 24px calc(32px + env(safe-area-inset-bottom));
+}
+
+/* Lo único que se achica cuando falta alto: la ilustración. */
+app-ilustracion-pareja {
+  flex: 0 1 220px;
 }
 
 .logo {
@@ -24,7 +29,7 @@ h1 {
 
 .formulario {
   display: flex;
-  flex: 1 1 auto;
+  flex: 1 0 auto;
   flex-direction: column;
   gap: 24px;
 }
@@ -40,4 +45,17 @@ h1 {
   flex-direction: column;
   gap: 10px;
   margin-top: auto;
+}
+
+@media (max-height: 700px) {
+  .pantalla {
+    gap: 14px;
+    padding: 20px 20px calc(16px + env(safe-area-inset-bottom));
+  }
+  h1 {
+    font-size: 26px;
+  }
+  .formulario {
+    gap: 14px;
+  }
 }
