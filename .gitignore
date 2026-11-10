@@ -3,8 +3,12 @@ dist/
 .angular/
 coverage/
 *.tsbuildinfo
+# Secretos: cualquier archivo .env o con .env en el nombre (.env.produccion, produccion.env,
+# neon.env...), salvo la plantilla. Los secretos de producción van en apps/api/.env.produccion.
 .env
 .env.*
+*.env
+*.env.*
 !.env.example
 .DS_Store
 apps/api/src/generated/

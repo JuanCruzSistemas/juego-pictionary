@@ -90,13 +90,16 @@ Y corré, desde la raíz del repo:
 
 ```sh
 cd apps/api
-set -a && . ./.env.produccion && set +a
-npx prisma migrate deploy   # con DIRECT_URL: tiene que aplicar 1 migración
-npm run db:seed             # con DATABASE_URL: tiene que decir "Palabras base: 130."
+env $(grep -E '^(DATABASE_URL|DIRECT_URL)=' .env.produccion | xargs) npx prisma migrate deploy   # DIRECT_URL: aplica 1 migración
+env $(grep -E '^(DATABASE_URL|DIRECT_URL)=' .env.produccion | xargs) npm run db:seed             # DATABASE_URL: "Palabras base: 130."
 cd ../..
 ```
 
-Esto prueba las dos cadenas antes de tocar Render. Las variables de la terminal tienen prioridad sobre `apps/api/.env`.
+Esto prueba las dos cadenas antes de tocar Render. Las variables pasadas así tienen prioridad sobre `apps/api/.env`.
+
+**No uses `set -a && . ./.env.produccion`:** las cadenas de Neon traen `&channel_binding=require` sin comillas, y al cargarlas así la shell toma el `&` como «mandar al fondo» y corta la cadena. `env $(…)` no lo interpreta.
+
+`pg` avisa que `sslmode=require` se trata como `verify-full`, la verificación completa del certificado. Hoy es lo que pasa y está bien. Para que no avise, se puede cambiar a `sslmode=verify-full` en las dos cadenas, en `.env.produccion` y en Render.
 
 ### 3. Render: Blueprint
 
@@ -119,8 +122,7 @@ Esto prueba las dos cadenas antes de tocar Render. Las variables de la terminal 
 
 ```sh
 cd apps/api
-set -a && . ./.env.produccion && set +a
-npm run crear-sala -- --url https://garabato.onrender.com
+env $(grep -E '^(DATABASE_URL|DIRECT_URL)=' .env.produccion | xargs) npm run crear-sala -- --url https://garabato.onrender.com
 cd ../..
 ```
 
@@ -159,5 +161,6 @@ Así la API no se duerme a los 15 minutos sin tráfico. Un solo servicio encendi
 ## Mantenimiento
 
 - **Cambiar la lista de palabras:** editar `palabras-base.ts`, commit y push, y correr `npm run db:seed` con `.env.produccion` como en el paso 2.
+- **Secretos:** solo en `apps/api/.env.produccion` y en el panel de Render. Git ignora cualquier archivo con `.env` en el nombre, pero no un `.md` o `.txt` suelto: antes de cada commit, revisar `git status` con los archivos sin trackear.
 - **Nueva migración:** `npm run db:migrate` en local, commit y push. Render la aplica al iniciar la API.
 - **Logs:** panel de Render → `garabato-api` → **Logs**.
