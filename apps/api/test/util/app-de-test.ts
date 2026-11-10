@@ -6,6 +6,7 @@ import { AppModule } from '../../src/app.module.js';
 import { configurarApp } from '../../src/configurar.js';
 import { PrismaService } from '../../src/db/prisma.service.js';
 import { Reloj } from '../../src/comun/reloj.js';
+import { ConfigPush } from '../../src/push/config.js';
 
 /** Reloj que solo avanza cuando el test lo pide. */
 export class RelojDeTest extends Reloj {
@@ -25,12 +26,14 @@ export class RelojDeTest extends Reloj {
 
 export type AppDeTest = { app: INestApplication<App>; prisma: PrismaService; reloj: RelojDeTest };
 
-export async function crearAppDeTest(): Promise<AppDeTest> {
+/** Claves VAPID de prueba: sin ellas, los avisos quedan apagados. */
+export type OpcionesDeTest = { push?: Partial<ConfigPush> };
+
+export async function crearAppDeTest(opciones: OpcionesDeTest = {}): Promise<AppDeTest> {
   const reloj = new RelojDeTest();
-  const modulo = await Test.createTestingModule({ imports: [AppModule] })
-    .overrideProvider(Reloj)
-    .useValue(reloj)
-    .compile();
+  let constructor = Test.createTestingModule({ imports: [AppModule] }).overrideProvider(Reloj).useValue(reloj);
+  if (opciones.push) constructor = constructor.overrideProvider(ConfigPush).useValue(opciones.push);
+  const modulo = await constructor.compile();
   const app = modulo.createNestApplication<NestExpressApplication>();
   configurarApp(app);
   await app.init();

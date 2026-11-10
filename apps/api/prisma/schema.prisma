@@ -53,6 +53,7 @@ model Jugador {
   dibujos       Dibujo[]
   intentos      Intento[]
   salteos       Salteo[]
+  suscripciones SuscripcionPush[]
 
   @@unique([salaId, lugar])
   @@map("jugadores")
@@ -141,4 +142,22 @@ model Palabra {
 
   @@index([salaId])
   @@map("palabras")
+}
+
+/// Etapa 3. Una suscripción de push por dispositivo y navegador; un jugador puede tener varias.
+model SuscripcionPush {
+  id            String   @id @default(uuid())
+  jugadorId     String
+  /// URL del servicio de push del navegador. Identifica al dispositivo: si cambia de sala, pasa al jugador nuevo.
+  endpoint      String   @unique
+  /// Claves del navegador para cifrar el contenido del aviso.
+  p256dh        String
+  auth          String
+  creadaEn      DateTime @default(now())
+  actualizadaEn DateTime @updatedAt
+
+  jugador Jugador @relation(fields: [jugadorId], references: [id], onDelete: Cascade)
+
+  @@index([jugadorId])
+  @@map("suscripciones_push")
 }

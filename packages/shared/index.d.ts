@@ -127,6 +127,19 @@ export type ResumenTurno = {
   adivine: boolean;
 };
 
+/** GET /api/push/clave. `clavePublica` es null si los avisos están apagados en el servidor. */
+export type ClavePush = { clavePublica: string | null };
+
+/** POST /api/push/suscripciones: lo que da PushSubscription.toJSON() en el navegador. */
+export type SuscripcionBody = {
+  endpoint: string;
+  expirationTime?: number | null;
+  keys: { p256dh: string; auth: string };
+};
+
+/** DELETE /api/push/suscripciones */
+export type DesuscripcionBody = { endpoint: string };
+
 /** GET /api/estado */
 export type Estado = {
   yo: JugadorPublico;
