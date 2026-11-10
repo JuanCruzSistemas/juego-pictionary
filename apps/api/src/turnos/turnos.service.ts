@@ -11,6 +11,8 @@ import type {
   TurnoActual,
 } from '@garabato/shared';
 import { acierta } from './acierto.js';
+import { NotificacionesService } from '../push/notificaciones.service.js';
+import { avisos } from '../push/avisos.js';
 import { Prisma, type Jugador, type Turno } from '../generated/prisma/client.js';
 import { PrismaService } from '../db/prisma.service.js';
 import { Reloj } from '../comun/reloj.js';
@@ -40,6 +42,7 @@ export class TurnosService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly reloj: Reloj,
+    private readonly notificaciones: NotificacionesService,
   ) {}
 
   /** Crea un turno con sus 3 opciones ya sorteadas. Se llama dentro de una transacción. */
@@ -138,7 +141,7 @@ export class TurnosService {
   async saltear(yo: Jugador, turnoId: string): Promise<SalteoRespuesta> {
     const cerrado = () => turnoCerrado('Este turno ya no se puede saltear.');
     try {
-      return await this.prisma.$transaction(async (tx) => {
+      const { respuesta, salaId, avisarA } = await this.prisma.$transaction(async (tx) => {
         const turno = await this.turnoQueDibujo(yo, turnoId, tx);
         if (!esAbierto(turno)) throw cerrado();
         if ((await this.salteosDe(yo.id, tx)).quedan === 0) throw sinSalteos();
@@ -156,8 +159,11 @@ export class TurnosService {
           dibujaId: turno.adivinaId,
           adivinaId: yo.id,
         });
-        return { salteos: await this.salteosDe(yo.id, tx) };
+        return { respuesta: { salteos: await this.salteosDe(yo.id, tx) }, salaId: turno.salaId, avisarA: turno.adivinaId };
       });
+      // Después de la transacción: un aviso que falla no afecta al salteo.
+      this.notificaciones.avisar(avisarA, salaId, avisos.salteo(yo.nombre));
+      return respuesta;
     } catch (e) {
       // Dos pedidos que llegan juntos y chocan en las restricciones únicas: el segundo no saltea.
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') throw cerrado();
@@ -170,6 +176,8 @@ export class TurnosService {
    * ya se mandó (un reintento, un doble toque), no lo reemplaza y responde igual que la primera vez.
    */
   async enviarDibujo(yo: Jugador, turnoId: string, trazos: Stroke[]): Promise<EnviarDibujoRespuesta> {
+    /** Si este pedido guardó el dibujo: a quién avisar. Un reintento no guarda nada y no avisa. */
+    let guardado: { salaId: string; adivinaId: string } | null = null;
     try {
       await this.prisma.$transaction(async (tx) => {
         const turno = await this.turnoQueDibujo(yo, turnoId, tx);
@@ -186,10 +194,14 @@ export class TurnosService {
         await tx.dibujo.create({
           data: { turnoId: turno.id, autorId: yo.id, trazos, duracionMs: duracionDe(trazos), creadoEn: this.reloj.ahora() },
         });
+        guardado = { salaId: turno.salaId, adivinaId: turno.adivinaId };
       });
     } catch (e) {
+      guardado = null;
       if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002')) throw e;
     }
+    const aviso = guardado as { salaId: string; adivinaId: string } | null;
+    if (aviso) this.notificaciones.avisar(aviso.adivinaId, aviso.salaId, avisos.dibujo(yo.nombre));
 
     const turno = await this.prisma.turno.findUniqueOrThrow({
       where: { id: turnoId },
@@ -224,7 +236,7 @@ export class TurnosService {
    * La palabra solo sale en la respuesta cuando acierta.
    */
   async probar(yo: Jugador, turnoId: string, texto: string): Promise<IntentoRespuesta> {
-    return this.prisma.$transaction(async (tx) => {
+    const { respuesta, avisarA } = await this.prisma.$transaction(async (tx) => {
       // Bloquea el turno: dos respuestas que llegan juntas se procesan de a una,
       // así una repetida no se guarda dos veces y un acierto doble no crea dos turnos.
       await tx.$queryRaw`SELECT id FROM turnos WHERE id = ${turnoId} FOR UPDATE`;
@@ -236,7 +248,7 @@ export class TurnosService {
       const previos = await this.listarIntentos(tx, turno.id);
       const clave = normalizar(texto);
       if (previos.some((i) => normalizar(i.texto) === clave)) {
-        return { resultado: 'repetido', intentos: previos };
+        return { respuesta: { resultado: 'repetido', intentos: previos } satisfies IntentoRespuesta, avisarA: null };
       }
 
       const correcto = acierta(texto, turno.palabra);
@@ -261,9 +273,17 @@ export class TurnosService {
 
       const intentos = await this.listarIntentos(tx, turno.id);
       return correcto
-        ? { resultado: 'correcto', intentos, palabra: turno.palabra }
-        : { resultado: 'incorrecto', intentos };
+        ? {
+            respuesta: { resultado: 'correcto', intentos, palabra: turno.palabra } satisfies IntentoRespuesta,
+            avisarA: { jugadorId: turno.dibujaId, salaId: turno.salaId, palabra: turno.palabra, turnoId: turno.id },
+          }
+        : { respuesta: { resultado: 'incorrecto', intentos } satisfies IntentoRespuesta, avisarA: null };
     });
+    // Después de la transacción: un aviso que falla no afecta al acierto.
+    if (avisarA) {
+      this.notificaciones.avisar(avisarA.jugadorId, avisarA.salaId, avisos.acierto(avisarA.palabra, avisarA.turnoId));
+    }
+    return respuesta;
   }
 
   /**

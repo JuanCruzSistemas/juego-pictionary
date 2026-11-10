@@ -7,6 +7,30 @@ import { configurarApp } from '../../src/configurar.js';
 import { PrismaService } from '../../src/db/prisma.service.js';
 import { Reloj } from '../../src/comun/reloj.js';
 import { ConfigPush } from '../../src/push/config.js';
+import { EnviadorPush, type Destino, type OpcionesDeEnvio } from '../../src/push/enviador.js';
+import { NotificacionesService } from '../../src/push/notificaciones.service.js';
+
+/** Enviador de push falso: guarda lo que se mandó y puede simular respuestas del servicio de push. */
+export class EnviadorDeTest extends EnviadorPush {
+  enviados: { endpoint: string; payload: { notification: { title: string; body: string; data: { onActionClick: { default: { url: string } } } } }; opciones: OpcionesDeEnvio }[] = [];
+  /** Qué hacer con cada endpoint: un código HTTP de error, 'colgado' (no responde nunca) o 'tira' (error sin código). */
+  respuestas = new Map<string, number | 'colgado' | 'tira'>();
+
+  async enviar(destino: Destino, payload: string, opciones: OpcionesDeEnvio): Promise<void> {
+    this.enviados.push({ endpoint: destino.endpoint, payload: JSON.parse(payload), opciones });
+    const r = this.respuestas.get(destino.endpoint);
+    if (r === 'colgado') return new Promise(() => {});
+    if (r === 'tira') throw new Error('se cayó la red');
+    if (typeof r === 'number') throw Object.assign(new Error(`HTTP ${r}`), { statusCode: r });
+  }
+}
+
+export const PUSH_ACTIVO: Partial<ConfigPush> = {
+  clavePublica: 'PUBLICA',
+  clavePrivada: 'PRIVADA',
+  subject: 'mailto:prueba@ejemplo.com',
+  activos: true,
+};
 
 /** Reloj que solo avanza cuando el test lo pide. */
 export class RelojDeTest extends Reloj {
@@ -24,20 +48,40 @@ export class RelojDeTest extends Reloj {
   }
 }
 
-export type AppDeTest = { app: INestApplication<App>; prisma: PrismaService; reloj: RelojDeTest };
+export type AppDeTest = {
+  app: INestApplication<App>;
+  prisma: PrismaService;
+  reloj: RelojDeTest;
+  enviador: EnviadorDeTest;
+  /** Espera a que terminen los avisos que salieron en segundo plano. */
+  esperarAvisos: () => Promise<void>;
+};
 
 /** Claves VAPID de prueba: sin ellas, los avisos quedan apagados. */
 export type OpcionesDeTest = { push?: Partial<ConfigPush> };
+// En todos los tests se usa el enviador falso: nunca se manda nada de verdad.
 
 export async function crearAppDeTest(opciones: OpcionesDeTest = {}): Promise<AppDeTest> {
   const reloj = new RelojDeTest();
-  let constructor = Test.createTestingModule({ imports: [AppModule] }).overrideProvider(Reloj).useValue(reloj);
+  const enviador = new EnviadorDeTest();
+  let constructor = Test.createTestingModule({ imports: [AppModule] })
+    .overrideProvider(Reloj)
+    .useValue(reloj)
+    .overrideProvider(EnviadorPush)
+    .useValue(enviador);
   if (opciones.push) constructor = constructor.overrideProvider(ConfigPush).useValue(opciones.push);
   const modulo = await constructor.compile();
   const app = modulo.createNestApplication<NestExpressApplication>();
   configurarApp(app);
   await app.init();
-  return { app: app as unknown as INestApplication<App>, prisma: app.get(PrismaService), reloj };
+  const notificaciones = app.get(NotificacionesService);
+  return {
+    app: app as unknown as INestApplication<App>,
+    prisma: app.get(PrismaService),
+    reloj,
+    enviador,
+    esperarAvisos: () => notificaciones.esperarEnvios(),
+  };
 }
 
 /**
