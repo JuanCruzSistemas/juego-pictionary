@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { avisos, payloadDe, topicDe } from './avisos.js';
 
 describe('avisos', () => {
@@ -44,10 +45,29 @@ describe('payloadDe', () => {
   });
 });
 
-describe('topicDe', () => {
-  it('el uuid de la sala sin guiones: base64url y 32 caracteres', () => {
-    const t = topicDe('3f2a9c1e-7b4d-4e8a-9f10-2c3d4e5f6a7b');
+describe('topicDe (header Topic de RFC 8030: hasta 32 caracteres base64url)', () => {
+  const VALIDO = /^[A-Za-z0-9_-]{1,32}$/;
+
+  it('un uuid (36 caracteres) queda sin guiones: 32 caracteres hexadecimales', () => {
+    const id = '3f2a9c1e-7b4d-4e8a-9f10-2c3d4e5f6a7b';
+    expect(id).toHaveLength(36);
+    const t = topicDe(id);
     expect(t).toBe('3f2a9c1e7b4d4e8a9f102c3d4e5f6a7b');
-    expect(t).toMatch(/^[A-Za-z0-9_-]{1,32}$/);
+    expect(t).toHaveLength(32);
+  });
+
+  it('mil uuid al azar: todos con largo de 1 a 32 y alfabeto base64url, y distintos', () => {
+    const topics = Array.from({ length: 1000 }, () => topicDe(randomUUID()));
+    for (const t of topics) expect(t).toMatch(VALIDO);
+    expect(new Set(topics).size).toBe(1000);
+  });
+
+  it.each([
+    ['más largo que un uuid', 'a'.repeat(80)],
+    ['con caracteres fuera de base64url', 'sala:1/2+3=4'],
+    ['con espacios y tildes', 'sala de Juancho ñ'],
+  ])('un id %s igual da un topic válido (por hash), y siempre el mismo', (_, id) => {
+    expect(topicDe(id)).toMatch(VALIDO);
+    expect(topicDe(id)).toBe(topicDe(id));
   });
 });

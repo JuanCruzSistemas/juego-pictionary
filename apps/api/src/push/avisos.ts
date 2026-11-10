@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 /** Un aviso, antes de convertirlo en el payload que entiende el service worker de Angular. */
 export type Aviso = { titulo: string; cuerpo: string; url: string };
 
@@ -47,10 +48,17 @@ export function payloadDe(aviso: Aviso, salaId: string): string {
   });
 }
 
+/** RFC 8030: el header Topic admite hasta 32 caracteres del alfabeto base64url. */
+const TOPIC_VALIDO = /^[A-Za-z0-9_-]{1,32}$/;
+
 /**
  * Topic de push: el servicio de push reemplaza un aviso todavía no entregado por el nuevo con el
- * mismo topic. Tiene que ser base64url de hasta 32 caracteres: el uuid de la sala sin guiones.
+ * mismo topic. Para un uuid (36 caracteres) es el uuid sin guiones: 32 caracteres hexadecimales.
+ * Si el id no diera un topic válido, se usa su SHA-256 en base64url recortado a 32: FCM rechaza
+ * con 400 un topic más largo o con otros caracteres.
  */
 export function topicDe(salaId: string): string {
-  return salaId.replace(/-/g, '').slice(0, 32);
+  const sinGuiones = salaId.replace(/-/g, '');
+  if (TOPIC_VALIDO.test(sinGuiones)) return sinGuiones;
+  return createHash('sha256').update(salaId).digest('base64url').slice(0, 32);
 }
