@@ -86,15 +86,22 @@ describe('POST y GET /api/turnos/:id/dibujo', () => {
     expect((await ana.get(`/api/turnos/${turnoId}/dibujo`)).body.trazos).toEqual(trazos);
   });
 
-  it('rechaza con 413 y un mensaje claro un body de más de 1 MB', async () => {
-    const enorme = [{ color: '#1B2A7A', width: 0.02, points: [{ x: 0.5, y: 0.5, t: 0 }], relleno: 'x'.repeat(1.1 * 1024 * 1024) }];
+  it('acepta un dibujo de 353 trazos y 3 MB', async () => {
+    const trazos = dibujoDe(90_000).concat(Array.from({ length: 173 }, () => ({ color: '#8A4B2A', width: 0.01, points: [{ x: 0.5, y: 0.5, t: 0 }] })));
+    expect(trazos.length).toBe(353);
+    expect(Buffer.byteLength(JSON.stringify({ trazos })) / 1024 / 1024).toBeGreaterThan(3);
+    await enviar(juan, trazos).expect(200);
+  });
+
+  it('rechaza con 413 y un mensaje claro un body de más de 5 MB', async () => {
+    const enorme = [{ color: '#1B2A7A', width: 0.02, points: [{ x: 0.5, y: 0.5, t: 0 }], relleno: 'x'.repeat(5.5 * 1024 * 1024) }];
     const r = await enviar(juan, enorme).expect(413);
     expect(r.body).toEqual({ codigo: 'datos_invalidos', mensaje: 'El dibujo es demasiado grande para mandarlo.' });
   });
 
   it.each([
     ['sin trazos', [], 'El dibujo no tiene trazos.'],
-    ['20.001 puntos', dibujoDe(20_001), 'El dibujo tiene más de 20.000 puntos.'],
+    ['100.001 puntos', dibujoDe(100_001), 'El dibujo tiene más de 100.000 puntos.'],
     ['color fuera de la paleta', [{ color: 'red', width: 0.02, points: [{ x: 0, y: 0, t: 0 }] }], 'Trazo 1: el color "red" no es de la paleta.'],
     ['x fuera de rango', [{ color: '#111111', width: 0.02, points: [{ x: 2, y: 0, t: 0 }] }], 'Trazo 1, punto 1: x tiene que estar entre 0 y 1.'],
   ])('rechaza con 400: %s', async (_, trazos, mensaje) => {

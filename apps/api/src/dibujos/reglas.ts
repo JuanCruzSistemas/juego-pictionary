@@ -15,11 +15,12 @@ export const COLORES_PERMITIDOS: ReadonlySet<string> = new Set([
 export const GROSOR_MINIMO = 0.01;
 export const GROSOR_MAXIMO = 0.08;
 
-export const TRAZOS_MAXIMOS = 200;
-export const PUNTOS_MAXIMOS = 20_000;
+/** Un dibujo real con sombreado tuvo 353 trazos: el límite deja mucho margen. */
+export const TRAZOS_MAXIMOS = 2_000;
+export const PUNTOS_MAXIMOS = 100_000;
 
-/** Tamaño máximo del body JSON. El peor caso medido (240 Hz, dedo rápido) pesa ~110 KB. */
-export const LIMITE_DEL_BODY = '1mb';
+/** Tamaño máximo del body JSON: ~34 bytes por punto × 100.000 puntos ≈ 3,4 MB, con margen. */
+export const LIMITE_DEL_BODY = '5mb';
 
 const coma = (n: number) => String(n).replace('.', ',');
 const esNumero = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);

@@ -17,7 +17,7 @@ describe('problemaDelDibujo', () => {
   it.each([
     ['sin lista', undefined, 'Falta la lista de trazos.'],
     ['sin trazos', [], 'El dibujo no tiene trazos.'],
-    ['201 trazos', Array.from({ length: 201 }, () => trazo()), 'El dibujo tiene 201 trazos y el máximo es 200.'],
+    ['2.001 trazos', Array.from({ length: 2001 }, () => trazo()), 'El dibujo tiene 2001 trazos y el máximo es 2000.'],
     ['color fuera de la paleta', [trazo({ color: '#FF00FF' })], 'Trazo 1: el color "#FF00FF" no es de la paleta.'],
     ['color en minúsculas', [trazo({ color: '#1b2a7a' })], 'Trazo 1: el color "#1b2a7a" no es de la paleta.'],
     ['grosor muy fino', [trazo(), trazo({ width: 0.005 })], 'Trazo 2: el grosor tiene que estar entre 0,01 y 0,08.'],
@@ -35,10 +35,14 @@ describe('problemaDelDibujo', () => {
     expect(problemaDelDibujo(trazos)).toBe(mensaje);
   });
 
-  it('acepta 20.000 puntos y rechaza 20.001', () => {
+  it('acepta 100.000 puntos y rechaza 100.001', () => {
     const conPuntos = (n: number) => [trazo({ points: Array.from({ length: n }, (_, i) => punto(0.5, 0.5, i)) })];
     expect(problemaDelDibujo(conPuntos(PUNTOS_MAXIMOS))).toBeNull();
-    expect(problemaDelDibujo(conPuntos(PUNTOS_MAXIMOS + 1))).toBe('El dibujo tiene más de 20.000 puntos.');
+    expect(problemaDelDibujo(conPuntos(PUNTOS_MAXIMOS + 1))).toBe('El dibujo tiene más de 100.000 puntos.');
+  });
+
+  it('acepta un dibujo con sombreado de 353 trazos', () => {
+    expect(problemaDelDibujo(Array.from({ length: 353 }, () => trazo()))).toBeNull();
   });
 
   it('el t es creciente dentro de cada trazo, no entre trazos', () => {
