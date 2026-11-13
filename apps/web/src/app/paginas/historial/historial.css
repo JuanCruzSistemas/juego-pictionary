@@ -1,0 +1,99 @@
+.pantalla {
+  gap: 16px;
+  padding: 24px 20px 0;
+  overflow: hidden;
+}
+
+header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.volver {
+  display: flex;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--birome);
+}
+
+h1 {
+  font-size: 28px;
+}
+
+.filtros {
+  display: grid;
+  flex: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.filtro {
+  min-height: 44px;
+  background: var(--hoja);
+  color: var(--birome);
+  border: 2px solid var(--birome);
+  border-radius: 12px;
+  font-family: var(--fuente-texto);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filtro[aria-pressed='true'] {
+  background: var(--resaltador);
+  font-weight: 700;
+}
+
+/* La lista es lo único que scrollea: el encabezado y los filtros quedan quietos. */
+.contenido {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+}
+
+.grilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--birome);
+  text-decoration: none;
+}
+
+.miniatura {
+  aspect-ratio: 1;
+}
+
+.nombre {
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+.detalle {
+  font-size: 13px;
+}
+
+.mas {
+  align-self: center;
+  min-width: 160px;
+}
+
+.vacio {
+  padding-top: 24px;
+  text-align: center;
+}

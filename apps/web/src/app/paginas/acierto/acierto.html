@@ -29,10 +29,15 @@
     </div>
 
     <div class="acciones">
-      @if (r.adivine) {
-        <a routerLink="/elegir" replaceUrl class="btn-principal btn-birome">Ahora te toca dibujar</a>
+      @if (desde() === 'historial') {
+        <a routerLink="/historial" replaceUrl class="btn-principal btn-birome">Volver al historial</a>
       } @else {
-        <a routerLink="/" replaceUrl class="btn-principal btn-birome">Volver al inicio</a>
+        @if (r.adivine) {
+          <a routerLink="/elegir" replaceUrl class="btn-principal btn-birome">Ahora te toca dibujar</a>
+        } @else {
+          <a routerLink="/" replaceUrl class="btn-principal btn-birome">Volver al inicio</a>
+        }
+        <a routerLink="/historial" class="enlace">Ver historial</a>
       }
     </div>
   } @else if (error(); as e) {

@@ -1,0 +1,51 @@
+<main class="pantalla">
+  <header>
+    <a routerLink="/" class="volver" aria-label="Volver al inicio">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+    </a>
+    <h1 class="titulo">Historial</h1>
+  </header>
+
+  <div class="filtros" role="group" aria-label="Filtrar dibujos">
+    @for (f of filtros; track f.valor) {
+      <button type="button" class="filtro" [attr.aria-pressed]="filtro() === f.valor" (click)="elegir(f.valor)">
+        {{ f.texto }}
+      </button>
+    }
+  </div>
+
+  <div class="contenido">
+    @if (items(); as lista) {
+      @if (lista.length > 0) {
+        <ul class="grilla">
+          @for (i of lista; track i.id) {
+            <li>
+              <a class="item"
+                [routerLink]="i.tipo === 'juego' ? ['/acierto', i.id] : ['/recibido', i.id]"
+                [queryParams]="i.tipo === 'juego' ? { desde: 'historial' } : null">
+                <app-dibujo-vista class="miniatura" [trazos]="i.trazos"
+                  [descripcion]="i.tipo === 'juego' ? 'Dibujo de ' + i.palabra : 'Dibujo libre de ' + i.autor" />
+                <strong class="nombre">{{ i.tipo === 'juego' ? i.palabra : 'Dibujo libre' }}</strong>
+                <span class="detalle texto-suave">{{ detalle(i) }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+        @if (siguiente()) {
+          <button type="button" class="btn-secundario mas" [disabled]="cargando()" (click)="cargar(false)">
+            {{ cargando() ? 'Cargando…' : 'Ver más' }}
+          </button>
+        }
+      } @else {
+        <p class="texto-suave vacio">Todavía no hay dibujos acá.</p>
+      }
+    } @else if (!error()) {
+      <p class="texto-suave" role="status">Cargando…</p>
+    }
+    @if (error(); as e) {
+      <p class="mensaje-error" role="alert">{{ e }}</p>
+      <button type="button" class="btn-secundario" [disabled]="cargando()" (click)="cargar(items() === null)">Probar de nuevo</button>
+    }
+  </div>
+</main>

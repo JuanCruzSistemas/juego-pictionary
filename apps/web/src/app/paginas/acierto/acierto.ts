@@ -21,6 +21,8 @@ export class AciertoPage implements OnInit {
 
   /** Viene de la ruta /acierto/:turnoId. */
   readonly turnoId = input.required<string>();
+  /** ?desde=historial: se abrió desde el historial, así que vuelve ahí y no ofrece seguir jugando. */
+  readonly desde = input<string>();
 
   protected readonly resumen = signal<ResumenTurno | null>(null);
   protected readonly error = signal<string | null>(null);

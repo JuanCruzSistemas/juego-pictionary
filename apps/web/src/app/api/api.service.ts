@@ -12,6 +12,8 @@ import type {
   EnviarDibujoRespuesta,
   EntrarBody,
   EntrarRespuesta,
+  FiltroHistorial,
+  PaginaHistorial,
   Estado,
   IntentoPublico,
   IntentoRespuesta,
@@ -83,6 +85,12 @@ export class ApiService {
 
   quitarPalabra(id: string) {
     return this.http.delete<PalabraPropia[]>(rutaApi(`palabras/${encodeURIComponent(id)}`));
+  }
+
+  historial(filtro: FiltroHistorial, antes: string | null) {
+    const params: Record<string, string> = { filtro };
+    if (antes) params['antes'] = antes;
+    return this.http.get<PaginaHistorial>(rutaApi('historial'), { params });
   }
 
   rendirse(turnoId: string) {

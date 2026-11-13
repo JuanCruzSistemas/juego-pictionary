@@ -8,8 +8,9 @@ import { SalasModule } from './salas/salas.module.js';
 import { EstadoModule } from './estado/estado.module.js';
 import { LibresModule } from './libres/libres.module.js';
 import { PalabrasModule } from './palabras/palabras.module.js';
+import { HistorialModule } from './historial/historial.module.js';
 
 @Module({
-  imports: [PrismaModule, RelojModule, TurnosModule, PushModule, HealthModule, SalasModule, EstadoModule, LibresModule, PalabrasModule],
+  imports: [PrismaModule, RelojModule, TurnosModule, PushModule, HealthModule, SalasModule, EstadoModule, LibresModule, PalabrasModule, HistorialModule],
 })
 export class AppModule {}

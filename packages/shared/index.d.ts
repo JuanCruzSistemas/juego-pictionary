@@ -192,6 +192,38 @@ export type Racha = {
   hoy: boolean;
 };
 
+/** Un dibujo del historial: de un turno terminado (adivinado o rendido) o libre. */
+export type ItemHistorial =
+  | {
+      tipo: 'juego';
+      /** Id del turno: su resumen está en /acierto/:id. */
+      id: string;
+      palabra: string;
+      /** Nombre de quien dibujó. */
+      autor: string;
+      /** true si lo dibujó quien pide. */
+      mio: boolean;
+      resultado: 'adivinado' | 'rendido';
+      intentos: number;
+      /** ISO 8601: cuándo se adivinó o, si se rindieron, cuándo se mandó. */
+      fecha: string;
+      trazos: Stroke[];
+    }
+  | {
+      tipo: 'libre';
+      /** Id del dibujo: se abre en /recibido/:id. */
+      id: string;
+      autor: string;
+      mio: boolean;
+      fecha: string;
+      trazos: Stroke[];
+    };
+
+export type FiltroHistorial = 'todos' | 'juego' | 'libres';
+
+/** GET /api/historial?filtro=&antes=. `siguiente` es el `antes` de la próxima página, o null si no hay más. */
+export type PaginaHistorial = { items: ItemHistorial[]; siguiente: string | null };
+
 /** GET /api/estado */
 export type Estado = {
   yo: JugadorPublico;

@@ -41,10 +41,16 @@
     }
 
     @if (estado()?.otro) {
-      <a routerLink="/libre" class="libre-boton">
-        <strong>Dibujo libre</strong>
-        <span class="texto-suave">Dejale un dibujo a {{ estado()?.otro?.nombre }}</span>
-      </a>
+      <nav class="botones" aria-label="Más">
+        <a routerLink="/libre" class="libre-boton">
+          <strong>Dibujo libre</strong>
+          <span class="texto-suave">Dejale uno a {{ estado()?.otro?.nombre }}</span>
+        </a>
+        <a routerLink="/historial" class="libre-boton">
+          <strong>Historial</strong>
+          <span class="texto-suave">Todos sus dibujos</span>
+        </a>
+      </nav>
     }
 
     @for (extra of extras(); track extra) {
