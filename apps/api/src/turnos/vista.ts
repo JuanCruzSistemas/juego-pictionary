@@ -6,7 +6,7 @@ import type { Turno } from '../generated/prisma/client.js';
  * Es el único lugar que decide qué campos salen: quien adivina nunca recibe la palabra ni las opciones.
  */
 export function vistaDelTurno(turno: Turno, jugadorId: string, intentos: number): TurnoActual {
-  if (turno.estado === 'adivinado' || turno.estado === 'salteado') {
+  if (turno.estado === 'adivinado' || turno.estado === 'salteado' || turno.estado === 'rendido') {
     throw new Error(`El turno ${turno.id} está cerrado y no puede ser el actual.`);
   }
   const base = { id: turno.id, numero: turno.numero, estado: turno.estado, intentos };
@@ -22,6 +22,6 @@ export function vistaDelTurno(turno: Turno, jugadorId: string, intentos: number)
 }
 
 export function vistaDelAnterior(turno: Turno | undefined, jugadorId: string): TurnoAnterior | null {
-  if (!turno || (turno.estado !== 'adivinado' && turno.estado !== 'salteado')) return null;
+  if (!turno || (turno.estado !== 'adivinado' && turno.estado !== 'salteado' && turno.estado !== 'rendido')) return null;
   return { resultado: turno.estado, dibuje: turno.dibujaId === jugadorId };
 }

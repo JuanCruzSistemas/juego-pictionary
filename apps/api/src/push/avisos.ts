@@ -16,6 +16,12 @@ export const avisos = {
     cuerpo: `Era ${palabra}. Ahora te toca adivinar a vos.`,
     url: `/acierto/${turnoId}`,
   }),
+  /** A quien dibujó, cuando la otra persona se rinde. Como en el acierto, la palabra va en el aviso. */
+  rendicion: (quienSeRindio: string, palabra: string, turnoId: string): Aviso => ({
+    titulo: `${quienSeRindio} se rindió`,
+    cuerpo: `Era ${palabra}. Ahora te toca adivinar a vos.`,
+    url: `/acierto/${turnoId}`,
+  }),
   /** A quien pasa a dibujar, cuando la otra persona saltea. */
   salteo: (quienSalteo: string): Aviso => ({
     titulo: 'Te toca dibujar',

@@ -4,6 +4,7 @@ import type {
   EnviarDibujoRespuesta,
   IntentoPublico,
   IntentoRespuesta,
+  RendirseRespuesta,
   ResumenTurno,
   SalteoRespuesta,
   Stroke,
@@ -66,6 +67,12 @@ export class TurnosController {
     @Body({ schema: intentoSchema }) body: { texto: string },
   ): Promise<IntentoRespuesta> {
     return this.turnos.probar(yo, id, body.texto);
+  }
+
+  @Post(':id/rendirse')
+  @HttpCode(200)
+  rendirse(@JugadorActual() yo: Jugador, @Param('id') id: string): Promise<RendirseRespuesta> {
+    return this.turnos.rendirse(yo, id);
   }
 
   @Get(':id/resumen')

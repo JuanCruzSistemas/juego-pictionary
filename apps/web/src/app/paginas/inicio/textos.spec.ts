@@ -44,6 +44,15 @@ describe('tarjetaDeInicio', () => {
     );
   });
 
+  it('después de rendirse: quien se rindió dibuja, y quien dibujó lo ve al esperar', () => {
+    expect(tarjetaDeInicio(estado({}, { resultado: 'rendido', dibuje: false })).texto).toBe(
+      'Te rendiste con su último dibujo. Ahora le toca adivinar a Ana.',
+    );
+    expect(tarjetaDeInicio(estado({ rol: 'adivina' }, { resultado: 'rendido', dibuje: true })).texto).toBe(
+      'Se rindió con tu dibujo. Cuando lo mande, te toca adivinar.',
+    );
+  });
+
   it('esperar mientras adivina, con los intentos', () => {
     const t = tarjetaDeInicio(estado({ estado: 'adivinando', intentos: 3 }));
     expect(t).toMatchObject({ titulo: 'Ana está adivinando', texto: 'Lleva 3 intentos.' });

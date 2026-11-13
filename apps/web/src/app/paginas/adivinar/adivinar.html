@@ -61,5 +61,17 @@
       <p id="respuesta-mensaje" class="mensaje-error" role="alert">{{ m }}</p>
     }
   </form>
+
+  <div class="rendirse" aria-live="polite">
+    @if (confirmandoRendirse()) {
+      <span class="pregunta">¿Seguro? Vas a ver la palabra.</span>
+      <button type="button" class="enlace" [disabled]="rindiendose()" (click)="noMeRindo()">No</button>
+      <button type="button" class="enlace fuerte" [disabled]="rindiendose()" (click)="meRindo()">
+        {{ rindiendose() ? 'Un momento…' : 'Sí, me rindo' }}
+      </button>
+    } @else {
+      <button type="button" class="enlace" [disabled]="!trazos() || enviando()" (click)="meRindo()">Me rindo</button>
+    }
+  </div>
 </main>
 <app-aviso-girar texto="Girá el celu para ver el dibujo" />

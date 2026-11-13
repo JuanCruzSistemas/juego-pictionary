@@ -1,7 +1,7 @@
 <main class="pantalla">
   @if (resumen(); as r) {
     <div class="encabezado">
-      <p class="festejo">{{ r.adivine ? '¡Adivinaste!' : '¡Lo adivinó!' }}</p>
+      <p class="festejo">{{ festejo(r) }}</p>
       <h1 class="titulo">Era {{ r.palabra }}</h1>
     </div>
 

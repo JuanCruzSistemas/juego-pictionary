@@ -18,6 +18,14 @@ describe('avisos', () => {
     });
   });
 
+  it('"Se rindió", con la palabra y el resumen de ese turno', () => {
+    expect(avisos.rendicion('Mili', 'Patineta', 't-9')).toEqual({
+      titulo: 'Mili se rindió',
+      cuerpo: 'Era Patineta. Ahora te toca adivinar a vos.',
+      url: '/acierto/t-9',
+    });
+  });
+
   it('"Te toca dibujar", con el texto acordado', () => {
     expect(avisos.salteo('Juanchi')).toEqual({
       titulo: 'Te toca dibujar',

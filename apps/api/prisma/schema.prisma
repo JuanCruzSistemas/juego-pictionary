@@ -17,6 +17,8 @@ enum EstadoTurno {
   adivinando
   adivinado
   salteado
+  /// Quien adivinaba se rindió: se revela la palabra y pasa al turno siguiente.
+  rendido
 }
 
 enum OrigenPalabra {

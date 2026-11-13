@@ -41,7 +41,9 @@ export function tarjetaDeInicio(e: Estado): Tarjeta {
         ? `Arrancás vos. Elegí una palabra y dibujásela a ${otro}.`
         : anterior.resultado === 'salteado'
           ? `${otro} salteó su turno, así que te toca a vos.`
-          : `Adivinaste su último dibujo. Ahora le toca adivinar a ${otro}.`,
+          : anterior.resultado === 'rendido'
+            ? `Te rendiste con su último dibujo. Ahora le toca adivinar a ${otro}.`
+            : `Adivinaste su último dibujo. Ahora le toca adivinar a ${otro}.`,
       accion:
         turno.estado === 'eligiendo'
           ? { texto: 'Elegir palabra', ruta: '/elegir' }
@@ -66,7 +68,9 @@ export function tarjetaDeInicio(e: Estado): Tarjeta {
       ? despues
       : anterior.resultado === 'salteado'
         ? `Salteaste tu turno. ${despues}`
-        : `Adivinó tu dibujo. ${despues}`,
+        : anterior.resultado === 'rendido'
+          ? `Se rindió con tu dibujo. ${despues}`
+          : `Adivinó tu dibujo. ${despues}`,
   };
 }
 

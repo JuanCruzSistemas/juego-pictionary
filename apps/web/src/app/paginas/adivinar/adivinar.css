@@ -5,7 +5,8 @@
 }
 
 header,
-.respuesta {
+.respuesta,
+.rendirse {
   flex: none;
 }
 
@@ -135,4 +136,28 @@ h1 {
   .probadas {
     max-height: 64px;
   }
+}
+
+/* "Me rindo": discreto, debajo de la respuesta, con confirmación en la misma línea. */
+.rendirse {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 12px;
+  min-height: 44px;
+}
+
+.rendirse .enlace {
+  min-height: 44px;
+}
+
+.rendirse .fuerte {
+  font-weight: 700;
+  color: var(--correccion-texto);
+}
+
+.pregunta {
+  font-size: 15px;
+  font-weight: 600;
 }

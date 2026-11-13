@@ -4,6 +4,7 @@ import type {
   EnviarDibujoRespuesta,
   IntentoPublico,
   IntentoRespuesta,
+  RendirseRespuesta,
   ResumenTurno,
   Salteos,
   SalteoRespuesta,
@@ -181,7 +182,7 @@ export class TurnosService {
     try {
       await this.prisma.$transaction(async (tx) => {
         const turno = await this.turnoQueDibujo(yo, turnoId, tx);
-        if (turno.estado === 'adivinando' || turno.estado === 'adivinado') return; // ya mandado
+        if (turno.estado === 'adivinando' || turno.estado === 'adivinado' || turno.estado === 'rendido') return; // ya mandado
         if (turno.estado === 'eligiendo') throw turnoCerrado('Elegí la palabra antes de mandar el dibujo.');
         if (turno.estado === 'salteado') throw turnoCerrado('Este turno se salteó: el dibujo no se puede mandar.');
 
@@ -287,9 +288,38 @@ export class TurnosService {
   }
 
   /**
-   * Resumen de un turno adivinado: la palabra, el dibujo y los intentos. Es el único lugar, junto con
-   * la respuesta del acierto, donde la palabra le llega a quien adivinaba. Solo para las dos personas
-   * del turno, y solo si ya está adivinado.
+   * Quien adivina se rinde: el turno pasa a "rendido", se revela la palabra y se crea el turno
+   * siguiente, que dibuja quien se rindió, igual que con un acierto. No gasta salteos.
+   * Bloquea el turno como `probar`: dos toques a la vez crean un solo turno nuevo.
+   */
+  async rendirse(yo: Jugador, turnoId: string): Promise<RendirseRespuesta> {
+    const cerrado = () => turnoCerrado('Este turno ya terminó.');
+    const r = await this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM turnos WHERE id = ${turnoId} FOR UPDATE`;
+      const turno = await tx.turno.findFirst({ where: { id: turnoId, salaId: yo.salaId } });
+      if (!turno) throw turnoNoEncontrado();
+      if (turno.adivinaId !== yo.id) throw noEsTuTurno('Este turno lo adivina la otra persona.');
+      if (turno.estado !== 'adivinando' || !turno.palabra) throw cerrado();
+
+      const u = await tx.turno.updateMany({ where: { id: turno.id, estado: 'adivinando' }, data: { estado: 'rendido' } });
+      if (u.count === 0) throw cerrado();
+      await this.crear(tx, {
+        salaId: turno.salaId,
+        numero: turno.numero + 1,
+        dibujaId: yo.id,
+        adivinaId: turno.dibujaId,
+      });
+      return { turnoId: turno.id, palabra: turno.palabra, salaId: turno.salaId, avisarA: turno.dibujaId };
+    });
+    // Después de la transacción: un aviso que falla no afecta al juego.
+    this.notificaciones.avisar(r.avisarA, r.salaId, avisos.rendicion(yo.nombre, r.palabra, r.turnoId));
+    return { turnoId: r.turnoId, palabra: r.palabra };
+  }
+
+  /**
+   * Resumen de un turno adivinado o rendido: la palabra, el dibujo y los intentos. Es el único lugar,
+   * junto con las respuestas del acierto y de rendirse, donde la palabra le llega a quien adivinaba.
+   * Solo para las dos personas del turno, y solo si ya terminó así.
    */
   async resumen(yo: Jugador, turnoId: string): Promise<ResumenTurno> {
     const turno = await this.prisma.turno.findFirst({
@@ -297,9 +327,11 @@ export class TurnosService {
       include: { dibujo: true, _count: { select: { intentos: true } } },
     });
     if (!turno || (turno.dibujaId !== yo.id && turno.adivinaId !== yo.id)) throw turnoNoEncontrado();
-    if (turno.estado !== 'adivinado' || !turno.palabra || !turno.dibujo) throw resumenNoDisponible();
+    const terminado = turno.estado === 'adivinado' || turno.estado === 'rendido';
+    if (!terminado || !turno.palabra || !turno.dibujo) throw resumenNoDisponible();
     return {
       turnoId: turno.id,
+      resultado: turno.estado as 'adivinado' | 'rendido',
       numero: turno.numero,
       palabra: turno.palabra,
       intentos: turno._count.intentos,

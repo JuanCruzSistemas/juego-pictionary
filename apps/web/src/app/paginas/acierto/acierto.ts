@@ -26,6 +26,12 @@ export class AciertoPage implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly cargando = signal(false);
 
+  /** Arriba de "Era …": festejo si acertaron; si alguien se rindió, solo lo dice. */
+  protected festejo(r: ResumenTurno): string {
+    if (r.resultado === 'rendido') return r.adivine ? 'Te rendiste' : 'Se rindió';
+    return r.adivine ? '¡Adivinaste!' : '¡Lo adivinó!';
+  }
+
   ngOnInit(): void {
     this.cargar();
   }
@@ -41,7 +47,7 @@ export class AciertoPage implements OnInit {
       error: (e: unknown) => {
         this.cargando.set(false);
         const codigo = errorDeApi(e)?.codigo;
-        // Un turno que no está adivinado, o que no es de quien pide, no tiene acierto que mostrar.
+        // Un turno que no terminó (adivinado o rendido), o que no es de quien pide, no tiene resumen.
         if (codigo === 'resumen_no_disponible' || codigo === 'turno_no_encontrado') {
           void this.router.navigate(['/'], { replaceUrl: true });
         } else {

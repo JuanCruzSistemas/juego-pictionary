@@ -54,7 +54,7 @@ export type EntrarRespuesta = { token: string; jugador: JugadorPublico };
 /** Lo que hace cada persona en el turno. */
 export type RolTurno = 'dibuja' | 'adivina';
 
-/** Estados de un turno en curso. `adivinado` y `salteado` son de turnos cerrados. */
+/** Estados de un turno en curso. `adivinado`, `salteado` y `rendido` son de turnos cerrados. */
 export type EstadoTurnoActual = 'eligiendo' | 'dibujando' | 'adivinando';
 
 export type TurnoActual = {
@@ -72,7 +72,7 @@ export type TurnoActual = {
 
 /** Cómo terminó el turno anterior, para el texto de Inicio. */
 export type TurnoAnterior = {
-  resultado: 'adivinado' | 'salteado';
+  resultado: 'adivinado' | 'salteado' | 'rendido';
   /** true si quien pregunta era quien dibujaba. */
   dibuje: boolean;
 };
@@ -115,17 +115,22 @@ export type IntentoRespuesta = {
   palabra?: string;
 };
 
-/** GET /api/turnos/:id/resumen: solo de un turno adivinado, para una de sus dos personas. */
+/** GET /api/turnos/:id/resumen: solo de un turno adivinado o rendido, para una de sus dos personas. */
 export type ResumenTurno = {
   turnoId: string;
+  /** `rendido`: quien adivinaba se rindió y vio la palabra. */
+  resultado: 'adivinado' | 'rendido';
   numero: number;
   palabra: string;
-  /** Intentos de quien adivinó, contando el que acertó. */
+  /** Intentos de quien adivinaba, contando el que acertó si acertó. */
   intentos: number;
   trazos: Stroke[];
-  /** true si quien pide es quien adivinó. */
+  /** true si quien pide es quien adivinaba. */
   adivine: boolean;
 };
+
+/** POST /api/turnos/:id/rendirse: se revela la palabra y se crea el turno siguiente. */
+export type RendirseRespuesta = { turnoId: string; palabra: string };
 
 /** GET /api/push/clave. `clavePublica` es null si los avisos están apagados en el servidor. */
 export type ClavePush = { clavePublica: string | null };

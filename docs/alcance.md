@@ -42,6 +42,7 @@ Los turnos se alternan estrictamente y se premia jugar juntos, no competir.
 | Turnos | Se alternan estrictamente, con un botón para saltear limitado a 3 usos por persona que se renuevan cada media hora. |
 | Dibujos libres | Se pueden mandar sin nada que adivinar. |
 | Adivinar | Intentos ilimitados. |
+| Rendirse | Quien adivina puede tocar "Me rindo" (con confirmación): ve la palabra y pasa a dibujar, como con un acierto. No gasta salteos. |
 | Pistas | Quien dibujó se las manda a quien adivina dentro de la app, sin límite. |
 | Progreso | Racha compartida, sin rankings. Se mantiene si al menos uno de los dos adivina en el día una palabra que dibujó el otro. |
 | Modo en vivo | Se inicia con una invitación por notificación y las rondas no tienen límite de tiempo. |

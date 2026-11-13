@@ -168,6 +168,7 @@ describe('Intentos', () => {
     const resumen = (await ana.get(`/api/turnos/${turnoId}/resumen`).expect(200)).body;
     expect(resumen).toEqual({
       turnoId,
+      resultado: 'adivinado',
       numero: 1,
       palabra: 'Zeppelin',
       intentos: 5, // 4 fallidas ("avion" repite a "Avión") y el acierto

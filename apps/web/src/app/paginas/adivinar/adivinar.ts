@@ -35,6 +35,9 @@ export class AdivinarPage {
   protected readonly texto = signal('');
   protected readonly enviando = signal(false);
   protected readonly mensaje = signal<string | null>(null);
+  /** "Me rindo" pide un segundo toque antes de revelar la palabra. */
+  protected readonly confirmandoRendirse = signal(false);
+  protected readonly rindiendose = signal(false);
   /** Campo vacío o solo signos: no se manda. */
   protected readonly sePuedeMandar = computed(() => normalizar(this.texto()).length > 0 && !this.enviando());
 
@@ -101,6 +104,37 @@ export class AdivinarPage {
         }
       },
     });
+  }
+
+  /** Primer toque: pide confirmación. Segundo toque: se rinde y va al resumen del turno. */
+  protected meRindo(): void {
+    const turnoId = this.turnoId;
+    if (!turnoId || this.rindiendose() || this.enviando()) return;
+    if (!this.confirmandoRendirse()) {
+      this.confirmandoRendirse.set(true);
+      return;
+    }
+    this.rindiendose.set(true);
+    this.mensaje.set(null);
+    this.api.rendirse(turnoId).subscribe({
+      next: () => {
+        // Como al acertar: la pantalla deja de seguir el estado, que ya pasó al turno siguiente.
+        this.acerto = true;
+        this.estados.actualizar();
+        void this.router.navigate(['/acierto', turnoId], { replaceUrl: true });
+      },
+      error: (e: unknown) => {
+        this.rindiendose.set(false);
+        this.confirmandoRendirse.set(false);
+        const err = errorDeApi(e);
+        if (err?.codigo === 'turno_cerrado') this.estados.actualizar();
+        this.mensaje.set(err?.codigo === 'turno_cerrado' ? err.mensaje : mensajeDeError(e, 'No se pudo. Probá de nuevo.'));
+      },
+    });
+  }
+
+  protected noMeRindo(): void {
+    this.confirmandoRendirse.set(false);
   }
 
   protected reintentarCarga(): void {
