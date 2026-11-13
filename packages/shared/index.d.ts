@@ -224,6 +224,47 @@ export type FiltroHistorial = 'todos' | 'juego' | 'libres';
 /** GET /api/historial?filtro=&antes=. `siguiente` es el `antes` de la próxima página, o null si no hay más. */
 export type PaginaHistorial = { items: ItemHistorial[]; siguiente: string | null };
 
+// ---------- Modo en vivo (Socket.IO) ----------
+
+/**
+ * La partida en vivo de la sala. `esperando`: alguien invitó y falta la otra persona.
+ * `activa`: están las dos conectadas. `pausada`: una se desconectó; si no vuelve en unos
+ * minutos, la partida termina y el turno sigue por turnos.
+ */
+export type EstadoVivo = 'esperando' | 'activa' | 'pausada';
+
+export type Vivo = {
+  estado: EstadoVivo;
+  /** Quién invitó. */
+  invitadorId: string;
+  /** Quiénes están conectados ahora. */
+  presentes: string[];
+};
+
+/** Eventos que manda el cliente. Cada trazo se identifica por su posición en el dibujo. */
+export type EventosAlServidor = {
+  'vivo:invitar': () => void;
+  'vivo:terminar': () => void;
+  /** Empieza un trazo nuevo en `indice`, con sus primeros puntos. */
+  'trazo:inicio': (d: { turnoId: string; indice: number; trazo: Stroke }) => void;
+  /** Puntos nuevos del trazo en `indice`. */
+  'trazo:puntos': (d: { turnoId: string; indice: number; puntos: StrokePoint[] }) => void;
+  /** El dibujo entero: al conectarse, al deshacer o al borrar. */
+  'trazos:todos': (d: { turnoId: string; trazos: Stroke[] }) => void;
+};
+
+/** Eventos que manda el servidor. */
+export type EventosAlCliente = {
+  /** null: no hay partida en vivo. */
+  'vivo:estado': (v: Vivo | null) => void;
+  /** Algo cambió en el juego (palabra, intento, pista, turno nuevo): volver a pedir el estado. */
+  'vivo:cambio': () => void;
+  'vivo:error': (mensaje: string) => void;
+  'trazo:inicio': (d: { turnoId: string; indice: number; trazo: Stroke }) => void;
+  'trazo:puntos': (d: { turnoId: string; indice: number; puntos: StrokePoint[] }) => void;
+  'trazos:todos': (d: { turnoId: string; trazos: Stroke[] }) => void;
+};
+
 /** GET /api/estado */
 export type Estado = {
   yo: JugadorPublico;
@@ -237,4 +278,6 @@ export type Estado = {
   /** El último dibujo libre sin abrir que te dejó la otra persona, o null. */
   libreNuevo: LibreNuevo | null;
   racha: Racha;
+  /** La partida en vivo de la sala, o null si no hay. */
+  vivo: Vivo | null;
 };

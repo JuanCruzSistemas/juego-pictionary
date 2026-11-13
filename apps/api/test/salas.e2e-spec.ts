@@ -125,6 +125,7 @@ describe('Salas y sesión', () => {
         salteos: { quedan: 3, maximo: 3, proximoEn: null },
         libreNuevo: null,
         racha: { dias: 0, hoy: false },
+        vivo: null,
       });
 
       const b = await entrar('Ana').expect(201);

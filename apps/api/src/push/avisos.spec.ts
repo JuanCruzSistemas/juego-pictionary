@@ -34,6 +34,14 @@ describe('avisos', () => {
     });
   });
 
+  it('"¿Jugamos en vivo?", que abre la pantalla en vivo', () => {
+    expect(avisos.vivo('Juanchi')).toEqual({
+      titulo: '¿Jugamos en vivo?',
+      cuerpo: 'Juanchi te está esperando. Tocá para entrar.',
+      url: '/vivo',
+    });
+  });
+
   it('"Te dejó un dibujito", que abre ese dibujo', () => {
     expect(avisos.libre('Mili', 'd-1')).toEqual({
       titulo: 'Mili te dejó un dibujito',

@@ -7,6 +7,7 @@ import { JugadorActual } from '../sesion/jugador-actual.decorator.js';
 import { vistaDelAnterior, vistaDelTurno } from '../turnos/vista.js';
 import { TurnosService } from '../turnos/turnos.service.js';
 import { LibresService } from '../libres/libres.service.js';
+import { VivoRegistro } from '../vivo/vivo.registro.js';
 
 const publico = (j: Jugador) => ({ id: j.id, nombre: j.nombre, lugar: j.lugar });
 
@@ -18,6 +19,7 @@ export class EstadoController {
     private readonly prisma: PrismaService,
     private readonly turnos: TurnosService,
     private readonly libres: LibresService,
+    private readonly vivo: VivoRegistro,
   ) {}
 
   @Get()
@@ -39,6 +41,7 @@ export class EstadoController {
       salteos: await this.turnos.salteosDe(yo.id),
       libreNuevo: await this.libres.nuevoPara(yo),
       racha: await this.turnos.rachaDe(yo.salaId),
+      vivo: this.vivo.vista(yo.salaId),
     };
   }
 

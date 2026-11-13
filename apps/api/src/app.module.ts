@@ -9,8 +9,9 @@ import { EstadoModule } from './estado/estado.module.js';
 import { LibresModule } from './libres/libres.module.js';
 import { PalabrasModule } from './palabras/palabras.module.js';
 import { HistorialModule } from './historial/historial.module.js';
+import { VivoModule } from './vivo/vivo.module.js';
 
 @Module({
-  imports: [PrismaModule, RelojModule, TurnosModule, PushModule, HealthModule, SalasModule, EstadoModule, LibresModule, PalabrasModule, HistorialModule],
+  imports: [PrismaModule, RelojModule, TurnosModule, PushModule, HealthModule, SalasModule, EstadoModule, LibresModule, PalabrasModule, HistorialModule, VivoModule],
 })
 export class AppModule {}

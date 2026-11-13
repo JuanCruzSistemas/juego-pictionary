@@ -35,6 +35,8 @@ import { contarSalteos, inicioDeLaVentana } from './salteos.js';
 import type { PalabraValidada } from './palabra.js';
 import { vistaDelTurno } from './vista.js';
 import { calcularRacha } from './racha.js';
+import { VivoRegistro } from '../vivo/vivo.registro.js';
+import { VivoCanal } from '../vivo/vivo.canal.js';
 
 /** Estados en los que quien dibuja todavía puede cambiar la palabra o saltear. */
 const ABIERTOS = ['eligiendo', 'dibujando'] as const;
@@ -47,7 +49,30 @@ export class TurnosService {
     private readonly prisma: PrismaService,
     private readonly reloj: Reloj,
     private readonly notificaciones: NotificacionesService,
+    private readonly vivo: VivoRegistro,
+    private readonly canal: VivoCanal,
   ) {}
+
+  /**
+   * ¿Se puede adivinar este turno ya? Por turnos, cuando llegó el dibujo. En vivo, también
+   * mientras se dibuja, si ya hay algo dibujado.
+   */
+  private enJuego(turno: Turno): boolean {
+    if (turno.estado === 'adivinando') return true;
+    return turno.estado === 'dibujando' && this.vivo.estaActiva(turno.salaId) && this.vivo.trazosDe(turno.salaId, turno.id).length > 0;
+  }
+
+  /**
+   * En vivo el dibujo no se "manda": al cerrar el turno se guarda lo dibujado hasta ese momento.
+   * Por turnos el dibujo ya está guardado y esto no hace nada.
+   */
+  private async guardarDibujoEnVivo(tx: Tx, turno: Turno): Promise<void> {
+    if (turno.estado !== 'dibujando') return;
+    const trazos = this.vivo.trazosDe(turno.salaId, turno.id).map((t) => ({ ...t, points: [...t.points] }));
+    await tx.dibujo.create({
+      data: { turnoId: turno.id, autorId: turno.dibujaId, trazos, duracionMs: duracionDe(trazos), creadoEn: this.reloj.ahora() },
+    });
+  }
 
   /** Crea un turno con sus 3 opciones ya sorteadas. Se llama dentro de una transacción. */
   async crear(
@@ -145,6 +170,7 @@ export class TurnosService {
     });
     if (r.count === 0) throw cerrado();
 
+    this.canal.cambio(turno.salaId);
     const actualizado = await this.prisma.turno.findUniqueOrThrow({
       where: { id: turno.id },
       include: { _count: { select: { intentos: true, pistas: true } } },
@@ -181,6 +207,8 @@ export class TurnosService {
         return { respuesta: { salteos: await this.salteosDe(yo.id, tx) }, salaId: turno.salaId, avisarA: turno.adivinaId };
       });
       // Después de la transacción: un aviso que falla no afecta al salteo.
+      this.vivo.olvidarTurno(salaId, turnoId);
+      this.canal.cambio(salaId);
       this.notificaciones.avisar(avisarA, salaId, avisos.salteo(yo.nombre));
       return respuesta;
     } catch (e) {
@@ -220,7 +248,10 @@ export class TurnosService {
       if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002')) throw e;
     }
     const aviso = guardado as { salaId: string; adivinaId: string } | null;
-    if (aviso) this.notificaciones.avisar(aviso.adivinaId, aviso.salaId, avisos.dibujo(yo.nombre));
+    if (aviso) {
+      this.canal.cambio(aviso.salaId);
+      this.notificaciones.avisar(aviso.adivinaId, aviso.salaId, avisos.dibujo(yo.nombre));
+    }
 
     const turno = await this.prisma.turno.findUniqueOrThrow({
       where: { id: turnoId },
@@ -262,7 +293,9 @@ export class TurnosService {
       const turno = await tx.turno.findFirst({ where: { id: turnoId, salaId: yo.salaId } });
       if (!turno) throw turnoNoEncontrado();
       if (turno.adivinaId !== yo.id) throw noEsTuTurno('Este turno lo adivina la otra persona.');
-      if (turno.estado !== 'adivinando' || !turno.palabra) throw turnoCerrado('Este turno ya no admite respuestas.');
+      if (!this.enJuego(turno) || !turno.palabra) {
+        throw turnoCerrado(turno.estado === 'dibujando' ? 'Esperá a que empiece a dibujar.' : 'Este turno ya no admite respuestas.');
+      }
 
       const previos = await this.listarIntentos(tx, turno.id);
       const clave = normalizar(texto);
@@ -274,10 +307,11 @@ export class TurnosService {
       if (correcto) {
         // Condicionado al estado: si dos aciertos llegan juntos, el segundo no crea otro turno.
         const r = await tx.turno.updateMany({
-          where: { id: turno.id, estado: 'adivinando' },
-          data: { estado: 'adivinado', adivinadoEn: this.reloj.ahora() },
+          where: { id: turno.id, estado: turno.estado },
+          data: { estado: 'adivinado', adivinadoEn: this.reloj.ahora(), enviadoEn: turno.enviadoEn ?? this.reloj.ahora() },
         });
         if (r.count === 0) throw turnoCerrado('Este turno ya no admite respuestas.');
+        await this.guardarDibujoEnVivo(tx, turno);
       }
       // creadoEn lo pone la base: solo sirve para ordenar, y así no depende del reloj simulado de los tests.
       await tx.intento.create({ data: { turnoId: turno.id, jugadorId: yo.id, texto, correcto } });
@@ -299,7 +333,9 @@ export class TurnosService {
         : { respuesta: { resultado: 'incorrecto', intentos } satisfies IntentoRespuesta, avisarA: null };
     });
     // Después de la transacción: un aviso que falla no afecta al acierto.
+    if (respuesta.resultado !== 'repetido') this.canal.cambio(yo.salaId);
     if (avisarA) {
+      this.vivo.olvidarTurno(avisarA.salaId, avisarA.turnoId);
       this.notificaciones.avisar(avisarA.jugadorId, avisarA.salaId, avisos.acierto(avisarA.palabra, avisarA.turnoId));
     }
     return respuesta;
@@ -317,10 +353,14 @@ export class TurnosService {
       const turno = await tx.turno.findFirst({ where: { id: turnoId, salaId: yo.salaId } });
       if (!turno) throw turnoNoEncontrado();
       if (turno.adivinaId !== yo.id) throw noEsTuTurno('Este turno lo adivina la otra persona.');
-      if (turno.estado !== 'adivinando' || !turno.palabra) throw cerrado();
+      if (!this.enJuego(turno) || !turno.palabra) throw cerrado();
 
-      const u = await tx.turno.updateMany({ where: { id: turno.id, estado: 'adivinando' }, data: { estado: 'rendido' } });
+      const u = await tx.turno.updateMany({
+        where: { id: turno.id, estado: turno.estado },
+        data: { estado: 'rendido', enviadoEn: turno.enviadoEn ?? this.reloj.ahora() },
+      });
       if (u.count === 0) throw cerrado();
+      await this.guardarDibujoEnVivo(tx, turno);
       await this.crear(tx, {
         salaId: turno.salaId,
         numero: turno.numero + 1,
@@ -330,6 +370,8 @@ export class TurnosService {
       return { turnoId: turno.id, palabra: turno.palabra, salaId: turno.salaId, avisarA: turno.dibujaId };
     });
     // Después de la transacción: un aviso que falla no afecta al juego.
+    this.vivo.olvidarTurno(r.salaId, r.turnoId);
+    this.canal.cambio(r.salaId);
     this.notificaciones.avisar(r.avisarA, r.salaId, avisos.rendicion(yo.nombre, r.palabra, r.turnoId));
     return { turnoId: r.turnoId, palabra: r.palabra };
   }
@@ -366,11 +408,13 @@ export class TurnosService {
    */
   async mandarPista(yo: Jugador, turnoId: string, texto: string): Promise<PistaPublica[]> {
     const turno = await this.turnoQueDibujo(yo, turnoId, this.prisma);
-    if (turno.estado !== 'adivinando' || !turno.palabra) throw turnoCerrado('Las pistas se mandan mientras la otra persona adivina.');
+    const enVivo = turno.estado === 'dibujando' && this.vivo.estaActiva(turno.salaId);
+    if ((turno.estado !== 'adivinando' && !enVivo) || !turno.palabra) throw turnoCerrado('Las pistas se mandan mientras la otra persona adivina.');
     if (contieneLaPalabra(texto, turno.palabra)) throw datosInvalidos('La pista no puede tener la palabra.');
     await this.prisma.pista.create({ data: { turnoId: turno.id, autorId: yo.id, texto } });
-    // Después de guardarla: un aviso que falla no afecta a la pista.
-    this.notificaciones.avisar(turno.adivinaId, turno.salaId, avisos.pista(texto));
+    // Después de guardarla: un aviso que falla no afecta a la pista. En vivo no hace falta el aviso.
+    this.canal.cambio(turno.salaId);
+    if (!enVivo) this.notificaciones.avisar(turno.adivinaId, turno.salaId, avisos.pista(texto));
     return this.listarPistas(turno.id);
   }
 

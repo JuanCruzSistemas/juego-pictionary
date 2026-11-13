@@ -28,6 +28,12 @@ export const avisos = {
     cuerpo: texto,
     url: '/adivinar',
   }),
+  /** A la otra persona, cuando la invitan a jugar en vivo. */
+  vivo: (quienInvita: string): Aviso => ({
+    titulo: '¿Jugamos en vivo?',
+    cuerpo: `${quienInvita} te está esperando. Tocá para entrar.`,
+    url: '/vivo',
+  }),
   /** A quien recibe un dibujo libre. Abre ese dibujo. */
   libre: (quienDibujo: string, libreId: string): Aviso => ({
     titulo: `${quienDibujo} te dejó un dibujito`,

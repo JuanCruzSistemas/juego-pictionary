@@ -3,6 +3,7 @@ import { pipeDeValidacion } from './comun/validacion.js';
 import { FiltroDeErrores } from './comun/filtro-de-errores.js';
 import { LIMITE_DEL_BODY } from './dibujos/reglas.js';
 import { CORS_MAX_AGE_S, origenPermitido } from './cors.js';
+import { AdaptadorVivo } from './vivo/adaptador.js';
 
 /**
  * Configuración compartida entre main.ts y los tests e2e.
@@ -20,6 +21,9 @@ export function configurarApp(
   } else if (process.env.RENDER) {
     console.warn('WEB_ORIGIN falta o no es un origen válido: el navegador no va a poder llamar a la API.');
   }
+
+  // Modo en vivo: Socket.IO en /socket.io, con el mismo origen permitido.
+  app.useWebSocketAdapter(new AdaptadorVivo(app, origen));
 
   app.setGlobalPrefix('api', { exclude: ['health'] });
   // El default de Express es 100 KB; un dibujo rápido en un celular de 240 Hz pesa ~110 KB.
