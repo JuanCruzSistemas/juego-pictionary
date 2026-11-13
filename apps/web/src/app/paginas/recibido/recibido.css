@@ -36,7 +36,8 @@ h1 {
   flex: 1 1 auto;
 }
 
-.btn-principal {
+.btn-principal,
+.enlace {
   flex: none;
 }
 

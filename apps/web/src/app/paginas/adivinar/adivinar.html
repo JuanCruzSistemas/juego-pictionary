@@ -9,7 +9,11 @@
 
   <div class="zona-dibujo">
     @if (trazos(); as t) {
-      <app-dibujo-vista class="vista" [trazos]="t" descripcion="El dibujo para adivinar" />
+      <app-dibujo-vista #vista class="vista" [trazos]="t" [reproducir]="true" descripcion="El dibujo para adivinar" />
+      <button type="button" class="repetir" aria-label="Ver cómo lo dibujó" [disabled]="vista.reproduciendo()"
+        (click)="vista.repetir()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6 3.5v13l10-6.5Z"></path></svg>
+      </button>
     } @else if (errorDeCarga() || errorDeEstado()) {
       <div class="estado">
         <p>No pudimos cargar el dibujo. Revisá tu conexión y probá de nuevo.</p>

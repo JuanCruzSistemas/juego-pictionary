@@ -9,7 +9,7 @@ import { cuando } from './cuando';
 
 /**
  * Un dibujo libre. Diseño: docs/diseno/Recibido.dc.html.
- * Abrirlo lo marca como visto. "Ver cómo lo dibujó" llega con la reproducción.
+ * Abrirlo lo marca como visto. Se reproduce trazo por trazo al abrirlo y con "Ver cómo lo dibujó".
  */
 @Component({
   selector: 'app-recibido',

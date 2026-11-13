@@ -11,8 +11,10 @@
     </div>
 
     <div class="zona-dibujo">
-      <app-dibujo-vista class="vista" [trazos]="l.trazos" [descripcion]="'Dibujo libre de ' + l.autor" />
+      <app-dibujo-vista #vista class="vista" [trazos]="l.trazos" [reproducir]="true" [descripcion]="'Dibujo libre de ' + l.autor" />
     </div>
+
+    <button type="button" class="enlace" [disabled]="vista.reproduciendo()" (click)="vista.repetir()">Ver cómo lo dibujó</button>
 
     <a routerLink="/libre" class="btn-principal">{{ l.mio ? 'Dejarle otro' : 'Responder con un dibujo' }}</a>
   } @else if (error(); as e) {
