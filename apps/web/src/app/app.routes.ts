@@ -38,5 +38,15 @@ export const routes: Routes = [
     canActivate: [conSesion],
     loadComponent: () => import('./paginas/acierto/acierto').then((m) => m.AciertoPage),
   },
+  {
+    path: 'libre',
+    canActivate: [conSesion],
+    loadComponent: () => import('./paginas/libre/libre').then((m) => m.LibrePage),
+  },
+  {
+    path: 'recibido/:id',
+    canActivate: [conSesion],
+    loadComponent: () => import('./paginas/recibido/recibido').then((m) => m.RecibidoPage),
+  },
   { path: '**', redirectTo: '' },
 ];

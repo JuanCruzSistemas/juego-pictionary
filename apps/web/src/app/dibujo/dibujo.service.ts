@@ -4,6 +4,8 @@ import { ALMACEN } from '../comun/almacen';
 import { deshacer } from './trazos';
 
 export const CLAVE_BORRADOR = 'garabato.borrador';
+/** Borrador del dibujo libre: aparte del dibujo del turno, así no se pisan. */
+export const CLAVE_BORRADOR_LIBRE = 'garabato.borrador-libre';
 /** Al seguir un borrador, el próximo trazo arranca este tiempo después del último. */
 const PAUSA_AL_RETOMAR_MS = 500;
 
@@ -18,6 +20,8 @@ type Borrador = { turnoId: string; trazos: Stroke[] };
 @Injectable({ providedIn: 'root' })
 export class DibujoService {
   private readonly almacen = inject(ALMACEN);
+  /** Dónde se guarda el borrador en el dispositivo. */
+  protected readonly clave: string = CLAVE_BORRADOR;
 
   private readonly lista = signal<Stroke[]>([]);
   readonly trazos = this.lista.asReadonly();
@@ -49,7 +53,7 @@ export class DibujoService {
   /** Si el borrador guardado no es del turno indicado, lo borra. Inicio lo llama cuando cambia el turno. */
   descartarSiNoEs(turnoId: string | null): void {
     const borrador = this.leerBorrador();
-    if (borrador && borrador.turnoId !== turnoId) this.almacen.borrar(CLAVE_BORRADOR);
+    if (borrador && borrador.turnoId !== turnoId) this.almacen.borrar(this.clave);
     if (this.turnoId !== null && this.turnoId !== turnoId) {
       this.turnoId = null;
       this.lista.set([]);
@@ -79,7 +83,7 @@ export class DibujoService {
   borrarTodo(): void {
     this.lista.set([]);
     this.reiniciarTiempo();
-    this.almacen.borrar(CLAVE_BORRADOR);
+    this.almacen.borrar(this.clave);
   }
 
   /** El body de POST /api/turnos/:id/dibujo. La duración la calcula la API. */
@@ -95,15 +99,15 @@ export class DibujoService {
   private guardarBorrador(): void {
     if (this.turnoId === null) return;
     if (this.vacio()) {
-      this.almacen.borrar(CLAVE_BORRADOR);
+      this.almacen.borrar(this.clave);
       return;
     }
     const borrador: Borrador = { turnoId: this.turnoId, trazos: this.lista() };
-    this.almacen.guardar(CLAVE_BORRADOR, JSON.stringify(borrador));
+    this.almacen.guardar(this.clave, JSON.stringify(borrador));
   }
 
   private leerBorrador(): Borrador | null {
-    const crudo = this.almacen.leer(CLAVE_BORRADOR);
+    const crudo = this.almacen.leer(this.clave);
     if (!crudo) return null;
     try {
       const b = JSON.parse(crudo) as Partial<Borrador>;
@@ -113,3 +117,14 @@ export class DibujoService {
     }
   }
 }
+
+/**
+ * El dibujo libre en curso: el mismo comportamiento, con su propio borrador.
+ * Se usa con `usarTurno(ID_LIBRE)`: hay un solo dibujo libre en curso por dispositivo.
+ */
+@Injectable({ providedIn: 'root' })
+export class DibujoLibreService extends DibujoService {
+  protected override readonly clave = CLAVE_BORRADOR_LIBRE;
+}
+
+export const ID_LIBRE = 'libre';

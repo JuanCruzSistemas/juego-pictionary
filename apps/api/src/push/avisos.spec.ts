@@ -26,6 +26,14 @@ describe('avisos', () => {
     });
   });
 
+  it('"Te dejó un dibujito", que abre ese dibujo', () => {
+    expect(avisos.libre('Mili', 'd-1')).toEqual({
+      titulo: 'Mili te dejó un dibujito',
+      cuerpo: 'Sin nada que adivinar. Abrilo cuando quieras.',
+      url: '/recibido/d-1',
+    });
+  });
+
   it('"Te toca dibujar", con el texto acordado', () => {
     expect(avisos.salteo('Juanchi')).toEqual({
       titulo: 'Te toca dibujar',

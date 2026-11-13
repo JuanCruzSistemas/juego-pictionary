@@ -10,8 +10,8 @@ import { tarjetasExtra } from '../../pwa/tarjetas';
 
 /**
  * Inicio. Diseño: docs/diseno/Main.dc.html.
- * En la etapa 1 se muestra solo la tarjeta del turno: racha, dibujos libres, modo en vivo
- * y últimos dibujos llegan en las etapas 2 y 4.
+ * La tarjeta del turno, el dibujo libre sin abrir y el botón para dejar uno. La racha,
+ * el modo en vivo y los últimos dibujos llegan después.
  */
 @Component({
   selector: 'app-inicio',

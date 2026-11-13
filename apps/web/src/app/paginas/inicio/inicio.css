@@ -93,6 +93,52 @@ h2 {
   line-height: 1.35;
 }
 
+/* "[nombre] te dejó un dibujito": la tarjeta punteada de Main.dc.html. */
+.libre-nuevo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 12px 14px;
+  background: var(--hoja);
+  border: 2px dashed var(--birome);
+  border-radius: 14px;
+  color: var(--birome);
+  text-decoration: none;
+}
+
+.libre-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+}
+
+.libre-texto strong {
+  font-size: 16px;
+}
+
+/* El botón "Dibujo libre" de Main.dc.html. */
+.libre-boton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-height: 72px;
+  padding: 12px 14px;
+  background: var(--hoja);
+  border: 2px solid var(--birome);
+  border-radius: 14px;
+  color: var(--birome);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.libre-boton strong {
+  font-family: var(--fuente-titulo);
+  font-size: 18px;
+}
+
 @media (max-height: 700px) {
   .pantalla {
     gap: 12px;

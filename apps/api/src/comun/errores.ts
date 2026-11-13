@@ -35,5 +35,11 @@ export const sinSalteos = () =>
 export const dibujoNoDisponible = () =>
   new ErrorDeApi(HttpStatus.NOT_FOUND, 'dibujo_no_disponible', 'Todavía no hay un dibujo para este turno.');
 
+export const faltaLaOtraPersona = () =>
+  new ErrorDeApi(HttpStatus.CONFLICT, 'falta_la_otra_persona', 'Todavía no entró la otra persona.');
+
+export const libreNoEncontrado = () =>
+  new ErrorDeApi(HttpStatus.NOT_FOUND, 'libre_no_encontrado', 'No encontramos ese dibujo.');
+
 export const resumenNoDisponible = () =>
   new ErrorDeApi(HttpStatus.CONFLICT, 'resumen_no_disponible', 'Este turno todavía no se adivinó.');

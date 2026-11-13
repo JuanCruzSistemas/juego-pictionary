@@ -1,0 +1,51 @@
+.pantalla {
+  gap: 16px;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+.volver {
+  display: flex;
+  flex: none;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--birome);
+}
+
+.encabezado {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 4px;
+}
+
+h1 {
+  font-size: 30px;
+  line-height: 1.15;
+}
+
+/* El dibujo es cuadrado: su lado es el mínimo entre el ancho y el alto que queda. */
+.zona-dibujo {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 120px;
+}
+
+.vista {
+  flex: 1 1 auto;
+}
+
+.btn-principal {
+  flex: none;
+}
+
+@media (max-height: 700px) {
+  .pantalla {
+    gap: 10px;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+  h1 {
+    font-size: 26px;
+  }
+}

@@ -1,0 +1,75 @@
+<main class="pantalla">
+  <header>
+    <a routerLink="/" class="icono" aria-label="Volver al inicio">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+    </a>
+    <h1 class="titulo consigna">Dibujo libre</h1>
+    <button type="button" class="icono" aria-label="Deshacer el último trazo" [disabled]="dibujo.vacio() || enviando()"
+      (click)="deshacer()">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10 6 4 12l6 6"></path><path d="M4 12h13a7 7 0 0 1 0 14h-5"></path>
+      </svg>
+    </button>
+  </header>
+
+  <app-lienzo-canvas
+    class="lienzo"
+    [trazos]="dibujo.trazos()"
+    [color]="colorDelTrazo()"
+    [grosor]="anchoDelTrazo()"
+    [tiempo]="dibujo.tiempo"
+    [bloqueado]="enviando()"
+    (terminado)="trazoTerminado($event)"
+  />
+
+  <div class="colores" role="group" aria-label="Colores">
+    @for (c of colores; track c.hex) {
+      <button type="button" class="color" [style.background]="c.hex" [attr.aria-label]="c.nombre"
+        [attr.aria-pressed]="!goma() && color() === c.hex" (click)="elegirColor(c.hex)"></button>
+    }
+  </div>
+
+  <div class="herramientas">
+    <div class="grupo" role="group" aria-label="Grosor">
+      @for (g of grosores; track g[0]) {
+        <button type="button" class="herramienta" [attr.aria-label]="g[1].nombre"
+          [attr.aria-pressed]="grosor() === g[0]" (click)="elegirGrosor(g[0])">
+          <span class="punto" [style.width.px]="g[1].punto" [style.height.px]="g[1].punto"></span>
+        </button>
+      }
+    </div>
+    <div class="grupo">
+      <button type="button" class="herramienta" aria-label="Goma de borrar" [attr.aria-pressed]="goma()"
+        (click)="alternarGoma()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--birome)" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m14 4 6 6-9 9H7l-3-3a2 2 0 0 1 0-3l10-9Z"></path><path d="M9 8l6 6"></path>
+        </svg>
+      </button>
+      <button type="button" class="herramienta borrar" [class.confirmando]="confirmandoBorrado()"
+        [attr.aria-label]="confirmandoBorrado() ? 'Tocá de nuevo para borrar todo' : 'Borrar todo el dibujo'"
+        [disabled]="dibujo.vacio() || enviando()" (click)="borrarTodo()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="pie">
+    @if (confirmandoBorrado()) {
+      <p class="mensaje-error" role="status">Tocá de nuevo el tacho para borrar todo el dibujo.</p>
+    } @else if (fallo(); as f) {
+      <p class="mensaje-error" role="alert">{{ f }}</p>
+    } @else if (aviso(); as a) {
+      <p class="aviso" role="status">{{ a }}</p>
+    }
+    <button type="button" class="btn-principal" [disabled]="enviando()" (click)="dejar()">
+      {{ enviando() ? 'Mandando…' : fallo() ? 'Reintentar' : otro() ? 'Dejárselo a ' + otro() : 'Dejárselo' }}
+    </button>
+  </div>
+</main>
+<app-aviso-girar />

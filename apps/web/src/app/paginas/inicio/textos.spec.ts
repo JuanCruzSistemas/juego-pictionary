@@ -12,6 +12,7 @@ function estado(turno: Partial<TurnoActual> | null, anterior: TurnoAnterior | nu
     turno: turno ? { id: 't', numero: 3, rol: 'dibuja', estado: 'eligiendo', intentos: 0, ...turno } : null,
     anterior,
     salteos: { quedan: 3, maximo: 3, proximoEn: null },
+    libreNuevo: null,
   };
 }
 

@@ -1,0 +1,29 @@
+<main class="pantalla">
+  <a routerLink="/" class="volver" aria-label="Volver al inicio">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+  </a>
+
+  @if (libre(); as l) {
+    <div class="encabezado">
+      <h1 class="titulo">{{ l.mio ? 'Le dejaste esto' : l.autor + ' te dejó esto' }}</h1>
+      <p class="texto-suave">{{ cuando(l.creadoEn) }} · Nada que adivinar</p>
+    </div>
+
+    <div class="zona-dibujo">
+      <app-dibujo-vista class="vista" [trazos]="l.trazos" [descripcion]="'Dibujo libre de ' + l.autor" />
+    </div>
+
+    <a routerLink="/libre" class="btn-principal">{{ l.mio ? 'Dejarle otro' : 'Responder con un dibujo' }}</a>
+  } @else if (error(); as e) {
+    <div class="encabezado">
+      <h1 class="titulo">No pudimos cargar el dibujo</h1>
+      <p>{{ e }}</p>
+    </div>
+    <button type="button" class="btn-principal" [disabled]="cargando()" (click)="cargar()">
+      {{ cargando() ? 'Probando…' : 'Probar de nuevo' }}
+    </button>
+  } @else {
+    <p class="texto-suave" role="status">Cargando…</p>
+  }
+</main>

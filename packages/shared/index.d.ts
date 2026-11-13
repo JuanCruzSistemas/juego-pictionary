@@ -30,7 +30,11 @@ export type CodigoError =
   /** El dibujo todavía no se mandó. */
   | 'dibujo_no_disponible'
   /** El turno todavía no se adivinó: no hay resumen. */
-  | 'resumen_no_disponible';
+  | 'resumen_no_disponible'
+  /** Todavía no entró la otra persona: no hay a quién dejarle un dibujo. */
+  | 'falta_la_otra_persona'
+  /** No existe ese dibujo libre en la sala. */
+  | 'libre_no_encontrado';
 
 /** Cuerpo de toda respuesta de error de la API. */
 export type ErrorApi = { codigo: CodigoError; mensaje: string };
@@ -145,6 +149,26 @@ export type SuscripcionBody = {
 /** DELETE /api/push/suscripciones */
 export type DesuscripcionBody = { endpoint: string };
 
+/** POST /api/libres: un dibujo sin nada que adivinar para la otra persona. */
+export type DejarLibreBody = { trazos: Stroke[] };
+export type DejarLibreRespuesta = { id: string };
+
+/** GET /api/libres/:id. Al abrirlo quien lo recibió, queda visto. */
+export type LibreGuardado = {
+  id: string;
+  /** Nombre de quien lo dibujó. */
+  autor: string;
+  /** true si lo dibujó quien pide. */
+  mio: boolean;
+  /** ISO 8601. */
+  creadoEn: string;
+  trazos: Stroke[];
+  duracionMs: number;
+};
+
+/** El último dibujo libre que te dejaron y todavía no abriste. */
+export type LibreNuevo = { id: string; creadoEn: string };
+
 /** GET /api/estado */
 export type Estado = {
   yo: JugadorPublico;
@@ -155,4 +179,6 @@ export type Estado = {
   turno: TurnoActual | null;
   anterior: TurnoAnterior | null;
   salteos: Salteos;
+  /** El último dibujo libre sin abrir que te dejó la otra persona, o null. */
+  libreNuevo: LibreNuevo | null;
 };

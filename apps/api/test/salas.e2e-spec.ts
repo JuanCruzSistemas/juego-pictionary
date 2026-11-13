@@ -123,6 +123,7 @@ describe('Salas y sesión', () => {
         turno: null,
         anterior: null,
         salteos: { quedan: 3, maximo: 3, proximoEn: null },
+        libreNuevo: null,
       });
 
       const b = await entrar('Ana').expect(201);

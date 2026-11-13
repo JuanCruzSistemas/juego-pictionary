@@ -22,6 +22,12 @@ export const avisos = {
     cuerpo: `Era ${palabra}. Ahora te toca adivinar a vos.`,
     url: `/acierto/${turnoId}`,
   }),
+  /** A quien recibe un dibujo libre. Abre ese dibujo. */
+  libre: (quienDibujo: string, libreId: string): Aviso => ({
+    titulo: `${quienDibujo} te dejó un dibujito`,
+    cuerpo: 'Sin nada que adivinar. Abrilo cuando quieras.',
+    url: `/recibido/${libreId}`,
+  }),
   /** A quien pasa a dibujar, cuando la otra persona saltea. */
   salteo: (quienSalteo: string): Aviso => ({
     titulo: 'Te toca dibujar',

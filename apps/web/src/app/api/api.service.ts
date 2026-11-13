@@ -3,6 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { rutaApi } from './rutas';
 import type {
   ClavePush,
+  DejarLibreBody,
+  DejarLibreRespuesta,
+  LibreGuardado,
   SuscripcionBody,
   DibujoGuardado,
   EnviarDibujoBody,
@@ -66,6 +69,14 @@ export class ApiService {
 
   resumen(turnoId: string) {
     return this.http.get<ResumenTurno>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/resumen`));
+  }
+
+  dejarLibre(body: DejarLibreBody) {
+    return this.http.post<DejarLibreRespuesta>(rutaApi('libres'), body);
+  }
+
+  libre(id: string) {
+    return this.http.get<LibreGuardado>(rutaApi(`libres/${encodeURIComponent(id)}`));
   }
 
   clavePush() {

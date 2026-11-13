@@ -97,6 +97,8 @@ model Dibujo {
   trazos     Json
   duracionMs Int
   creadoEn   DateTime @default(now())
+  /// Dibujos libres: cuándo lo abrió quien lo recibió. Null = todavía no lo vio.
+  vistoEn    DateTime?
 
   turno Turno?  @relation(fields: [turnoId], references: [id], onDelete: Cascade)
   autor Jugador @relation(fields: [autorId], references: [id], onDelete: Cascade)

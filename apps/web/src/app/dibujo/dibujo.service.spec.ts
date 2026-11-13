@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import type { Stroke } from '@garabato/shared';
 import { ALMACEN, almacenEnMemoria } from '../comun/almacen';
-import { CLAVE_BORRADOR, DibujoService } from './dibujo.service';
+import { CLAVE_BORRADOR, CLAVE_BORRADOR_LIBRE, DibujoLibreService, DibujoService, ID_LIBRE } from './dibujo.service';
 
 const trazo = (...ts: number[]): Stroke => ({
   color: '#1B2A7A',
@@ -124,6 +124,34 @@ describe('DibujoService', () => {
       const otraVez = reabrir();
       otraVez.usarTurno('t1');
       expect(otraVez.vacio()).toBe(true);
+    });
+  });
+
+  describe('dibujo libre', () => {
+    it('tiene su propio borrador: no pisa ni borra el del turno', () => {
+      d.usarTurno('t1');
+      d.agregar(trazo(0, 10));
+      const libre = TestBed.inject(DibujoLibreService);
+      libre.usarTurno(ID_LIBRE);
+      expect(libre.vacio()).toBe(true);
+      libre.agregar(trazo(5));
+      expect(almacen.datos.has(CLAVE_BORRADOR)).toBe(true);
+      expect(almacen.datos.has(CLAVE_BORRADOR_LIBRE)).toBe(true);
+
+      // Inicio descarta el borrador de un turno viejo: el libre queda.
+      d.descartarSiNoEs('t2');
+      expect(almacen.datos.has(CLAVE_BORRADOR)).toBe(false);
+      expect(almacen.datos.has(CLAVE_BORRADOR_LIBRE)).toBe(true);
+    });
+
+    it('se recupera al volver a abrir la app', () => {
+      const libre = TestBed.inject(DibujoLibreService);
+      libre.usarTurno(ID_LIBRE);
+      libre.agregar(trazo(0, 10));
+      reabrir();
+      const otraVez = TestBed.inject(DibujoLibreService);
+      otraVez.usarTurno(ID_LIBRE);
+      expect(otraVez.trazos()).toEqual([trazo(0, 10)]);
     });
   });
 });

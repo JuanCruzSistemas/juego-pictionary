@@ -6,6 +6,7 @@ import { SesionGuard } from '../sesion/sesion.guard.js';
 import { JugadorActual } from '../sesion/jugador-actual.decorator.js';
 import { vistaDelAnterior, vistaDelTurno } from '../turnos/vista.js';
 import { TurnosService } from '../turnos/turnos.service.js';
+import { LibresService } from '../libres/libres.service.js';
 
 const publico = (j: Jugador) => ({ id: j.id, nombre: j.nombre, lugar: j.lugar });
 
@@ -16,6 +17,7 @@ export class EstadoController {
   constructor(
     private readonly prisma: PrismaService,
     private readonly turnos: TurnosService,
+    private readonly libres: LibresService,
   ) {}
 
   @Get()
@@ -35,6 +37,7 @@ export class EstadoController {
       turno: actual ? vistaDelTurno(actual, yo.id, actual._count.intentos) : null,
       anterior: vistaDelAnterior(anterior, yo.id),
       salteos: await this.turnos.salteosDe(yo.id),
+      libreNuevo: await this.libres.nuevoPara(yo),
     };
   }
 
