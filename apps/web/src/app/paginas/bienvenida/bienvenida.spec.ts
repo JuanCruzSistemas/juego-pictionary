@@ -40,6 +40,8 @@ describe('BienvenidaPage con una sesión guardada', () => {
     [...el.querySelectorAll('button')].find((b) => b.textContent?.trim() === texto);
 
   beforeEach(() => {
+    // Cada test arranca sin sesión ni preferencias guardadas: si no, se filtran de un test al otro.
+    localStorage.clear();
     sala = { llena: false, invitadoPor: 'Mili' };
     TestBed.configureTestingModule({
       providers: [
@@ -122,6 +124,8 @@ describe('BienvenidaPage: avisos al entrar', () => {
   };
 
   beforeEach(() => {
+    // Cada test arranca sin sesión ni preferencias guardadas: si no, se filtran de un test al otro.
+    localStorage.clear();
     llamadas = [];
     avisos = {
       ofrecerTarjeta: signal(true),

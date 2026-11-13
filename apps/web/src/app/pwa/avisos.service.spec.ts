@@ -43,6 +43,8 @@ describe('AvisosService', () => {
   }
 
   beforeEach(() => {
+    // Cada test arranca sin sesión ni preferencias guardadas: si no, se filtran de un test al otro.
+    localStorage.clear();
     permiso = 'default';
     respuestaAlPedir = 'granted';
     clave = 'CLAVE-PUBLICA';

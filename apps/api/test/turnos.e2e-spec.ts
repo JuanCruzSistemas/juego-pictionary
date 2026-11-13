@@ -1,3 +1,4 @@
+import { normalizar } from '../src/comun/texto.js';
 import { crearAppDeTest, limpiar, type AppDeTest } from './util/app-de-test.js';
 import { salaCon, type Persona } from './util/sala-de-test.js';
 
@@ -30,7 +31,8 @@ describe('Elegir palabra y saltear', () => {
 
       const db = await t.prisma.turno.findUniqueOrThrow({ where: { id: turno.id } });
       expect(db).toMatchObject({ palabra: elegida, origen: 'sugerida', estado: 'dibujando' });
-      expect(db.palabraNormalizada).toBe(elegida.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase());
+      // Con la misma función de la API: conserva la ñ ("Montaña" → "montaña").
+      expect(db.palabraNormalizada).toBe(normalizar(elegida));
     });
 
     it('una palabra propia se guarda tal cual y también normalizada', async () => {
