@@ -1,5 +1,5 @@
 import { PALABRAS_BASE } from '../../prisma/palabras-base.js';
-import { seParecen, sortearOpciones } from './sorteo.js';
+import { seParecen, sortearOpciones, sortearConPropias } from './sorteo.js';
 
 /** Generador determinístico para que los tests no dependan de la suerte. */
 function azarConSemilla(semilla: number): () => number {
@@ -55,5 +55,41 @@ describe('sortearOpciones', () => {
   it('si no alcanza para evitar parecidos, completa igual con palabras distintas', () => {
     const opciones = sortearOpciones(['Gato', 'Pato', 'Rato'], azarConSemilla(1));
     expect(new Set(opciones).size).toBe(3);
+  });
+});
+
+describe('sortearConPropias', () => {
+  const base = ['Mate', 'Bicicleta', 'Paraguas', 'Volcán', 'Pulpo', 'Faro'];
+  const propias = ['Patineta de Pili', 'Mesa de luz'];
+  /** Un azar fijo: devuelve los valores en orden, y después siempre el último. */
+  const azar = (...v: number[]) => () => (v.length > 1 ? v.shift()! : v[0]);
+
+  it('sin palabras propias, sortea de la lista base', () => {
+    const o = sortearConPropias(base, [], azar(0.1));
+    expect(o).toHaveLength(3);
+    expect(o.every((p) => base.includes(p))).toBe(true);
+  });
+
+  it('en la mitad de los turnos, una de las tres es propia', () => {
+    const o = sortearConPropias(base, propias, azar(0.2, 0.3));
+    expect(o).toHaveLength(3);
+    expect(o.filter((p) => propias.includes(p))).toHaveLength(1);
+  });
+
+  it('en la otra mitad, salen de todas juntas', () => {
+    for (let i = 0; i < 50; i++) {
+      const o = sortearConPropias(base, propias, azar(0.7, Math.random()));
+      expect(o).toHaveLength(3);
+      expect(new Set(o).size).toBe(3);
+    }
+  });
+
+  it('con una propia, nunca ofrece una base que se le parezca', () => {
+    for (let i = 0; i < 100; i++) {
+      // "Mate" está dentro de "Mate de Pili": se parecen (como Flor/Florero).
+      const o = sortearConPropias(['Mate', 'Faro', 'Pulpo', 'Volcán'], ['Mate de Pili'], azar(0.1, Math.random()));
+      expect(o).toContain('Mate de Pili');
+      expect(o).not.toContain('Mate');
+    }
   });
 });

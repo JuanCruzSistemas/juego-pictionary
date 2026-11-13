@@ -44,6 +44,11 @@ export const routes: Routes = [
     loadComponent: () => import('./paginas/seguimiento/seguimiento').then((m) => m.SeguimientoPage),
   },
   {
+    path: 'palabras',
+    canActivate: [conSesion],
+    loadComponent: () => import('./paginas/palabras/palabras').then((m) => m.PalabrasPage),
+  },
+  {
     path: 'libre',
     canActivate: [conSesion],
     loadComponent: () => import('./paginas/libre/libre').then((m) => m.LibrePage),

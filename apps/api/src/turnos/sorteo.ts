@@ -35,3 +35,29 @@ export function sortearOpciones(
   }
   return elegidas;
 }
+
+/** En qué proporción de los turnos una de las opciones es una palabra propia de la sala. */
+export const PROPORCION_CON_PROPIA = 0.5;
+
+/**
+ * Las opciones de un turno. Con palabras propias, en la mitad de los turnos una de las tres
+ * es propia (si no, se perderían entre las palabras base); el resto sale de todas juntas.
+ */
+export function sortearConPropias(
+  base: readonly string[],
+  propias: readonly string[],
+  azar: () => number = Math.random,
+  cantidad = CANTIDAD_DE_OPCIONES,
+): string[] {
+  if (propias.length === 0 || azar() >= PROPORCION_CON_PROPIA) return sortearOpciones([...base, ...propias], azar, cantidad);
+  const [propia] = sortearOpciones(propias, azar, 1);
+  const resto = sortearOpciones(
+    base.filter((p) => !seParecen(p, propia)),
+    azar,
+    cantidad - 1,
+  );
+  // La propia en un lugar al azar, para que no sea siempre la primera.
+  const lugar = Math.floor(azar() * cantidad);
+  resto.splice(Math.min(lugar, resto.length), 0, propia);
+  return resto;
+}

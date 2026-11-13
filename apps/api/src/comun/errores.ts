@@ -41,5 +41,8 @@ export const faltaLaOtraPersona = () =>
 export const libreNoEncontrado = () =>
   new ErrorDeApi(HttpStatus.NOT_FOUND, 'libre_no_encontrado', 'No encontramos ese dibujo.');
 
+export const palabraNoEncontrada = () =>
+  new ErrorDeApi(HttpStatus.NOT_FOUND, 'palabra_no_encontrada', 'No encontramos esa palabra.');
+
 export const resumenNoDisponible = () =>
   new ErrorDeApi(HttpStatus.CONFLICT, 'resumen_no_disponible', 'Este turno todavía no se adivinó.');

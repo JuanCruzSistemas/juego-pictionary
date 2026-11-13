@@ -16,6 +16,7 @@ import type {
   IntentoPublico,
   IntentoRespuesta,
   PalabraBody,
+  PalabraPropia,
   PistaPublica,
   RendirseRespuesta,
   ResumenTurno,
@@ -70,6 +71,18 @@ export class ApiService {
 
   mandarPista(turnoId: string, texto: string) {
     return this.http.post<PistaPublica[]>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/pistas`), { texto });
+  }
+
+  palabras() {
+    return this.http.get<PalabraPropia[]>(rutaApi('palabras'));
+  }
+
+  sumarPalabra(texto: string) {
+    return this.http.post<PalabraPropia[]>(rutaApi('palabras'), { texto });
+  }
+
+  quitarPalabra(id: string) {
+    return this.http.delete<PalabraPropia[]>(rutaApi(`palabras/${encodeURIComponent(id)}`));
   }
 
   rendirse(turnoId: string) {

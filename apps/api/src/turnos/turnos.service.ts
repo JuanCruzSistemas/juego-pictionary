@@ -29,7 +29,7 @@ import {
   turnoNoEncontrado,
 } from '../comun/errores.js';
 import { duracionDe } from '../dibujos/reglas.js';
-import { sortearOpciones } from './sorteo.js';
+import { sortearConPropias } from './sorteo.js';
 import { contarSalteos, inicioDeLaVentana } from './salteos.js';
 import type { PalabraValidada } from './palabra.js';
 import { vistaDelTurno } from './vista.js';
@@ -54,9 +54,12 @@ export class TurnosService {
   ): Promise<Turno> {
     const palabras = await tx.palabra.findMany({
       where: { OR: [{ salaId: null }, { salaId: datos.salaId }] },
-      select: { texto: true },
+      select: { texto: true, salaId: true },
     });
-    const opciones = sortearOpciones(palabras.map((p) => p.texto));
+    const opciones = sortearConPropias(
+      palabras.filter((p) => p.salaId === null).map((p) => p.texto),
+      palabras.filter((p) => p.salaId !== null).map((p) => p.texto),
+    );
     return tx.turno.create({ data: { ...datos, opciones } });
   }
 

@@ -120,3 +120,7 @@ h1 {
     gap: 8px;
   }
 }
+
+.nuestras {
+  justify-content: flex-start;
+}

@@ -8,7 +8,7 @@ import { PALABRA_MAXIMA, problemaDeLaPalabra, textoDeSalteos } from './reglas';
 
 /**
  * Elegir palabra. Diseño: docs/diseno/Elegir.dc.html.
- * "Ver nuestras palabras" queda oculto hasta la etapa 2.
+ * "Ver nuestras palabras" lleva a las palabras propias de la sala.
  */
 @Component({
   selector: 'app-elegir',

@@ -8,6 +8,7 @@ export type Persona = {
   jugador: JugadorPublico;
   get: (ruta: string) => request.Test;
   post: (ruta: string, body?: object) => request.Test;
+  delete: (ruta: string) => request.Test;
 };
 
 /** Crea una sala y hace entrar a las personas indicadas, en orden. */
@@ -27,6 +28,7 @@ export async function salaCon(t: AppDeTest, ...nombres: string[]) {
       get: (ruta) => request(t.app.getHttpServer()).get(ruta).set('Authorization', `Bearer ${token}`),
       post: (ruta, body = {}) =>
         request(t.app.getHttpServer()).post(ruta).set('Authorization', `Bearer ${token}`).send(body),
+      delete: (ruta) => request(t.app.getHttpServer()).delete(ruta).set('Authorization', `Bearer ${token}`),
     });
   }
   return { sala, invitacion, personas };

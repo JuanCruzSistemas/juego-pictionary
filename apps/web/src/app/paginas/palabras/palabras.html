@@ -1,0 +1,56 @@
+<main class="pantalla">
+  <header>
+    <button type="button" class="volver" aria-label="Volver" (click)="volver()">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+    </button>
+    <h1 class="titulo">Nuestras palabras</h1>
+  </header>
+  <p class="intro">Sumá chistes internos. El juego las mezcla con las palabras base.</p>
+
+  <form class="nueva" novalidate (submit)="sumar($event)">
+    <label for="nueva" class="etiqueta">Nueva palabra</label>
+    <div class="fila">
+      <input
+        id="nueva"
+        type="text"
+        class="campo"
+        placeholder="Escribí una palabra"
+        autocomplete="off"
+        enterkeyhint="done"
+        [attr.maxlength]="maximo"
+        [value]="borrador()"
+        [attr.aria-describedby]="mensaje() ? 'nueva-mensaje' : null"
+        (input)="escribir($any($event.target).value)"
+      />
+      <button type="submit" class="sumar" [disabled]="!sePuedeSumar()">{{ sumando() ? '…' : 'Sumar' }}</button>
+    </div>
+    @if (mensaje(); as m) {
+      <p id="nueva-mensaje" class="mensaje-error" role="alert">{{ m }}</p>
+    }
+  </form>
+
+  @if (lista(); as l) {
+    @if (l.length > 0) {
+      <ul class="lista" aria-label="Palabras propias">
+        @for (p of l; track p.id) {
+          <li class="palabra">
+            <span>{{ p.texto }}</span>
+            <button type="button" class="quitar" [attr.aria-label]="'Sacar ' + p.texto" [disabled]="quitando() === p.id"
+              (click)="quitar(p)">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"></path></svg>
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="texto-suave">Todavía no sumaron ninguna.</p>
+    }
+  } @else if (errorDeCarga(); as e) {
+    <p class="mensaje-error" role="alert">{{ e }}</p>
+    <button type="button" class="btn-secundario" (click)="cargar()">Probar de nuevo</button>
+  } @else {
+    <p class="texto-suave" role="status">Cargando…</p>
+  }
+</main>

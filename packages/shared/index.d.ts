@@ -34,7 +34,9 @@ export type CodigoError =
   /** Todavía no entró la otra persona: no hay a quién dejarle un dibujo. */
   | 'falta_la_otra_persona'
   /** No existe ese dibujo libre en la sala. */
-  | 'libre_no_encontrado';
+  | 'libre_no_encontrado'
+  /** No existe esa palabra propia en la sala. */
+  | 'palabra_no_encontrada';
 
 /** Cuerpo de toda respuesta de error de la API. */
 export type ErrorApi = { codigo: CodigoError; mensaje: string };
@@ -174,6 +176,10 @@ export type LibreGuardado = {
 
 /** El último dibujo libre que te dejaron y todavía no abriste. */
 export type LibreNuevo = { id: string; creadoEn: string };
+
+/** GET y POST /api/palabras: las palabras propias de la sala, de la más nueva a la más vieja. */
+export type PalabraPropia = { id: string; texto: string };
+export type PalabraNuevaBody = { texto: string };
 
 /** GET /api/estado */
 export type Estado = {

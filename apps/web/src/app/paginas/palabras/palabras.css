@@ -1,0 +1,136 @@
+.pantalla {
+  gap: 16px;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.volver {
+  display: flex;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--birome);
+  cursor: pointer;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+.intro {
+  flex: none;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.nueva {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fila {
+  display: flex;
+  gap: 8px;
+}
+
+.fila .campo {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sumar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  min-height: 52px;
+  padding: 0 18px;
+  background: var(--resaltador);
+  color: var(--birome);
+  border: 2.5px solid var(--birome);
+  border-radius: 12px;
+  box-shadow: var(--sombra-boton);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.sumar:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.sumar:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* La lista scrollea sola si son muchas: la pantalla no se mueve. */
+.lista {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.palabra {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 4px 0 12px;
+  background: var(--hoja);
+  border: 2px solid var(--birome);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.quitar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--correccion);
+  cursor: pointer;
+}
+
+.quitar:disabled {
+  opacity: 0.4;
+}
+
+@media (max-height: 700px) {
+  .pantalla {
+    gap: 10px;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+  h1 {
+    font-size: 24px;
+  }
+}

@@ -7,8 +7,9 @@ import { HealthModule } from './health/health.module.js';
 import { SalasModule } from './salas/salas.module.js';
 import { EstadoModule } from './estado/estado.module.js';
 import { LibresModule } from './libres/libres.module.js';
+import { PalabrasModule } from './palabras/palabras.module.js';
 
 @Module({
-  imports: [PrismaModule, RelojModule, TurnosModule, PushModule, HealthModule, SalasModule, EstadoModule, LibresModule],
+  imports: [PrismaModule, RelojModule, TurnosModule, PushModule, HealthModule, SalasModule, EstadoModule, LibresModule, PalabrasModule],
 })
 export class AppModule {}
