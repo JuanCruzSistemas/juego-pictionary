@@ -38,6 +38,7 @@ export class EstadoController {
       anterior: vistaDelAnterior(anterior, yo.id),
       salteos: await this.turnos.salteosDe(yo.id),
       libreNuevo: await this.libres.nuevoPara(yo),
+      racha: await this.turnos.rachaDe(yo.salaId),
     };
   }
 

@@ -10,6 +10,30 @@ header {
   gap: 12px;
 }
 
+.lado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* La racha: resaltada si hoy ya adivinaron; punteada si todavía falta adivinar algo hoy. */
+.racha {
+  padding: 4px 12px;
+  background: var(--resaltador);
+  border: 2px solid var(--birome);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.racha.pendiente {
+  background: var(--hoja);
+  border-style: dashed;
+}
+
 .quien {
   font-size: 14px;
   text-align: right;

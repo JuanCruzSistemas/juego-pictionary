@@ -174,6 +174,8 @@ describe('Intentos', () => {
       intentos: 5, // 4 fallidas ("avion" repite a "Avión") y el acierto
       trazos: dibujo,
       adivine: true,
+      pistas: 0,
+      racha: { dias: 1, hoy: true },
     });
     expect((await juan.get(`/api/turnos/${turnoId}/resumen`).expect(200)).body).toMatchObject({ palabra: 'Zeppelin', adivine: false });
   });

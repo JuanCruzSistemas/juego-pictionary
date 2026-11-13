@@ -56,6 +56,7 @@ h1.chico {
 .datos {
   display: flex;
   justify-content: center;
+  gap: 8px;
 }
 
 .dato {
@@ -63,8 +64,10 @@ h1.chico {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  min-width: 108px;
-  padding: 10px 16px;
+  flex: 0 1 108px;
+  min-width: 0;
+  padding: 10px 8px;
+  text-align: center;
   background: var(--hoja);
   border: 2px solid var(--birome);
   border-radius: 12px;

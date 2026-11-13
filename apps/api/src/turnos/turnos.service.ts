@@ -5,6 +5,7 @@ import type {
   IntentoPublico,
   IntentoRespuesta,
   PistaPublica,
+  Racha,
   RendirseRespuesta,
   ResumenTurno,
   Salteos,
@@ -33,6 +34,7 @@ import { sortearConPropias } from './sorteo.js';
 import { contarSalteos, inicioDeLaVentana } from './salteos.js';
 import type { PalabraValidada } from './palabra.js';
 import { vistaDelTurno } from './vista.js';
+import { calcularRacha } from './racha.js';
 
 /** Estados en los que quien dibuja todavía puede cambiar la palabra o saltear. */
 const ABIERTOS = ['eligiendo', 'dibujando'] as const;
@@ -89,6 +91,18 @@ export class TurnosService {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') return;
       throw e;
     }
+  }
+
+  /** La racha compartida de la sala, según el reloj. */
+  async rachaDe(salaId: string): Promise<Racha> {
+    const aciertos = await this.prisma.turno.findMany({
+      where: { salaId, estado: 'adivinado', adivinadoEn: { not: null } },
+      select: { adivinadoEn: true },
+    });
+    return calcularRacha(
+      aciertos.map((a) => a.adivinadoEn!),
+      this.reloj.ahora(),
+    );
   }
 
   /** Salteos que le quedan a la persona, según el reloj. */
@@ -328,7 +342,7 @@ export class TurnosService {
   async resumen(yo: Jugador, turnoId: string): Promise<ResumenTurno> {
     const turno = await this.prisma.turno.findFirst({
       where: { id: turnoId, salaId: yo.salaId },
-      include: { dibujo: true, _count: { select: { intentos: true } } },
+      include: { dibujo: true, _count: { select: { intentos: true, pistas: true } } },
     });
     if (!turno || (turno.dibujaId !== yo.id && turno.adivinaId !== yo.id)) throw turnoNoEncontrado();
     const terminado = turno.estado === 'adivinado' || turno.estado === 'rendido';
@@ -341,6 +355,8 @@ export class TurnosService {
       intentos: turno._count.intentos,
       trazos: turno.dibujo.trazos as Stroke[],
       adivine: turno.adivinaId === yo.id,
+      pistas: turno._count.pistas,
+      racha: await this.rachaDe(turno.salaId),
     };
   }
 

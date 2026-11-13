@@ -10,10 +10,22 @@
     </div>
 
     <div class="datos">
+      @if (r.racha.dias > 0) {
+        <div class="dato">
+          <strong>{{ r.racha.dias }}</strong>
+          <span>{{ r.racha.dias === 1 ? 'día de racha' : 'días de racha' }}</span>
+        </div>
+      }
       <div class="dato">
         <strong>{{ r.intentos }}</strong>
         <span>{{ r.intentos === 1 ? 'intento' : 'intentos' }}</span>
       </div>
+      @if (r.pistas > 0) {
+        <div class="dato">
+          <strong>{{ r.pistas }}</strong>
+          <span>{{ r.pistas === 1 ? 'pista' : 'pistas' }}</span>
+        </div>
+      }
     </div>
 
     <div class="acciones">

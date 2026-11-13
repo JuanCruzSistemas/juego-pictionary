@@ -13,6 +13,7 @@ function estado(turno: Partial<TurnoActual> | null, anterior: TurnoAnterior | nu
     anterior,
     salteos: { quedan: 3, maximo: 3, proximoEn: null },
     libreNuevo: null,
+    racha: { dias: 0, hoy: false },
   };
 }
 

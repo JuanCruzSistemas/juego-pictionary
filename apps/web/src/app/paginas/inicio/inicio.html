@@ -2,7 +2,15 @@
   <header>
     <h1 class="titulo logo"><span class="resaltado">Garabato</span></h1>
     @if (estado(); as e) {
-      <p class="quien texto-suave">Entraste como {{ e.yo.nombre }}</p>
+      <div class="lado">
+        @if (e.racha.dias > 0) {
+          <p class="racha" [class.pendiente]="!e.racha.hoy"
+            [attr.title]="e.racha.hoy ? 'Hoy ya adivinaron' : 'Adivinen algo hoy para no cortarla'">
+            Racha: {{ e.racha.dias }} {{ e.racha.dias === 1 ? 'día' : 'días' }}
+          </p>
+        }
+        <p class="quien texto-suave">Entraste como {{ e.yo.nombre }}</p>
+      </div>
     }
   </header>
 

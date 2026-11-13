@@ -139,6 +139,10 @@ export type ResumenTurno = {
   trazos: Stroke[];
   /** true si quien pide es quien adivinaba. */
   adivine: boolean;
+  /** Pistas que mandó quien dibujó. */
+  pistas: number;
+  /** La racha de la sala en este momento. */
+  racha: Racha;
 };
 
 /** POST /api/turnos/:id/rendirse: se revela la palabra y se crea el turno siguiente. */
@@ -181,6 +185,13 @@ export type LibreNuevo = { id: string; creadoEn: string };
 export type PalabraPropia = { id: string; texto: string };
 export type PalabraNuevaBody = { texto: string };
 
+/** Días seguidos en los que alguno de los dos adivinó un dibujo del otro, en hora de Argentina. */
+export type Racha = {
+  dias: number;
+  /** true si hoy ya adivinaron: la racha está a salvo hasta mañana. */
+  hoy: boolean;
+};
+
 /** GET /api/estado */
 export type Estado = {
   yo: JugadorPublico;
@@ -193,4 +204,5 @@ export type Estado = {
   salteos: Salteos;
   /** El último dibujo libre sin abrir que te dejó la otra persona, o null. */
   libreNuevo: LibreNuevo | null;
+  racha: Racha;
 };

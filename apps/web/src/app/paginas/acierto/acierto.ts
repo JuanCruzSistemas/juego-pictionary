@@ -7,7 +7,7 @@ import { DibujoVista } from '../../dibujo/dibujo-vista';
 
 /**
  * Acierto. Diseño: docs/diseno/Acierto.dc.html.
- * La racha, las pistas y "Ver historial" llegan en la etapa 2.
+ * Muestra la racha, los intentos y las pistas del turno.
  */
 @Component({
   selector: 'app-acierto',
