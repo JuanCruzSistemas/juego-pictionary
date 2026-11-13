@@ -4,6 +4,7 @@ import type {
   EnviarDibujoRespuesta,
   IntentoPublico,
   IntentoRespuesta,
+  PistaPublica,
   RendirseRespuesta,
   ResumenTurno,
   SalteoRespuesta,
@@ -11,6 +12,7 @@ import type {
   TurnoActual,
 } from '@garabato/shared';
 import { intentoSchema } from './intento.js';
+import { pistaSchema } from './pista.js';
 import type { Jugador } from '../generated/prisma/client.js';
 import { SesionGuard } from '../sesion/sesion.guard.js';
 import { JugadorActual } from '../sesion/jugador-actual.decorator.js';
@@ -67,6 +69,21 @@ export class TurnosController {
     @Body({ schema: intentoSchema }) body: { texto: string },
   ): Promise<IntentoRespuesta> {
     return this.turnos.probar(yo, id, body.texto);
+  }
+
+  @Get(':id/pistas')
+  pistas(@JugadorActual() yo: Jugador, @Param('id') id: string): Promise<PistaPublica[]> {
+    return this.turnos.pistasDe(yo, id);
+  }
+
+  @Post(':id/pistas')
+  @HttpCode(200)
+  mandarPista(
+    @JugadorActual() yo: Jugador,
+    @Param('id') id: string,
+    @Body({ schema: pistaSchema }) body: { texto: string },
+  ): Promise<PistaPublica[]> {
+    return this.turnos.mandarPista(yo, id, body.texto);
   }
 
   @Post(':id/rendirse')

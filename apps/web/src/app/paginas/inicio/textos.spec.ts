@@ -9,7 +9,7 @@ function estado(turno: Partial<TurnoActual> | null, anterior: TurnoAnterior | nu
     yo,
     otro: turno ? ana : null,
     invitacion: 'abc',
-    turno: turno ? { id: 't', numero: 3, rol: 'dibuja', estado: 'eligiendo', intentos: 0, ...turno } : null,
+    turno: turno ? { id: 't', numero: 3, rol: 'dibuja', estado: 'eligiendo', intentos: 0, pistas: 0, ...turno } : null,
     anterior,
     salteos: { quedan: 3, maximo: 3, proximoEn: null },
     libreNuevo: null,
@@ -54,10 +54,10 @@ describe('tarjetaDeInicio', () => {
     );
   });
 
-  it('esperar mientras adivina, con los intentos', () => {
+  it('esperar mientras adivina, con los intentos y el botón para mandar pistas', () => {
     const t = tarjetaDeInicio(estado({ estado: 'adivinando', intentos: 3 }));
     expect(t).toMatchObject({ titulo: 'Ana está adivinando', texto: 'Lleva 3 intentos.' });
-    expect(t.accion).toBeUndefined();
+    expect(t.accion).toEqual({ texto: 'Ver intentos y mandar pista', ruta: '/seguimiento' });
     expect(tarjetaDeInicio(estado({ estado: 'adivinando', intentos: 1 })).texto).toBe('Lleva 1 intento.');
   });
 

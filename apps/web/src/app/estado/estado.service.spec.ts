@@ -85,7 +85,7 @@ describe('EstadoService.aplicarTurno', () => {
 
     respuesta = enCamino;
     s.actualizar(); // sale un pedido...
-    s.aplicarTurno({ id: 't', numero: 1, rol: 'dibuja', estado: 'dibujando', intentos: 0, palabra: 'Mate' });
+    s.aplicarTurno({ id: 't', numero: 1, rol: 'dibuja', estado: 'dibujando', intentos: 0, pistas: 0, palabra: 'Mate' });
     enCamino.next(viejo('eligiendo')); // ...y vuelve con el estado de antes de elegir
     enCamino.complete();
     expect(s.estado()?.turno).toMatchObject({ estado: 'dibujando', palabra: 'Mate' });

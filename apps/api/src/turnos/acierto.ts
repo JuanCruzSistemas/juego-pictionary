@@ -40,6 +40,26 @@ function seParece(respuesta: string, palabra: string): boolean {
 }
 
 /**
+ * ¿El texto contiene la palabra? Toda la palabra dentro del texto, o alguna de sus palabras
+ * (o grupo de palabras seguidas) que la acertaría como respuesta: "mates ricos" contiene "Mate".
+ */
+export function contieneLaPalabra(texto: string, palabra: string): boolean {
+  const t = normalizar(texto);
+  const p = sinArticulo(palabra);
+  if (p.length === 0) return false;
+  if (` ${t} `.includes(` ${p} `)) return true;
+  const palabras = t.split(' ');
+  const largo = p.split(' ').length;
+  // Grupos del mismo largo que la palabra, y de una más: "arco iris" contiene "Arcoíris".
+  for (const n of [largo, largo + 1]) {
+    for (let i = 0; i + n <= palabras.length; i++) {
+      if (acierta(palabras.slice(i, i + n).join(' '), palabra)) return true;
+    }
+  }
+  return false;
+}
+
+/**
  * ¿La respuesta acierta la palabra? Sin tildes ni mayúsculas, sin un artículo al principio,
  * aceptando una "s" o "es" de más en cualquiera de las dos, y con errores chicos según el largo
  * de la palabra: hasta 4 letras, solo un intercambio de dos letras contiguas; de 5 a 7, 1 error;

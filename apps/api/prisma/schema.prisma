@@ -55,6 +55,7 @@ model Jugador {
   dibujos       Dibujo[]
   intentos      Intento[]
   salteos       Salteo[]
+  pistas        Pista[]
   suscripciones SuscripcionPush[]
 
   @@unique([salaId, lugar])
@@ -83,6 +84,7 @@ model Turno {
   dibujo   Dibujo?
   intentos Intento[]
   salteo   Salteo?
+  pistas   Pista[]
 
   @@unique([salaId, numero])
   @@map("turnos")
@@ -119,6 +121,21 @@ model Intento {
 
   @@index([turnoId, creadoEn])
   @@map("intentos")
+}
+
+/// Etapa 2. Una pista que quien dibuja le manda a quien adivina, mientras adivina.
+model Pista {
+  id       String   @id @default(uuid())
+  turnoId  String
+  autorId  String
+  texto    String
+  creadoEn DateTime @default(now())
+
+  turno Turno   @relation(fields: [turnoId], references: [id], onDelete: Cascade)
+  autor Jugador @relation(fields: [autorId], references: [id], onDelete: Cascade)
+
+  @@index([turnoId, creadoEn])
+  @@map("pistas")
 }
 
 model Salteo {

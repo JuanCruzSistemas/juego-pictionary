@@ -21,6 +21,14 @@
     }
   </div>
 
+  @if (pistasRecientes().length > 0) {
+    <div class="pistas" aria-live="polite">
+      @for (p of pistasRecientes(); track p.id) {
+        <p class="pista"><strong>Pista:</strong> {{ p.texto }}</p>
+      }
+    </div>
+  }
+
   @if (errorDeIntentos()) {
     <p class="mensaje-error" role="alert">
       No pudimos traer lo que ya probaste.

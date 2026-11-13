@@ -1,6 +1,6 @@
 import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import type { IntentoPublico, Stroke } from '@garabato/shared';
+import type { IntentoPublico, PistaPublica, Stroke } from '@garabato/shared';
 import { ApiService } from '../../api/api.service';
 import { errorDeApi, mensajeDeError } from '../../api/errores';
 import { EstadoService } from '../../estado/estado.service';
@@ -10,7 +10,7 @@ import { normalizar } from '../../comun/texto';
 
 /**
  * Adivinar. Diseño: docs/diseno/Adivinar.dc.html.
- * La reproducción trazo por trazo y las pistas llegan en la etapa 2.
+ * Muestra las pistas que manda quien dibujó, la más nueva arriba.
  */
 @Component({
   selector: 'app-adivinar',
@@ -32,6 +32,9 @@ export class AdivinarPage {
   protected readonly cargandoEstado = this.estados.cargando;
   protected readonly intentos = signal<IntentoPublico[]>([]);
   protected readonly fallidos = computed(() => this.intentos().filter((i) => !i.correcto));
+  protected readonly pistas = signal<PistaPublica[]>([]);
+  /** La más nueva arriba. */
+  protected readonly pistasRecientes = computed(() => [...this.pistas()].reverse());
   protected readonly texto = signal('');
   protected readonly enviando = signal(false);
   protected readonly mensaje = signal<string | null>(null);
@@ -57,6 +60,9 @@ export class AdivinarPage {
       if (this.turnoId !== t.id) {
         this.turnoId = t.id;
         this.cargar(t.id);
+      } else if (t.pistas > this.pistas().length) {
+        // Llegó una pista nueva: el estado se actualiza cada 5 s.
+        this.cargarPistas(t.id);
       }
     });
   }
@@ -160,5 +166,11 @@ export class AdivinarPage {
       next: (i) => this.intentos.set(i),
       error: () => this.errorDeIntentos.set(true),
     });
+    this.cargarPistas(turnoId);
+  }
+
+  private cargarPistas(turnoId: string): void {
+    // Si falla, se vuelve a intentar con la próxima actualización del estado.
+    this.api.pistas(turnoId).subscribe({ next: (p) => this.pistas.set(p), error: () => undefined });
   }
 }

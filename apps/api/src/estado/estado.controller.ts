@@ -34,7 +34,7 @@ export class EstadoController {
       yo: publico(yo),
       otro: otro ? publico(otro) : null,
       invitacion: sala.invitacion,
-      turno: actual ? vistaDelTurno(actual, yo.id, actual._count.intentos) : null,
+      turno: actual ? vistaDelTurno(actual, yo.id, actual._count.intentos, actual._count.pistas) : null,
       anterior: vistaDelAnterior(anterior, yo.id),
       salteos: await this.turnos.salteosDe(yo.id),
       libreNuevo: await this.libres.nuevoPara(yo),
@@ -47,7 +47,7 @@ export class EstadoController {
       include: {
         jugadores: true,
         // El actual y el anterior.
-        turnos: { orderBy: { numero: 'desc' }, take: 2, include: { _count: { select: { intentos: true } } } },
+        turnos: { orderBy: { numero: 'desc' }, take: 2, include: { _count: { select: { intentos: true, pistas: true } } } },
       },
     });
   }

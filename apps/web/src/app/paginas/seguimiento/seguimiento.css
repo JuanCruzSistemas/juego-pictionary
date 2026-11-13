@@ -1,0 +1,162 @@
+.pantalla {
+  gap: 14px;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+.volver {
+  display: flex;
+  flex: none;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--birome);
+}
+
+.cabecera {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 14px;
+}
+
+.miniatura {
+  display: flex;
+  flex: 0 0 96px;
+  height: 96px;
+}
+
+.vista {
+  flex: 1 1 auto;
+}
+
+.cabecera-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+h1 {
+  font-size: 26px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.subtitulo {
+  font-family: var(--fuente-texto);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Intentos y pistas: si son muchos, cada lista scrollea sola y la pantalla no se mueve. */
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.intentos {
+  flex: 0 1 auto;
+}
+
+.pistas {
+  flex: 0 1 auto;
+  max-height: 30%;
+}
+
+.lista,
+.globos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.intento {
+  padding: 10px 12px;
+  background: var(--hoja);
+  border: 2px solid var(--birome);
+  border-radius: 12px;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+.globos {
+  align-items: flex-end;
+}
+
+.pista {
+  max-width: 85%;
+  padding: 10px 12px;
+  background: var(--resaltador);
+  border: 2px solid var(--birome);
+  border-radius: 14px 14px 2px 14px;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+.formulario {
+  display: flex;
+  flex: none;
+  margin-top: auto;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fila {
+  display: flex;
+  gap: 8px;
+}
+
+.fila .campo {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.mandar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  min-height: 52px;
+  padding: 0 18px;
+  background: var(--resaltador);
+  color: var(--birome);
+  border: 2.5px solid var(--birome);
+  border-radius: 12px;
+  box-shadow: var(--sombra-boton);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.mandar:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.mandar:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media (max-height: 700px) {
+  .pantalla {
+    gap: 10px;
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+  }
+  .miniatura {
+    flex-basis: 72px;
+    height: 72px;
+  }
+  h1 {
+    font-size: 22px;
+  }
+}

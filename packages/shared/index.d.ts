@@ -68,6 +68,8 @@ export type TurnoActual = {
   estado: EstadoTurnoActual;
   /** Intentos de quien adivina en este turno. */
   intentos: number;
+  /** Pistas que mandó quien dibuja en este turno. */
+  pistas: number;
   /** Solo para quien dibuja, mientras elige o dibuja. */
   opciones?: string[];
   /** Solo para quien dibuja, una vez elegida. Quien adivina nunca la recibe acá. */
@@ -105,6 +107,10 @@ export type EnviarDibujoRespuesta = { turno: TurnoActual | null };
 export type DibujoGuardado = { trazos: Stroke[]; duracionMs: number };
 
 export type IntentoPublico = { id: string; texto: string; correcto: boolean; creadoEn: string };
+
+/** GET y POST /api/turnos/:id/pistas. La lista va de la más vieja a la más nueva. */
+export type PistaPublica = { id: string; texto: string; creadoEn: string };
+export type PistaBody = { texto: string };
 
 /** POST /api/turnos/:id/intentos */
 export type IntentoBody = { texto: string };

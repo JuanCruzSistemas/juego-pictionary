@@ -1,4 +1,4 @@
-import { acierta, sinArticulo, variantes } from './acierto.js';
+import { acierta, contieneLaPalabra, sinArticulo, variantes } from './acierto.js';
 
 describe('acierta', () => {
   it.each([
@@ -60,5 +60,27 @@ describe('variantes', () => {
     expect(variantes('flores')).toEqual(['flores', 'flore', 'flor']);
     expect(variantes('mates')).toEqual(['mates', 'mate', 'mat']);
     expect(variantes('mate')).toEqual(['mate']);
+  });
+});
+
+describe('contieneLaPalabra', () => {
+  it.each([
+    ['Lo tomás con un mate', 'Mate'],
+    ['MATES ricos', 'Mate'],
+    ['es una patineta roja', 'Patineta'],
+    ['patinetas', 'Patineta'],
+    ['tiene arco iris', 'Arcoíris'],
+    ['vamos a la plaza', 'La plaza'],
+  ])('"%s" contiene "%s"', (texto, palabra) => {
+    expect(contieneLaPalabra(texto, palabra)).toBe(true);
+  });
+
+  it.each([
+    ['Lo tomás todas las mañanas', 'Mate'],
+    ['tiene cuatro ruedas', 'Patineta'],
+    ['un pato', 'Gato'],
+    ['sale después de llover', 'Arcoíris'],
+  ])('"%s" no contiene "%s"', (texto, palabra) => {
+    expect(contieneLaPalabra(texto, palabra)).toBe(false);
   });
 });

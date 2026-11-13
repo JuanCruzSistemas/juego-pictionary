@@ -26,6 +26,14 @@ describe('avisos', () => {
     });
   });
 
+  it('"Llegó una pista", con el texto de la pista', () => {
+    expect(avisos.pista('Lo tomás todas las mañanas')).toEqual({
+      titulo: 'Llegó una pista',
+      cuerpo: 'Lo tomás todas las mañanas',
+      url: '/adivinar',
+    });
+  });
+
   it('"Te dejó un dibujito", que abre ese dibujo', () => {
     expect(avisos.libre('Mili', 'd-1')).toEqual({
       titulo: 'Mili te dejó un dibujito',

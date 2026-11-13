@@ -4,6 +4,7 @@ import type {
   EnviarDibujoRespuesta,
   IntentoPublico,
   IntentoRespuesta,
+  PistaPublica,
   RendirseRespuesta,
   ResumenTurno,
   Salteos,
@@ -11,7 +12,7 @@ import type {
   Stroke,
   TurnoActual,
 } from '@garabato/shared';
-import { acierta } from './acierto.js';
+import { acierta, contieneLaPalabra } from './acierto.js';
 import { NotificacionesService } from '../push/notificaciones.service.js';
 import { avisos } from '../push/avisos.js';
 import { Prisma, type Jugador, type Turno } from '../generated/prisma/client.js';
@@ -129,9 +130,9 @@ export class TurnosService {
 
     const actualizado = await this.prisma.turno.findUniqueOrThrow({
       where: { id: turno.id },
-      include: { _count: { select: { intentos: true } } },
+      include: { _count: { select: { intentos: true, pistas: true } } },
     });
-    return vistaDelTurno(actualizado, yo.id, actualizado._count.intentos);
+    return vistaDelTurno(actualizado, yo.id, actualizado._count.intentos, actualizado._count.pistas);
   }
 
   /**
@@ -206,10 +207,10 @@ export class TurnosService {
 
     const turno = await this.prisma.turno.findUniqueOrThrow({
       where: { id: turnoId },
-      include: { _count: { select: { intentos: true } } },
+      include: { _count: { select: { intentos: true, pistas: true } } },
     });
     return {
-      turno: turno.estado === 'adivinando' ? vistaDelTurno(turno, yo.id, turno._count.intentos) : null,
+      turno: turno.estado === 'adivinando' ? vistaDelTurno(turno, yo.id, turno._count.intentos, turno._count.pistas) : null,
     };
   }
 
@@ -338,6 +339,33 @@ export class TurnosService {
       trazos: turno.dibujo.trazos as Stroke[],
       adivine: turno.adivinaId === yo.id,
     };
+  }
+
+  /**
+   * Quien dibuja le manda una pista a quien adivina, mientras adivina. Sin límite.
+   * No puede contener la palabra (ni con tildes, plural o un error chico): sería regalarla.
+   */
+  async mandarPista(yo: Jugador, turnoId: string, texto: string): Promise<PistaPublica[]> {
+    const turno = await this.turnoQueDibujo(yo, turnoId, this.prisma);
+    if (turno.estado !== 'adivinando' || !turno.palabra) throw turnoCerrado('Las pistas se mandan mientras la otra persona adivina.');
+    if (contieneLaPalabra(texto, turno.palabra)) throw datosInvalidos('La pista no puede tener la palabra.');
+    await this.prisma.pista.create({ data: { turnoId: turno.id, autorId: yo.id, texto } });
+    // Después de guardarla: un aviso que falla no afecta a la pista.
+    this.notificaciones.avisar(turno.adivinaId, turno.salaId, avisos.pista(texto));
+    return this.listarPistas(turno.id);
+  }
+
+  /** Las pistas del turno, de la más vieja a la más nueva. Para las dos personas del turno. */
+  async pistasDe(yo: Jugador, turnoId: string): Promise<PistaPublica[]> {
+    const turno = await this.prisma.turno.findFirst({ where: { id: turnoId, salaId: yo.salaId } });
+    if (!turno) throw turnoNoEncontrado();
+    return this.listarPistas(turno.id);
+  }
+
+  private async listarPistas(turnoId: string): Promise<PistaPublica[]> {
+    // creadoEn lo pone la base, como en los intentos: solo sirve para ordenar.
+    const pistas = await this.prisma.pista.findMany({ where: { turnoId }, orderBy: [{ creadoEn: 'asc' }, { id: 'asc' }] });
+    return pistas.map((p) => ({ id: p.id, texto: p.texto, creadoEn: p.creadoEn.toISOString() }));
   }
 
   private async listarIntentos(tx: Tx, turnoId: string): Promise<IntentoPublico[]> {

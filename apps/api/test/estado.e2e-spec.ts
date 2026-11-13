@@ -31,7 +31,7 @@ describe('GET /api/estado con turnos', () => {
     expect(deJuan.anterior).toBeNull();
 
     const deAna = (await ana.get('/api/estado').expect(200)).body;
-    expect(deAna.turno).toEqual({ id: deJuan.turno.id, numero: 1, rol: 'adivina', estado: 'eligiendo', intentos: 0 });
+    expect(deAna.turno).toEqual({ id: deJuan.turno.id, numero: 1, rol: 'adivina', estado: 'eligiendo', intentos: 0, pistas: 0 });
   });
 
   it('una sala llena sin turno (gente que entró antes del paso 4) recibe el turno 1 al pedir el estado', async () => {

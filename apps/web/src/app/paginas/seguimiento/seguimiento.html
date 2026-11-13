@@ -1,0 +1,64 @@
+<main class="pantalla">
+  <a routerLink="/" class="volver" aria-label="Volver al inicio">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+  </a>
+
+  <div class="cabecera">
+    <div class="miniatura">
+      @if (trazos(); as t) {
+        <app-dibujo-vista class="vista" [trazos]="t" [descripcion]="'Tu dibujo de ' + palabra()" />
+      }
+    </div>
+    <div class="cabecera-texto">
+      <h1 class="titulo">{{ otro() }} está adivinando</h1>
+      <p>Tu palabra: <strong>{{ palabra() }}</strong></p>
+    </div>
+  </div>
+
+  <section class="seccion intentos" aria-labelledby="titulo-intentos">
+    <h2 id="titulo-intentos" class="subtitulo">Sus intentos</h2>
+    @if (fallidos().length > 0) {
+      <ul class="lista" aria-live="polite">
+        @for (i of fallidos(); track i.id) {
+          <li class="intento">{{ i.texto }}</li>
+        }
+      </ul>
+    } @else {
+      <p class="texto-suave">Todavía no probó ninguna palabra.</p>
+    }
+  </section>
+
+  @if (pistas().length > 0) {
+    <section class="seccion pistas" aria-labelledby="titulo-pistas">
+      <h2 id="titulo-pistas" class="subtitulo">Pistas que mandaste</h2>
+      <div class="globos">
+        @for (p of pistas(); track p.id) {
+          <p class="pista">{{ p.texto }}</p>
+        }
+      </div>
+    </section>
+  }
+
+  <form class="formulario" novalidate (submit)="mandar($event)">
+    <label for="pista" class="etiqueta">Mandale una pista</label>
+    <div class="fila">
+      <input
+        id="pista"
+        type="text"
+        class="campo"
+        placeholder="Escribí tu pista"
+        autocomplete="off"
+        enterkeyhint="send"
+        maxlength="80"
+        [value]="texto()"
+        [attr.aria-describedby]="mensaje() ? 'pista-mensaje' : null"
+        (input)="escribir($any($event.target).value)"
+      />
+      <button type="submit" class="mandar" [disabled]="!sePuedeMandar()">{{ enviando() ? '…' : 'Mandar' }}</button>
+    </div>
+    @if (mensaje(); as m) {
+      <p id="pista-mensaje" class="mensaje-error" role="alert">{{ m }}</p>
+    }
+  </form>
+</main>

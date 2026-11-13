@@ -16,6 +16,7 @@ import type {
   IntentoPublico,
   IntentoRespuesta,
   PalabraBody,
+  PistaPublica,
   RendirseRespuesta,
   ResumenTurno,
   SalaPublica,
@@ -61,6 +62,14 @@ export class ApiService {
 
   probar(turnoId: string, texto: string) {
     return this.http.post<IntentoRespuesta>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/intentos`), { texto });
+  }
+
+  pistas(turnoId: string) {
+    return this.http.get<PistaPublica[]>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/pistas`));
+  }
+
+  mandarPista(turnoId: string, texto: string) {
+    return this.http.post<PistaPublica[]>(rutaApi(`turnos/${encodeURIComponent(turnoId)}/pistas`), { texto });
   }
 
   rendirse(turnoId: string) {

@@ -32,7 +32,12 @@ export function tarjetaDeInicio(e: Estado): Tarjeta {
 
   if (turno.rol === 'dibuja') {
     if (turno.estado === 'adivinando') {
-      return { etiqueta, titulo: `${otro} está adivinando`, texto: textoDeIntentos(turno.intentos) };
+      return {
+        etiqueta,
+        titulo: `${otro} está adivinando`,
+        texto: textoDeIntentos(turno.intentos),
+        accion: { texto: 'Ver intentos y mandar pista', ruta: '/seguimiento' },
+      };
     }
     return {
       etiqueta,
