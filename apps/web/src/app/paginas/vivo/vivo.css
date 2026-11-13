@@ -1,0 +1,346 @@
+/* Como Lienzo y Adivinar: la pantalla entra justa en el alto visible y nada scrollea. */
+.pantalla {
+  position: relative;
+  gap: 10px;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+header,
+.opciones,
+.colores,
+.herramientas,
+.probando,
+.pista-globo,
+.probadas,
+.respuesta,
+.acciones-chicas,
+.fila,
+.pie {
+  flex: none;
+}
+
+.volver {
+  display: flex;
+  flex: none;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--birome);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+}
+
+h1 {
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}
+
+.consigna {
+  min-width: 0;
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}
+
+.en-vivo {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--correccion-texto);
+}
+
+.punto-vivo {
+  width: 10px;
+  height: 10px;
+  background: var(--correccion);
+  border-radius: 50%;
+}
+
+/* Espera, pausa y sin partida: el contenido al centro, los botones abajo. */
+.centro {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.centro h1 {
+  font-size: 30px;
+  line-height: 1.15;
+}
+
+.centro p {
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.pie {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fila-botones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fila-botones.tres {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fila-botones .dos {
+  grid-column: span 2;
+}
+
+.fila-botones .btn-secundario {
+  min-height: 48px;
+  padding: 0 6px;
+  font-size: 15px;
+}
+
+/* Elegir */
+.opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.opcion {
+  min-height: 56px;
+  padding: 12px 16px;
+  background: var(--hoja);
+  color: var(--birome);
+  border: 2px solid var(--birome);
+  border-radius: 12px;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 20px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.opcion:active:not(:disabled) {
+  background: var(--resaltador);
+}
+
+/* Dibujar */
+.lienzo,
+.zona-dibujo {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 120px;
+}
+
+.vista {
+  flex: 1 1 auto;
+}
+
+.probando {
+  font-size: 15px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  max-height: 2.7em;
+  overflow: hidden;
+}
+
+.colores,
+.herramientas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.color {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid var(--birome);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.color[aria-pressed='true'] {
+  border: 4px solid var(--hoja);
+  box-shadow: 0 0 0 3px var(--birome);
+}
+
+.herramienta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: var(--hoja);
+  color: var(--birome);
+  border: 2px solid var(--birome);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.herramienta[aria-pressed='true'] {
+  background: var(--resaltador);
+}
+
+.herramienta:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.punto {
+  display: block;
+  border-radius: 50%;
+  background: var(--birome);
+}
+
+/* Campos con botón al lado: pista y respuesta. */
+.fila {
+  display: flex;
+  gap: 8px;
+}
+
+.fila .campo {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.chico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  min-height: 52px;
+  padding: 0 16px;
+  background: var(--resaltador);
+  color: var(--birome);
+  border: 2.5px solid var(--birome);
+  border-radius: 12px;
+  box-shadow: var(--sombra-boton);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.chico:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Adivinar */
+.pista-globo {
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 8px 12px;
+  background: var(--resaltador);
+  border: 2px solid var(--birome);
+  border-radius: 14px 14px 14px 2px;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.probadas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  max-height: 64px;
+  overflow-y: auto;
+}
+
+.etiqueta-probadas {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.probada {
+  padding: 4px 10px;
+  background: var(--hoja);
+  border: 1.5px solid var(--correccion);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--correccion-texto);
+}
+
+.respuesta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.acciones-chicas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 16px;
+  min-height: 44px;
+}
+
+.acciones-chicas .fuerte {
+  font-weight: 700;
+  color: var(--correccion-texto);
+}
+
+.pregunta {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* El resultado de la ronda, arriba de todo, un momento. */
+.resultado {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  background: var(--resaltador);
+  text-align: center;
+}
+
+.resultado .titulo {
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+.resultado p:not(.titulo) {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+@media (max-height: 700px) {
+  .pantalla {
+    gap: 8px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  }
+  .opcion {
+    min-height: 48px;
+  }
+}

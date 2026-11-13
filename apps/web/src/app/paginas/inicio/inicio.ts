@@ -10,8 +10,8 @@ import { tarjetasExtra } from '../../pwa/tarjetas';
 
 /**
  * Inicio. Diseño: docs/diseno/Main.dc.html.
- * La tarjeta del turno, el dibujo libre sin abrir y el botón para dejar uno. La racha,
- * el modo en vivo y los últimos dibujos llegan después.
+ * La tarjeta del turno, la invitación al modo en vivo, el dibujo libre sin abrir y los botones
+ * de dibujo libre, modo en vivo e historial.
  */
 @Component({
   selector: 'app-inicio',
@@ -37,6 +37,19 @@ export class InicioPage {
   protected readonly tarjeta = computed(() => {
     const e = this.estado();
     return e ? tarjetaDeInicio(e) : null;
+  });
+  /** En vivo se arranca con el turno en elección o en dibujo, no con un dibujo esperando que lo adivinen. */
+  protected readonly sePuedeJugarEnVivo = computed(() => {
+    const t = this.estado()?.turno;
+    return !!t && t.estado !== 'adivinando';
+  });
+  /** Si la otra persona invitó, o hay una partida en vivo de la que no estás, la tarjeta para entrar. */
+  protected readonly invitacionVivo = computed(() => {
+    const e = this.estado();
+    const v = e?.vivo;
+    if (!e || !v || v.presentes.includes(e.yo.id)) return null;
+    const otro = e.otro?.nombre ?? 'La otra persona';
+    return v.estado === 'esperando' ? `${otro} te invita a jugar en vivo` : 'Volver a la partida en vivo';
   });
   protected readonly link = computed(() => {
     const e = this.estado();

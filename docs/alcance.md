@@ -45,7 +45,7 @@ Los turnos se alternan estrictamente y se premia jugar juntos, no competir.
 | Rendirse | Quien adivina puede tocar "Me rindo" (con confirmación): ve la palabra y pasa a dibujar, como con un acierto. No gasta salteos. |
 | Pistas | Quien dibujó se las manda a quien adivina dentro de la app, sin límite, mientras adivina. Una pista no puede tener la palabra. |
 | Progreso | Racha compartida, sin rankings. Se mantiene si al menos uno de los dos adivina en el día una palabra que dibujó el otro, contando los días en hora de Argentina. Rendirse no cuenta. |
-| Modo en vivo | Se inicia con una invitación por notificación y las rondas no tienen límite de tiempo. |
+| Modo en vivo | Se inicia con una invitación por notificación y las rondas no tienen límite de tiempo. Las rondas son turnos normales (cuentan para la racha y van al historial): se arranca con el turno en elección o en dibujo, y quien adivina puede probar, rendirse y recibir pistas mientras se dibuja. Si alguien se desconecta, la partida se pausa 2 minutos; si no vuelve, termina y el turno sigue por turnos con el dibujo como borrador. |
 
 ## Plataforma y stack
 

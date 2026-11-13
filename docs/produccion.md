@@ -200,6 +200,14 @@ cloudflared tunnel --url http://localhost:4300
 
 La URL `https://….trycloudflare.com` cambia en cada corrida: hay que volver a suscribirse. Para ver el aviso de versión nueva, hacer otro build con algún cambio sin cerrar la app.
 
+## Modo en vivo (Socket.IO)
+
+- La API atiende Socket.IO en `/socket.io`, en el mismo servicio `garabato-api`. Render soporta WebSockets en los servicios web, sin configurar nada.
+- El CORS del socket es el mismo de la API: solo `WEB_ORIGIN`. Si la web cambia de URL, cambia para los dos.
+- Las partidas en vivo viven en la memoria de la API (hay una sola instancia). Si Render reinicia el servicio, las partidas terminan y los turnos siguen por turnos; si las dos personas vuelven a la pantalla en vivo, se arma sola.
+- En local, `ng serve` pasa `/socket.io` a la API (proxy con `ws: true`).
+- Sin migraciones.
+
 ## Mantenimiento
 
 - **Cambiar la lista de palabras:** editar `palabras-base.ts`, commit y push, y correr `npm run db:seed` con `.env.produccion` como en el paso 2.

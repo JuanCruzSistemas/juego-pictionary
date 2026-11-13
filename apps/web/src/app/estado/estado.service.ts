@@ -29,6 +29,7 @@ export class EstadoService {
   /** Sube con cada cambio local; una respuesta pedida antes de un cambio local llega vieja y se descarta. */
   private version = 0;
   private enCurso = false;
+  private otraVez = false;
   private seguidores = 0;
 
   private readonly alCambiarVisibilidad = () => {
@@ -56,9 +57,12 @@ export class EstadoService {
     });
   }
 
-  /** Pide el estado ya. Si hay un pedido en curso, no lo duplica. */
+  /** Pide el estado ya. Si hay un pedido en curso, no lo duplica: pide otro apenas termine. */
   actualizar(): void {
-    if (this.enCurso) return;
+    if (this.enCurso) {
+      this.otraVez = true;
+      return;
+    }
     this.enCurso = true;
     this.pidiendo.set(true);
     const version = this.version;
@@ -68,6 +72,11 @@ export class EstadoService {
         finalize(() => {
           this.enCurso = false;
           this.pidiendo.set(false);
+          // Llegó un aviso de cambio mientras viajaba este pedido: puede haber salido viejo.
+          if (this.otraVez) {
+            this.otraVez = false;
+            this.actualizar();
+          }
         }),
       )
       .subscribe({

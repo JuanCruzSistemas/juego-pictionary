@@ -27,6 +27,16 @@
       }
     </section>
 
+    @if (invitacionVivo(); as inv) {
+      <a class="libre-nuevo vivo" routerLink="/vivo">
+        <span class="punto-vivo" aria-hidden="true"></span>
+        <span class="libre-texto">
+          <strong>{{ inv }}</strong>
+          <span class="texto-suave">Tocá para entrar</span>
+        </span>
+      </a>
+    }
+
     @if (estado()?.libreNuevo; as nuevo) {
       <a class="libre-nuevo" [routerLink]="['/recibido', nuevo.id]">
         <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="var(--correccion)" stroke-width="2.5"
@@ -46,10 +56,18 @@
           <strong>Dibujo libre</strong>
           <span class="texto-suave">Dejale uno a {{ estado()?.otro?.nombre }}</span>
         </a>
-        <a routerLink="/historial" class="libre-boton">
-          <strong>Historial</strong>
-          <span class="texto-suave">Todos sus dibujos</span>
-        </a>
+        @if (sePuedeJugarEnVivo()) {
+          <a routerLink="/vivo" [queryParams]="{ invitar: 1 }" class="libre-boton">
+            <strong>Jugar en vivo</strong>
+            <span class="texto-suave">Invitá a {{ estado()?.otro?.nombre }}</span>
+          </a>
+        } @else {
+          <div class="libre-boton apagado" aria-disabled="true">
+            <strong>Jugar en vivo</strong>
+            <span class="texto-suave">Cuando adivinen este dibujo</span>
+          </div>
+        }
+        <a routerLink="/historial" class="historial">Historial: todos sus dibujos</a>
       </nav>
     }
 

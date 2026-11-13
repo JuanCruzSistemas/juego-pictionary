@@ -54,6 +54,11 @@ export const routes: Routes = [
     loadComponent: () => import('./paginas/historial/historial').then((m) => m.HistorialPage),
   },
   {
+    path: 'vivo',
+    canActivate: [conSesion],
+    loadComponent: () => import('./paginas/vivo/vivo').then((m) => m.VivoPage),
+  },
+  {
     path: 'libre',
     canActivate: [conSesion],
     loadComponent: () => import('./paginas/libre/libre').then((m) => m.LibrePage),

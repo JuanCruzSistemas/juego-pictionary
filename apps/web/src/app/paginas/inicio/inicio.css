@@ -169,6 +169,38 @@ h2 {
   font-size: 18px;
 }
 
+/* "Jugar en vivo" apagado mientras hay un dibujo esperando que lo adivinen. */
+.libre-boton.apagado {
+  border-style: dashed;
+  opacity: 0.7;
+}
+
+.historial {
+  grid-column: span 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  color: var(--birome);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* La invitación al vivo, con el punto rojo de "En vivo". */
+.libre-nuevo.vivo {
+  border-color: var(--correccion);
+}
+
+.punto-vivo {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin: 0 15px;
+  background: var(--correccion);
+  border-radius: 50%;
+}
+
 @media (max-height: 700px) {
   .pantalla {
     gap: 12px;

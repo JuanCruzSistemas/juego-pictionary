@@ -81,6 +81,8 @@ export class LienzoCanvas implements AfterViewInit, OnDestroy {
   /** Mientras se manda el dibujo, no se puede seguir dibujando. */
   readonly bloqueado = input(false);
   readonly terminado = output<Stroke>();
+  /** El trazo en curso, cada vez que suma puntos. El modo en vivo lo manda mientras se dibuja. */
+  readonly avance = output<Stroke>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>('lienzo');
@@ -133,6 +135,7 @@ export class LienzoCanvas implements AfterViewInit, OnDestroy {
       rect,
       trazo: { color: this.color(), width: this.grosor(), points: [p] },
     };
+    this.avance.emit(this.enCurso.trazo);
     this.pedirCuadro();
   }
 
@@ -144,6 +147,7 @@ export class LienzoCanvas implements AfterViewInit, OnDestroy {
     for (const ev of eventos.length > 0 ? eventos : [e]) {
       agregarPunto(c.trazo.points, normalizarPunto(ev.clientX, ev.clientY, c.rect, this.tiempo()(ev.timeStamp)));
     }
+    this.avance.emit(c.trazo);
     this.pedirCuadro();
   }
 

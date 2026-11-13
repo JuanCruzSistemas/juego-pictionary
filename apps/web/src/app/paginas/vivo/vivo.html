@@ -1,0 +1,235 @@
+<main class="pantalla">
+  @switch (vista()) {
+    @case ('conectando') {
+      <div class="centro">
+        <p class="texto-suave" role="status">Conectando…</p>
+      </div>
+    }
+
+    @case ('sin-partida') {
+      <a routerLink="/" class="volver" aria-label="Volver al inicio">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+      </a>
+      <div class="centro">
+        <h1 class="titulo">Jugar en vivo con {{ otro() }}</h1>
+        <p>Se ven dibujar en el momento. Le avisamos para que entre.</p>
+        @if (vivoSrv.error(); as e) {
+          <p class="mensaje-error" role="alert">{{ e }}</p>
+        }
+      </div>
+      <div class="pie">
+        <button type="button" class="btn-principal" (click)="invitarAhora()">Invitar a {{ otro() }}</button>
+        <a routerLink="/" class="enlace">Volver al inicio</a>
+      </div>
+    }
+
+    @case ('esperando') {
+      <a routerLink="/" class="volver" aria-label="Volver al inicio" (click)="terminar()">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5 8 14l10 9"></path></svg>
+      </a>
+      <div class="centro">
+        <svg width="180" height="150" viewBox="0 0 180 150" fill="none" stroke="var(--birome)" stroke-width="5"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 40h140v90H20z"></path><path d="m20 40 70 54 70-54"></path>
+          <path stroke="var(--correccion)" d="M90 28C78 19 74 13 76 8c2-5 10-6 14 0 4-6 12-5 14 0 2 5-2 11-14 20Z"></path>
+        </svg>
+        <h1 class="titulo">Le avisamos a {{ otro() }}</h1>
+        <p>Cuando entre, arrancan. {{ quienDibuja() }}</p>
+      </div>
+      <div class="pie">
+        <button type="button" class="enlace" (click)="terminar()">Cancelar invitación</button>
+      </div>
+    }
+
+    @case ('pausada') {
+      <div class="centro">
+        <h1 class="titulo">{{ otro() }} se desconectó</h1>
+        <p>Esperando que vuelva. Si no vuelve en un par de minutos, siguen por turnos.</p>
+      </div>
+      <div class="pie">
+        <button type="button" class="btn-secundario" (click)="terminar()">Terminar partida</button>
+      </div>
+    }
+
+    @case ('turno-normal') {
+      <div class="centro">
+        <h1 class="titulo">Hay un dibujo esperando</h1>
+        <p>Terminen ese turno por turnos y después vuelven al vivo.</p>
+      </div>
+      <div class="pie">
+        <button type="button" class="btn-principal" (click)="terminar()">Volver al inicio</button>
+      </div>
+    }
+
+    @case ('elegir') {
+      <header>
+        <h1 class="titulo">¿Qué vas a dibujar?</h1>
+        <span class="en-vivo"><span class="punto-vivo" aria-hidden="true"></span>En vivo</span>
+      </header>
+      <div class="opciones" role="group" aria-label="Opciones">
+        @for (op of turno()?.opciones ?? []; track op) {
+          <button type="button" class="opcion" [disabled]="ocupado()" (click)="elegir(op)">{{ op }}</button>
+        }
+      </div>
+      <p class="texto-suave">{{ otro() }} te está esperando.</p>
+      @if (mensaje(); as m) {
+        <p class="mensaje-error" role="alert">{{ m }}</p>
+      }
+      <div class="pie fila-botones">
+        @if (confirmandoSalteo()) {
+          <button type="button" class="btn-secundario" [disabled]="ocupado()" (click)="noSaltear()">No</button>
+          <button type="button" class="btn-secundario" [disabled]="ocupado()" (click)="saltear()">Sí, saltear</button>
+        } @else {
+          <button type="button" class="btn-secundario" [disabled]="ocupado() || salteos()?.quedan === 0" (click)="saltear()">
+            Saltear ({{ salteos()?.quedan ?? 0 }} de {{ salteos()?.maximo ?? 3 }})
+          </button>
+          <button type="button" class="btn-secundario" (click)="terminar()">Terminar</button>
+        }
+      </div>
+    }
+
+    @case ('dibujar') {
+      <header>
+        <p class="titulo consigna">Dibujá: <span class="resaltado">{{ turno()?.palabra }}</span></p>
+        <span class="en-vivo"><span class="punto-vivo" aria-hidden="true"></span>En vivo</span>
+      </header>
+      <app-lienzo-canvas
+        class="lienzo"
+        [trazos]="dibujo.trazos()"
+        [color]="colorDelTrazo()"
+        [grosor]="anchoDelTrazo()"
+        [tiempo]="dibujo.tiempo"
+        (avance)="avance($event)"
+        (terminado)="trazoTerminado($event)"
+      />
+      <p class="probando" aria-live="polite">
+        @if (fallidos().length > 0) {
+          <strong>{{ otro() }} probó:</strong>
+          @for (i of fallidos(); track i.id; let ultimo = $last) {
+            {{ i.texto }}{{ ultimo ? '' : ' · ' }}
+          }
+        } @else {
+          <span class="texto-suave">{{ otro() }} todavía no probó nada.</span>
+        }
+      </p>
+      @if (escribiendoPista()) {
+        <form class="fila" novalidate (submit)="mandarPista($event)">
+          <label for="pista" class="visualmente-oculto">Pista</label>
+          <input id="pista" type="text" class="campo" placeholder="Escribí una pista" autocomplete="off" maxlength="80"
+            enterkeyhint="send" [value]="pista()" (input)="pista.set($any($event.target).value)" />
+          <button type="submit" class="chico" [disabled]="ocupado()">Mandar</button>
+        </form>
+      } @else {
+        <div class="colores" role="group" aria-label="Colores">
+          @for (c of colores; track c.hex) {
+            <button type="button" class="color" [style.background]="c.hex" [attr.aria-label]="c.nombre"
+              [attr.aria-pressed]="!goma() && color() === c.hex" (click)="elegirColor(c.hex)"></button>
+          }
+        </div>
+        <div class="herramientas">
+          @for (g of grosores; track g[0]) {
+            <button type="button" class="herramienta" [attr.aria-label]="g[1].nombre" [attr.aria-pressed]="grosor() === g[0]"
+              (click)="elegirGrosor(g[0])">
+              <span class="punto" [style.width.px]="g[1].punto" [style.height.px]="g[1].punto"></span>
+            </button>
+          }
+          <button type="button" class="herramienta" aria-label="Goma de borrar" [attr.aria-pressed]="goma()" (click)="alternarGoma()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--birome)" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m14 4 6 6-9 9H7l-3-3a2 2 0 0 1 0-3l10-9Z"></path><path d="M9 8l6 6"></path>
+            </svg>
+          </button>
+          <button type="button" class="herramienta" aria-label="Deshacer el último trazo" [disabled]="dibujo.vacio()" (click)="deshacer()">
+            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" stroke="var(--birome)" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10 6 4 12l6 6"></path><path d="M4 12h13a7 7 0 0 1 0 14h-5"></path>
+            </svg>
+          </button>
+        </div>
+      }
+      @if (mensaje(); as m) {
+        <p class="mensaje-error" role="alert">{{ m }}</p>
+      }
+      <div class="pie fila-botones tres">
+        @if (confirmandoSalteo()) {
+          <button type="button" class="btn-secundario" [disabled]="ocupado()" (click)="noSaltear()">No</button>
+          <button type="button" class="btn-secundario dos" [disabled]="ocupado()" (click)="saltear()">Sí, saltear</button>
+        } @else {
+          <button type="button" class="btn-secundario" (click)="alternarPista()">{{ escribiendoPista() ? 'Colores' : 'Pista' }}</button>
+          <button type="button" class="btn-secundario" [disabled]="ocupado() || salteos()?.quedan === 0" (click)="saltear()">
+            Saltear ({{ salteos()?.quedan ?? 0 }})
+          </button>
+          <button type="button" class="btn-secundario" (click)="terminar()">Terminar</button>
+        }
+      </div>
+    }
+
+    @case ('espera-palabra') {
+      <header>
+        <h1 class="titulo">{{ otro() }} está eligiendo</h1>
+        <span class="en-vivo"><span class="punto-vivo" aria-hidden="true"></span>En vivo</span>
+      </header>
+      <div class="centro">
+        <p>En un momento empieza a dibujar.</p>
+      </div>
+      <div class="pie">
+        <button type="button" class="btn-secundario" (click)="terminar()">Terminar partida</button>
+      </div>
+    }
+
+    @case ('adivinar') {
+      <header>
+        <h1 class="titulo">{{ otro() }} está dibujando</h1>
+        <span class="en-vivo"><span class="punto-vivo" aria-hidden="true"></span>En vivo</span>
+      </header>
+      <div class="zona-dibujo">
+        <app-dibujo-vista class="vista" [trazos]="trazosRemotos()" descripcion="El dibujo, mientras se dibuja" />
+      </div>
+      @if (ultimaPista(); as p) {
+        <p class="pista-globo"><strong>Pista:</strong> {{ p.texto }}</p>
+      }
+      @if (fallidos().length > 0) {
+        <div class="probadas">
+          <span class="etiqueta-probadas">Ya probaste:</span>
+          @for (i of fallidos(); track i.id) {
+            <s class="probada">{{ i.texto }}</s>
+          }
+        </div>
+      }
+      <form class="respuesta" novalidate (submit)="probar($event)">
+        <label for="respuesta" class="etiqueta">Tu respuesta</label>
+        <div class="fila">
+          <input id="respuesta" type="text" class="campo" placeholder="Escribí lo que ves" autocomplete="off"
+            autocapitalize="none" enterkeyhint="send" maxlength="60" [value]="respuesta()"
+            [attr.aria-describedby]="mensaje() ? 'vivo-mensaje' : null" (input)="escribir($any($event.target).value)" />
+          <button type="submit" class="chico" [disabled]="ocupado() || trazosRemotos().length === 0">Probar</button>
+        </div>
+        @if (mensaje(); as m) {
+          <p id="vivo-mensaje" class="mensaje-error" role="alert">{{ m }}</p>
+        }
+      </form>
+      <div class="acciones-chicas">
+        @if (confirmandoRendirse()) {
+          <span class="pregunta">¿Seguro? Vas a ver la palabra.</span>
+          <button type="button" class="enlace" (click)="noMeRindo()">No</button>
+          <button type="button" class="enlace fuerte" [disabled]="ocupado()" (click)="meRindo()">Sí, me rindo</button>
+        } @else {
+          <button type="button" class="enlace" [disabled]="trazosRemotos().length === 0" (click)="meRindo()">Me rindo</button>
+          <button type="button" class="enlace" (click)="terminar()">Terminar partida</button>
+        }
+      </div>
+    }
+  }
+
+  @if (resultado(); as r) {
+    <div class="resultado" role="status">
+      <p class="titulo">{{ r.titulo }}</p>
+      @if (r.texto) {
+        <p>{{ r.texto }}</p>
+      }
+    </div>
+  }
+</main>
+<app-aviso-girar />
